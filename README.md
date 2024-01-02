@@ -10,7 +10,9 @@ Note: this specification is currently in beta. If you notice any inaccuracies wi
 
 The OpenAPI (v3.1.0) specification is located in the `openapi/` directory. This specification can be used with a [wide variety of tools](https://tools.openapis.org/) to generate API documentation, client SDKs, and more.
 
-The Typescript types are generated from the OpenAPI specification and are located in `dist/`. While there are a number of existing OpenAPI to Typescript code generators, we are generating our own types with some stylistic choices we believe are more optimal for development with the REST API:
+The Typescript types are generated from the OpenAPI specification and are located in `dist/`.
+
+We use a custom code generator to convert the OpenAPI spec to TypeScript. While there are a number of existing OpenAPI-to-Typescript code generators, we adopted a custom solution that produces output that we believe is more optimal for the Figma REST API. In particular:
 
 - All OpenAPI schemas, responses, and request parameters are exported as named types. This exposes named types inside complex node properties (e.g. `Paint`, `VariableAlias`, etc...).
 - Types directly associated with API endpoints are prefixed with the OpenAPI operation ID (e.g. `getFile` -> `GetFilePathParams`, `GetFileQueryParams`, `GetFileResponse`). For API endpoints expecting a request body, the types are suffixed with `RequestBody` (e.g. `postComments` -> `PostCommentsRequestBody`).
