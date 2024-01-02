@@ -4,7 +4,7 @@ This repository contains the OpenAPI specification and Typescript types for the 
 
 [Changelog](https://www.figma.com/developers/api#changelog)
 
-Note: we are releasing the OpenAPI specification as a beta given the large surface area and complexity of the REST API. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues) in this repository.
+Note: this specification is currently in beta. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues) in this repository.
 
 ## Usage
 
