@@ -1,27 +1,13 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 1.0.0
-  description: >
-    <p>
-      Welcome to Figma, the world's first collaborative interface design tool. Figma allows
-      designers to create and prototype their digital experiences - together in real-time and in
-      one place - helping them turn their ideas and visions into products, faster. Figma's mission
-      is to make design accessible to everyone. The Figma API is one of the ways we aim to do
-      that.
-    </p>
+  version: 0.9.0
+  description: >-
+    This is the OpenAPI specification for the [Figma REST
+    API](https://www.figma.com/developers/api).
 
-    <p>
-      The Figma API is based on the
-      <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">REST</a> structure.
-      We support authentication via <a href="#access-tokens">access tokens</a> and
-      <a href="#oauth2">OAuth2</a>. Requests are made via <Bold>HTTP endpoints</Bold> with clear
-      functions and appropriate response codes. Endpoints allow you to request
-      <a href="#files">files</a>, <a href="#get-images-endpoint">images</a>,
-      <a href="#version-history">file versions</a>, <a href="#users">users</a>,
-      <a href="#comments">comments</a>, <a href="#get-team-projects-endpoint">team projects</a>
-      and <a href="#get-project-files-endpoint">project files</a>.
-    </p>
+
+    Note: we are releasing the OpenAPI specification as a beta given the large surface area and complexity of the REST API. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues).
   termsOfService: https://www.figma.com/developer-terms/
   contact:
     email: support@figma.com
@@ -110,7 +96,8 @@ paths:
         Returns the document identified by `file_key` as a JSON object. The file
         key can be parsed from any Figma file url:
         `https://www.figma.com/file/{file_key}/{title}`.
-            
+
+
         The `document` property contains a node of type `DOCUMENT`.
 
 
@@ -2267,9 +2254,10 @@ components:
         boundVariables:
           type: object
           description: A mapping of field to the variables applied to this field. Most
-            fields will only map to a single VariableAlias. However, for fills,
-            strokes, size, component properties, and text range fills, it is
-            possible to have multiple variables bound to the field.
+            fields will only map to a single `VariableAlias`. However, for
+            properties like `fills`, `strokes`, `size`, `componentProperties`,
+            and `textRangeFills`, it is possible to have multiple variables
+            bound to the field.
           properties:
             size:
               type: object
@@ -2277,6 +2265,17 @@ components:
                 x:
                   $ref: "#/components/schemas/VariableAlias"
                 y:
+                  $ref: "#/components/schemas/VariableAlias"
+            individualStrokeWeights:
+              type: object
+              properties:
+                top:
+                  $ref: "#/components/schemas/VariableAlias"
+                bottom:
+                  $ref: "#/components/schemas/VariableAlias"
+                left:
+                  $ref: "#/components/schemas/VariableAlias"
+                right:
                   $ref: "#/components/schemas/VariableAlias"
             characters:
               $ref: "#/components/schemas/VariableAlias"
@@ -2310,6 +2309,8 @@ components:
               $ref: "#/components/schemas/VariableAlias"
             counterAxisSpacing:
               $ref: "#/components/schemas/VariableAlias"
+            opacity:
+              $ref: "#/components/schemas/VariableAlias"
             fills:
               type: array
               items:
@@ -2326,6 +2327,14 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/VariableAlias"
+            effects:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            layoutGrids:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
         explicitVariableModes:
           type: object
           description: A mapping of variable collection ID to mode ID representing the
@@ -2336,6 +2345,7 @@ components:
         - id
         - name
         - type
+        - scrollBehavior
     HasChildrenTrait:
       type: object
       properties:
@@ -2804,6 +2814,8 @@ components:
             $ref: "#/components/schemas/Effect"
           description: An array of effects attached to this node (see effects section for
             more details)
+      required:
+        - effects
     HasMaskTrait:
       type: object
       properties:
@@ -2827,6 +2839,12 @@ components:
             - ALPHA
             - VECTOR
             - LUMINANCE
+        isMaskOutline:
+          type: boolean
+          description: True if maskType is VECTOR. This field is deprecated; use maskType
+            instead.
+          default: false
+          deprecated: true
     ComponentPropertiesTrait:
       type: object
       properties:
@@ -2929,6 +2947,8 @@ components:
               enum:
                 - NONE
                 - READY_FOR_DEV
+          required:
+            - type
     FrameTraits:
       allOf:
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -2966,27 +2986,27 @@ components:
     Node:
       oneOf:
         - $ref: "#/components/schemas/BooleanOperationNode"
-        - $ref: "#/components/schemas/SectionNode"
-        - $ref: "#/components/schemas/FrameNode"
-        - $ref: "#/components/schemas/GroupNode"
         - $ref: "#/components/schemas/ComponentNode"
         - $ref: "#/components/schemas/ComponentSetNode"
-        - $ref: "#/components/schemas/VectorNode"
-        - $ref: "#/components/schemas/StarNode"
-        - $ref: "#/components/schemas/LineNode"
+        - $ref: "#/components/schemas/ConnectorNode"
         - $ref: "#/components/schemas/EllipseNode"
-        - $ref: "#/components/schemas/RegularPolygonNode"
+        - $ref: "#/components/schemas/EmbedNode"
+        - $ref: "#/components/schemas/FrameNode"
+        - $ref: "#/components/schemas/GroupNode"
+        - $ref: "#/components/schemas/InstanceNode"
+        - $ref: "#/components/schemas/LineNode"
+        - $ref: "#/components/schemas/LinkUnfurlNode"
         - $ref: "#/components/schemas/RectangleNode"
-        - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/RegularPolygonNode"
+        - $ref: "#/components/schemas/SectionNode"
+        - $ref: "#/components/schemas/ShapeWithTextNode"
+        - $ref: "#/components/schemas/SliceNode"
+        - $ref: "#/components/schemas/StarNode"
+        - $ref: "#/components/schemas/StickyNode"
         - $ref: "#/components/schemas/TableNode"
         - $ref: "#/components/schemas/TableCellNode"
-        - $ref: "#/components/schemas/SliceNode"
-        - $ref: "#/components/schemas/InstanceNode"
-        - $ref: "#/components/schemas/EmbedNode"
-        - $ref: "#/components/schemas/LinkUnfurlNode"
-        - $ref: "#/components/schemas/StickyNode"
-        - $ref: "#/components/schemas/ShapeWithTextNode"
-        - $ref: "#/components/schemas/ConnectorNode"
+        - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/VectorNode"
         - $ref: "#/components/schemas/WashiTapeNode"
         - $ref: "#/components/schemas/WidgetNode"
         - $ref: "#/components/schemas/DocumentNode"
@@ -2995,27 +3015,27 @@ components:
         propertyName: type
         mapping:
           BOOLEAN_OPERATION: "#/components/schemas/BooleanOperationNode"
-          SECTION: "#/components/schemas/SectionNode"
-          FRAME: "#/components/schemas/FrameNode"
-          GROUP: "#/components/schemas/GroupNode"
           COMPONENT: "#/components/schemas/ComponentNode"
           COMPONENT_SET: "#/components/schemas/ComponentSetNode"
-          VECTOR: "#/components/schemas/VectorNode"
-          STAR: "#/components/schemas/StarNode"
-          LINE: "#/components/schemas/LineNode"
+          CONNECTOR: "#/components/schemas/ConnectorNode"
           ELLIPSE: "#/components/schemas/EllipseNode"
-          REGULAR_POLYGON: "#/components/schemas/RegularPolygonNode"
+          EMBED: "#/components/schemas/EmbedNode"
+          FRAME: "#/components/schemas/FrameNode"
+          GROUP: "#/components/schemas/GroupNode"
+          INSTANCE: "#/components/schemas/InstanceNode"
+          LINE: "#/components/schemas/LineNode"
+          LINK_UNFURL: "#/components/schemas/LinkUnfurlNode"
           RECTANGLE: "#/components/schemas/RectangleNode"
-          TEXT: "#/components/schemas/TextNode"
+          REGULAR_POLYGON: "#/components/schemas/RegularPolygonNode"
+          SECTION: "#/components/schemas/SectionNode"
+          SHAPE_WITH_TEXT: "#/components/schemas/ShapeWithTextNode"
+          SLICE: "#/components/schemas/SliceNode"
+          STAR: "#/components/schemas/StarNode"
+          STICKY: "#/components/schemas/StickyNode"
           TABLE: "#/components/schemas/TableNode"
           TABLE_CELL: "#/components/schemas/TableCellNode"
-          SLICE: "#/components/schemas/SliceNode"
-          INSTANCE: "#/components/schemas/InstanceNode"
-          EMBED: "#/components/schemas/EmbedNode"
-          LINK_UNFURL: "#/components/schemas/LinkUnfurlNode"
-          STICKY: "#/components/schemas/StickyNode"
-          SHAPE_WITH_TEXT: "#/components/schemas/ShapeWithTextNode"
-          CONNECTOR: "#/components/schemas/ConnectorNode"
+          TEXT: "#/components/schemas/TextNode"
+          VECTOR: "#/components/schemas/VectorNode"
           WASHI_TAPE: "#/components/schemas/WashiTapeNode"
           WIDGET: "#/components/schemas/WidgetNode"
           DOCUMENT: "#/components/schemas/DocumentNode"
@@ -3074,59 +3094,60 @@ components:
             - backgroundColor
             - flowStartingPoints
             - prototypeDevice
+            - prototypeStartNodeID
         - $ref: "#/components/schemas/IsLayerTrait"
         - $ref: "#/components/schemas/HasExportSettingsTrait"
     SubcanvasNode:
       oneOf:
         - $ref: "#/components/schemas/BooleanOperationNode"
-        - $ref: "#/components/schemas/SectionNode"
-        - $ref: "#/components/schemas/FrameNode"
-        - $ref: "#/components/schemas/GroupNode"
         - $ref: "#/components/schemas/ComponentNode"
         - $ref: "#/components/schemas/ComponentSetNode"
-        - $ref: "#/components/schemas/VectorNode"
-        - $ref: "#/components/schemas/StarNode"
-        - $ref: "#/components/schemas/LineNode"
+        - $ref: "#/components/schemas/ConnectorNode"
         - $ref: "#/components/schemas/EllipseNode"
-        - $ref: "#/components/schemas/RegularPolygonNode"
+        - $ref: "#/components/schemas/EmbedNode"
+        - $ref: "#/components/schemas/FrameNode"
+        - $ref: "#/components/schemas/GroupNode"
+        - $ref: "#/components/schemas/InstanceNode"
+        - $ref: "#/components/schemas/LineNode"
+        - $ref: "#/components/schemas/LinkUnfurlNode"
         - $ref: "#/components/schemas/RectangleNode"
-        - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/RegularPolygonNode"
+        - $ref: "#/components/schemas/SectionNode"
+        - $ref: "#/components/schemas/ShapeWithTextNode"
+        - $ref: "#/components/schemas/SliceNode"
+        - $ref: "#/components/schemas/StarNode"
+        - $ref: "#/components/schemas/StickyNode"
         - $ref: "#/components/schemas/TableNode"
         - $ref: "#/components/schemas/TableCellNode"
-        - $ref: "#/components/schemas/SliceNode"
-        - $ref: "#/components/schemas/InstanceNode"
-        - $ref: "#/components/schemas/EmbedNode"
-        - $ref: "#/components/schemas/LinkUnfurlNode"
-        - $ref: "#/components/schemas/StickyNode"
-        - $ref: "#/components/schemas/ShapeWithTextNode"
-        - $ref: "#/components/schemas/ConnectorNode"
+        - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/VectorNode"
         - $ref: "#/components/schemas/WashiTapeNode"
         - $ref: "#/components/schemas/WidgetNode"
       discriminator:
         propertyName: type
         mapping:
           BOOLEAN_OPERATION: "#/components/schemas/BooleanOperationNode"
-          SECTION: "#/components/schemas/SectionNode"
-          FRAME: "#/components/schemas/FrameNode"
-          GROUP: "#/components/schemas/GroupNode"
           COMPONENT: "#/components/schemas/ComponentNode"
           COMPONENT_SET: "#/components/schemas/ComponentSetNode"
-          VECTOR: "#/components/schemas/VectorNode"
-          STAR: "#/components/schemas/StarNode"
-          LINE: "#/components/schemas/LineNode"
+          CONNECTOR: "#/components/schemas/ConnectorNode"
           ELLIPSE: "#/components/schemas/EllipseNode"
-          REGULAR_POLYGON: "#/components/schemas/RegularPolygonNode"
+          EMBED: "#/components/schemas/EmbedNode"
+          FRAME: "#/components/schemas/FrameNode"
+          GROUP: "#/components/schemas/GroupNode"
+          INSTANCE: "#/components/schemas/InstanceNode"
+          LINE: "#/components/schemas/LineNode"
+          LINK_UNFURL: "#/components/schemas/LinkUnfurlNode"
           RECTANGLE: "#/components/schemas/RectangleNode"
-          TEXT: "#/components/schemas/TextNode"
+          REGULAR_POLYGON: "#/components/schemas/RegularPolygonNode"
+          SECTION: "#/components/schemas/SectionNode"
+          SHAPE_WITH_TEXT: "#/components/schemas/ShapeWithTextNode"
+          SLICE: "#/components/schemas/SliceNode"
+          STAR: "#/components/schemas/StarNode"
+          STICKY: "#/components/schemas/StickyNode"
           TABLE: "#/components/schemas/TableNode"
           TABLE_CELL: "#/components/schemas/TableCellNode"
-          SLICE: "#/components/schemas/SliceNode"
-          INSTANCE: "#/components/schemas/InstanceNode"
-          EMBED: "#/components/schemas/EmbedNode"
-          LINK_UNFURL: "#/components/schemas/LinkUnfurlNode"
-          STICKY: "#/components/schemas/StickyNode"
-          SHAPE_WITH_TEXT: "#/components/schemas/ShapeWithTextNode"
-          CONNECTOR: "#/components/schemas/ConnectorNode"
+          TEXT: "#/components/schemas/TextNode"
+          VECTOR: "#/components/schemas/VectorNode"
           WASHI_TAPE: "#/components/schemas/WashiTapeNode"
           WIDGET: "#/components/schemas/WidgetNode"
     BooleanOperationNode:
@@ -3137,6 +3158,8 @@ components:
               type: string
               enum:
                 - BOOLEAN_OPERATION
+              description: The type of this node, represented by the string literal
+                "BOOLEAN_OPERATION"
             booleanOperation:
               type: string
               description: A string enum indicating the type of boolean operation applied.
@@ -3165,6 +3188,7 @@ components:
               type: string
               enum:
                 - SECTION
+              description: The type of this node, represented by the string literal "SECTION"
             sectionContentsHidden:
               type: boolean
               description: Whether the contents of the section are visible
@@ -3197,6 +3221,7 @@ components:
               type: string
               enum:
                 - GROUP
+              description: The type of this node, represented by the string literal "GROUP"
           required:
             - type
         - $ref: "#/components/schemas/FrameTraits"
@@ -3208,6 +3233,8 @@ components:
               type: string
               enum:
                 - COMPONENT
+              description: The type of this node, represented by the string literal
+                "COMPONENT"
           required:
             - type
         - $ref: "#/components/schemas/FrameTraits"
@@ -3220,6 +3247,8 @@ components:
               type: string
               enum:
                 - COMPONENT_SET
+              description: The type of this node, represented by the string literal
+                "COMPONENT_SET"
           required:
             - type
         - $ref: "#/components/schemas/FrameTraits"
@@ -3232,6 +3261,7 @@ components:
               type: string
               enum:
                 - VECTOR
+              description: The type of this node, represented by the string literal "VECTOR"
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
@@ -3243,6 +3273,7 @@ components:
               type: string
               enum:
                 - STAR
+              description: The type of this node, represented by the string literal "STAR"
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
@@ -3254,6 +3285,7 @@ components:
               type: string
               enum:
                 - LINE
+              description: The type of this node, represented by the string literal "LINE"
           required:
             - type
         - $ref: "#/components/schemas/DefaultShapeTraits"
@@ -3265,6 +3297,7 @@ components:
               type: string
               enum:
                 - ELLIPSE
+              description: The type of this node, represented by the string literal "ELLIPSE"
             arcData:
               $ref: "#/components/schemas/ArcData"
           required:
@@ -3279,6 +3312,8 @@ components:
               type: string
               enum:
                 - REGULAR_POLYGON
+              description: The type of this node, represented by the string literal
+                "REGULAR_POLYGON"
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
@@ -3290,6 +3325,8 @@ components:
               type: string
               enum:
                 - RECTANGLE
+              description: The type of this node, represented by the string literal
+                "RECTANGLE"
           required:
             - type
         - $ref: "#/components/schemas/RectangularShapeTraits"
@@ -3301,6 +3338,7 @@ components:
               type: string
               enum:
                 - TEXT
+              description: The type of this node, represented by the string literal "TEXT"
           required:
             - type
         - $ref: "#/components/schemas/DefaultShapeTraits"
@@ -3313,6 +3351,7 @@ components:
               type: string
               enum:
                 - TABLE
+              description: The type of this node, represented by the string literal "TABLE"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3330,6 +3369,8 @@ components:
               type: string
               enum:
                 - TABLE_CELL
+              description: The type of this node, represented by the string literal
+                "TABLE_CELL"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3344,6 +3385,7 @@ components:
               type: string
               enum:
                 - SLICE
+              description: The type of this node, represented by the string literal "SLICE"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3355,6 +3397,7 @@ components:
               type: string
               enum:
                 - INSTANCE
+              description: The type of this node, represented by the string literal "INSTANCE"
             componentId:
               type: string
               description: ID of component that this instance came from.
@@ -3368,7 +3411,6 @@ components:
               items:
                 type: string
               description: IDs of instances that have been exposed to this node's level.
-              default: []
             componentProperties:
               type: object
               additionalProperties:
@@ -3395,6 +3437,7 @@ components:
               type: string
               enum:
                 - EMBED
+              description: The type of this node, represented by the string literal "EMBED"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3406,6 +3449,8 @@ components:
               type: string
               enum:
                 - LINK_UNFURL
+              description: The type of this node, represented by the string literal
+                "LINK_UNFURL"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3417,6 +3462,7 @@ components:
               type: string
               enum:
                 - STICKY
+              description: The type of this node, represented by the string literal "STICKY"
             authorVisible:
               type: boolean
               description: If true, author name is visible.
@@ -3439,6 +3485,8 @@ components:
               type: string
               enum:
                 - SHAPE_WITH_TEXT
+              description: The type of this node, represented by the string literal
+                "SHAPE_WITH_TEXT"
             shapeType:
               $ref: "#/components/schemas/ShapeType"
               description: "Geometric shape type. Most shape types have the same name as their
@@ -3466,6 +3514,8 @@ components:
               type: string
               enum:
                 - CONNECTOR
+              description: The type of this node, represented by the string literal
+                "CONNECTOR"
             connectorStart:
               $ref: "#/components/schemas/ConnectorEndpoint"
               description: The starting point of the connector.
@@ -3522,6 +3572,8 @@ components:
               type: string
               enum:
                 - WASHI_TAPE
+              description: The type of this node, represented by the string literal
+                "WASHI_TAPE"
           required:
             - type
         - $ref: "#/components/schemas/DefaultShapeTraits"
@@ -3533,6 +3585,7 @@ components:
               type: string
               enum:
                 - WIDGET
+              description: The type of this node, represented by the string literal "WIDGET"
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3630,13 +3683,16 @@ components:
             - PRESENTATION
         size:
           $ref: "#/components/schemas/Size"
-        presentIdentifier:
+        presetIdentifier:
           type: string
         rotation:
           type: string
           enum:
             - NONE
             - CCW_90
+      required:
+        - type
+        - rotation
     Constraint:
       type: object
       description: Sizing constraint for exports.
@@ -3656,6 +3712,9 @@ components:
         value:
           type: number
           description: See type property for effect of this field.
+      required:
+        - type
+        - value
     ExportSetting:
       type: object
       description: An export setting.
@@ -3833,23 +3892,9 @@ components:
         shadows:
           type: number
           default: 0
-    Paint:
+    BasePaint:
       type: object
-      description: A solid color, gradient, or image texture that can be applied as
-        fills or strokes
       properties:
-        type:
-          type: string
-          description: Type of paint as a string enum
-          enum:
-            - SOLID
-            - GRADIENT_LINEAR
-            - GRADIENT_RADIAL
-            - GRADIENT_ANGULAR
-            - GRADIENT_DIAMOND
-            - IMAGE
-            - EMOJI
-            - VIDEO
         visible:
           type: boolean
           description: Is the paint enabled?
@@ -3858,72 +3903,132 @@ components:
           type: number
           description: Overall opacity of paint (colors within the paint can also have
             opacity values which would blend with this)
+          minimum: 0
+          maximum: 1
           default: 1
-        color:
-          $ref: "#/components/schemas/RGBA"
-          description: Solid color of the paint
-        boundVariables:
-          type: object
-          description: The variables bound to a particular field on this paint
-          properties:
-            color:
-              $ref: "#/components/schemas/VariableAlias"
         blendMode:
           $ref: "#/components/schemas/BlendMode"
           description: How this node blends with nodes behind it in the scene
-        gradientHandlePositions:
-          type: array
-          items:
-            $ref: "#/components/schemas/Vector"
-          description: This field contains three vectors, each of which are a position in
-            normalized object space (normalized object space is if the top left
-            corner of the bounding box of the object is (0, 0) and the bottom
-            right is (1,1)). The first position corresponds to the start of the
-            gradient (value 0 for the purposes of calculating gradient stops),
-            the second position is the end of the gradient (value 1), and the
-            third handle position determines the width of the gradient.
-        gradientStops:
-          type: array
-          items:
-            $ref: "#/components/schemas/ColorStop"
-          description: Positions of key points along the gradient axis with the colors
-            anchored there. Colors along the gradient are interpolated smoothly
-            between neighboring gradient stops.
-        scaleMode:
-          type: string
-          description: Image scaling mode.
-          enum:
-            - FILL
-            - FIT
-            - TILE
-            - STRETCH
-        imageTransform:
-          $ref: "#/components/schemas/Transform"
-          description: Affine transform applied to the image, only present if `scaleMode`
-            is `STRETCH`
-        scalingFactor:
-          type: number
-          description: Amount image is scaled by in tiling, only present if scaleMode is
-            `TILE`.
-        rotation:
-          type: number
-          description: Image rotation, in degrees.
-        imageRef:
-          type: string
-          description: A reference to an image embedded in this node. To download the
-            image using this reference, use the `GET file images` endpoint to
-            retrieve the mapping from image references to image URLs.
-        filters:
-          $ref: "#/components/schemas/ImageFilters"
-          description: Defines what image filters have been applied to this paint, if any.
-            If this property is not defined, no filters have been applied.
-        gifRef:
-          type: string
-          description: A reference to an animated GIF embedded in this node. To download
-            the image using this reference, use the `GET file images` endpoint
-            to retrieve the mapping from image references to image URLs.
       required:
-        - type
+        - blendMode
+    SolidPaint:
+      allOf:
+        - type: object
+          description: A solid color
+          properties:
+            type:
+              type: string
+              description: The string literal "SOLID" representing the paint's type. Always
+                check the `type` before reading other properties.
+              enum:
+                - SOLID
+            color:
+              $ref: "#/components/schemas/RGBA"
+              description: Solid color of the paint
+            boundVariables:
+              type: object
+              description: The variables bound to a particular field on this paint
+              properties:
+                color:
+                  $ref: "#/components/schemas/VariableAlias"
+          required:
+            - type
+            - color
+        - $ref: "#/components/schemas/BasePaint"
+    GradientPaint:
+      allOf:
+        - type: object
+          description: A gradient
+          properties:
+            type:
+              type: string
+              description: The string literal representing the paint's type. Always check the
+                `type` before reading other properties.
+              enum:
+                - GRADIENT_LINEAR
+                - GRADIENT_RADIAL
+                - GRADIENT_ANGULAR
+                - GRADIENT_DIAMOND
+            gradientHandlePositions:
+              type: array
+              items:
+                $ref: "#/components/schemas/Vector"
+              description: This field contains three vectors, each of which are a position in
+                normalized object space (normalized object space is if the top
+                left corner of the bounding box of the object is (0, 0) and the
+                bottom right is (1,1)). The first position corresponds to the
+                start of the gradient (value 0 for the purposes of calculating
+                gradient stops), the second position is the end of the gradient
+                (value 1), and the third handle position determines the width of
+                the gradient.
+            gradientStops:
+              type: array
+              items:
+                $ref: "#/components/schemas/ColorStop"
+              description: Positions of key points along the gradient axis with the colors
+                anchored there. Colors along the gradient are interpolated
+                smoothly between neighboring gradient stops.
+          required:
+            - type
+            - gradientHandlePositions
+            - gradientStops
+        - $ref: "#/components/schemas/BasePaint"
+    ImagePaint:
+      allOf:
+        - type: object
+          description: An image
+          properties:
+            type:
+              type: string
+              description: The string literal "IMAGE" representing the paint's type. Always
+                check the `type` before reading other properties.
+              enum:
+                - IMAGE
+            scaleMode:
+              type: string
+              description: Image scaling mode.
+              enum:
+                - FILL
+                - FIT
+                - TILE
+                - STRETCH
+            imageRef:
+              type: string
+              description: A reference to an image embedded in this node. To download the
+                image using this reference, use the `GET file images` endpoint
+                to retrieve the mapping from image references to image URLs.
+            imageTransform:
+              $ref: "#/components/schemas/Transform"
+              description: Affine transform applied to the image, only present if `scaleMode`
+                is `STRETCH`
+            scalingFactor:
+              type: number
+              description: Amount image is scaled by in tiling, only present if scaleMode is
+                `TILE`.
+            filters:
+              $ref: "#/components/schemas/ImageFilters"
+              description: Defines what image filters have been applied to this paint, if any.
+                If this property is not defined, no filters have been applied.
+            rotation:
+              type: number
+              description: Image rotation, in degrees.
+              default: 0
+            gifRef:
+              type: string
+              description: A reference to an animated GIF embedded in this node. To download
+                the image using this reference, use the `GET file images`
+                endpoint to retrieve the mapping from image references to image
+                URLs.
+          required:
+            - type
+            - scaleMode
+            - imageRef
+        - $ref: "#/components/schemas/BasePaint"
+    Paint:
+      oneOf:
+        - $ref: "#/components/schemas/SolidPaint"
+        - $ref: "#/components/schemas/GradientPaint"
+        - $ref: "#/components/schemas/ImagePaint"
     LayoutConstraint:
       type: object
       description: Layout constraint relative to containing Frame
@@ -4042,6 +4147,18 @@ components:
         count:
           type: number
           description: Number of columns or rows
+        boundVariables:
+          type: object
+          description: The variables bound to a particular field on this layout grid
+          properties:
+            gutterSize:
+              $ref: "#/components/schemas/VariableAlias"
+            numSections:
+              $ref: "#/components/schemas/VariableAlias"
+            sectionSize:
+              $ref: "#/components/schemas/VariableAlias"
+            offset:
+              $ref: "#/components/schemas/VariableAlias"
       required:
         - pattern
         - sectionSize
@@ -4051,30 +4168,10 @@ components:
         - gutterSize
         - offset
         - count
-    Effect:
+    BaseShadowEffect:
       type: object
-      description: A visual effect such as a shadow or blur
+      description: Base properties shared by all shadow effects
       properties:
-        type:
-          type: string
-          description: |-
-            Type of effect as a string enum
-
-            - `INNER_SHADOW`: An inner shadow
-            - `DROP_SHADOW`: A drop shadow
-            - `LAYER_BLUR`: Layer blur
-            - `BACKGROUND_BLUR`: Background blur
-          enum:
-            - INNER_SHADOW
-            - DROP_SHADOW
-            - LAYER_BLUR
-            - BACKGROUND_BLUR
-        visible:
-          type: boolean
-          description: Is the effect active?
-        radius:
-          type: number
-          description: Radius of the blur effect (applies to shadows as well)
         color:
           $ref: "#/components/schemas/RGBA"
           description: The color of the shadow
@@ -4084,17 +4181,115 @@ components:
         offset:
           $ref: "#/components/schemas/Vector"
           description: How far the shadow is projected in the x and y directions
+        radius:
+          type: number
+          description: Radius of the blur effect (applies to shadows as well)
+          minimum: 0
         spread:
           type: number
-          description: How far the shadow spreads
+          description: >-
+            The distance by which to expand (or contract) the shadow.
+
+
+            For drop shadows, a positive `spread` value creates a shadow larger than the node, whereas a negative value creates a shadow smaller than the node.
+
+
+            For inner shadows, a positive `spread` value contracts the shadow. Spread values are only accepted on rectangles and ellipses, or on frames, components, and instances with visible fill paints and `clipsContent` enabled. When left unspecified, the default value is 0.
           default: 0
-        showShadowBehindNode:
+        visible:
           type: boolean
-          description: Whether to show the shadow behind translucent or transparent pixels
-            (applies only to drop shadows)
+          description: Whether this shadow is visible.
+        boundVariables:
+          type: object
+          description: The variables bound to a particular field on this shadow effect
+          properties:
+            radius:
+              $ref: "#/components/schemas/VariableAlias"
+            spread:
+              $ref: "#/components/schemas/VariableAlias"
+            color:
+              $ref: "#/components/schemas/VariableAlias"
+            offsetX:
+              $ref: "#/components/schemas/VariableAlias"
+            offsetY:
+              $ref: "#/components/schemas/VariableAlias"
+      required:
+        - color
+        - blendMode
+        - offset
+        - radius
+        - visible
+    DropShadowEffect:
+      allOf:
+        - type: object
+          description: A drop shadow effect
+          properties:
+            type:
+              type: string
+              description: A string literal representing the effect's type. Always check the
+                type before reading other properties.
+              enum:
+                - DROP_SHADOW
+            showShadowBehindNode:
+              type: boolean
+              description: Whether to show the shadow behind translucent or transparent pixels
+              default: false
+          required:
+            - type
+            - showShadowBehindNode
+        - $ref: "#/components/schemas/BaseShadowEffect"
+    InnerShadowEffect:
+      allOf:
+        - type: object
+          description: An inner shadow effect
+          properties:
+            type:
+              type: string
+              description: A string literal representing the effect's type. Always check the
+                type before reading other properties.
+              enum:
+                - INNER_SHADOW
+        - $ref: "#/components/schemas/BaseShadowEffect"
+    BlurEffect:
+      type: object
+      description: A blur effect
+      properties:
+        type:
+          type: string
+          description: A string literal representing the effect's type. Always check the
+            type before reading other properties.
+          enum:
+            - LAYER_BLUR
+            - BACKGROUND_BLUR
+        visible:
+          type: boolean
+          description: Whether this blur is active.
+        radius:
+          type: number
+          description: Radius of the blur effect
+          minimum: 0
+        boundVariables:
+          type: object
+          description: The variables bound to a particular field on this blur effect
+          properties:
+            radius:
+              $ref: "#/components/schemas/VariableAlias"
       required:
         - type
         - visible
+        - radius
+    Effect:
+      oneOf:
+        - $ref: "#/components/schemas/DropShadowEffect"
+        - $ref: "#/components/schemas/InnerShadowEffect"
+        - $ref: "#/components/schemas/BlurEffect"
+      discriminator:
+        propertyName: type
+        mapping:
+          DROP_SHADOW: "#/components/schemas/DropShadowEffect"
+          INNER_SHADOW: "#/components/schemas/InnerShadowEffect"
+          LAYER_BLUR: "#/components/schemas/BlurEffect"
+          BACKGROUND_BLUR: "#/components/schemas/BlurEffect"
     Style:
       type: object
       description: A set of properties that can be applied to nodes and published.
@@ -4125,7 +4320,8 @@ components:
       type: string
       description: >-
         This type is a string enum with the following possible values
-          
+
+
         - `EASE_IN`: Ease in with an animation curve similar to CSS ease-in.
 
         - `EASE_OUT`: Ease out with an animation curve similar to CSS ease-out.
@@ -4192,6 +4388,9 @@ components:
           type: number
           description: If there is a per-region fill, this refers to an ID in the
             `fillOverrideTable`.
+      required:
+        - path
+        - windingRule
     ArcData:
       type: object
       description: Information about the arc properties of an ellipse. 0° is the x
@@ -4209,6 +4408,8 @@ components:
           type: number
           description: Inner radius value between 0 and 1
           default: 0
+          minimum: 0
+          maximum: 1
       required:
         - startingAngle
         - endingAngle
@@ -4229,6 +4430,8 @@ components:
         nodeID:
           type: string
           description: The ID of the node that the hyperlink points to, if `type` is `NODE`.
+      required:
+        - type
     TypeStyle:
       type: object
       description: Metadata for character formatting.
@@ -4381,6 +4584,9 @@ components:
         key:
           type: string
           description: Key of this component or component set.
+      required:
+        - type
+        - key
     ComponentPropertyDefinition:
       type: object
       description: A property of a component.
@@ -4428,13 +4634,13 @@ components:
             `INSTANCE_SWAP`.
         boundVariables:
           type: object
-          description: A mapping of field to the variables applied to this field. Most
-            fields will only map to a single VariableAlias. However, for fills,
-            strokes, size, and component properties, it is possible to have
-            multiple variables bound to the field.
+          description: The variables bound to a particular field on this component property
           properties:
             value:
               $ref: "#/components/schemas/VariableAlias"
+      required:
+        - type
+        - value
     Overrides:
       type: object
       description: Fields directly overridden on an instance. Inherited overrides are
@@ -4448,6 +4654,9 @@ components:
           items:
             type: string
           description: An array of properties.
+      required:
+        - id
+        - overriddenFields
     ShapeType:
       type: string
       description: Geometric shape type.
@@ -4456,9 +4665,32 @@ components:
         - ELLIPSE
         - ROUNDED_RECTANGLE
         - DIAMOND
+        - TRIANGLE_UP
         - TRIANGLE_DOWN
         - PARALLELOGRAM_RIGHT
         - PARALLELOGRAM_LEFT
+        - ENG_DATABASE
+        - ENG_QUEUE
+        - ENG_FILE
+        - ENG_FOLDER
+        - TRAPEZOID
+        - PREDEFINED_PROCESS
+        - SHIELD
+        - DOCUMENT_SINGLE
+        - DOCUMENT_MULTIPLE
+        - MANUAL_INPUT
+        - HEXAGON
+        - CHEVRON
+        - PENTAGON
+        - OCTAGON
+        - STAR
+        - PLUS
+        - ARROW_LEFT
+        - ARROW_RIGHT
+        - SUMMING_JUNCTION
+        - OR
+        - SPEECH_BUBBLE
+        - INTERNAL_STORAGE
     ConnectorEndpoint:
       description: Stores canvas location for a connector start/end point.
       oneOf:
@@ -4529,8 +4761,8 @@ components:
         - remote
     ComponentSet:
       type: object
-      description: A description of a main component. Helps you identify which
-        component instances are attached to.
+      description: A description of a component set, which is a node containing a set
+        of variants of a component.
       properties:
         key:
           type: string
@@ -4581,14 +4813,14 @@ components:
         - id
     FrameOffset:
       type: object
-      description: A relative offset within a frame.
+      description: Position of a comment relative to the frame to which it is attached.
       properties:
         node_id:
           type: string
           description: Unique id specifying the frame.
         node_offset:
           $ref: "#/components/schemas/Vector"
-          description: 2D vector offset within the frame.
+          description: 2D vector offset within the frame from the top-left corner.
       required:
         - node_id
         - node_offset
@@ -4615,7 +4847,7 @@ components:
           enum:
             - top-left
             - top-right
-            - botom-left
+            - bottom-left
             - bottom-right
           default: bottom-right
       required:
@@ -4625,14 +4857,15 @@ components:
         - region_width
     FrameOffsetRegion:
       type: object
-      description: Position of a region comment on the canvas.
+      description: Position of a region comment relative to the frame to which it is
+        attached.
       properties:
         node_id:
           type: string
           description: Unique id specifying the frame.
         node_offset:
           $ref: "#/components/schemas/Vector"
-          description: 2D vector offset within the frame.
+          description: 2D vector offset within the frame from the top-left corner.
         region_height:
           type: number
           description: The height of the comment region. Must be greater than 0.
@@ -4646,7 +4879,7 @@ components:
           enum:
             - top-left
             - top-right
-            - botom-left
+            - bottom-left
             - bottom-right
           default: bottom-right
       required:
@@ -5751,6 +5984,7 @@ components:
       enum:
         - ALL_SCOPES
         - TEXT_CONTENT
+        - CORNER_RADIUS
         - WIDTH_HEIGHT
         - GAP
         - ALL_FILLS
@@ -5758,11 +5992,16 @@ components:
         - SHAPE_FILL
         - TEXT_FILL
         - STROKE_COLOR
+        - STROKE_FLOAT
+        - EFFECT_FLOAT
+        - EFFECT_COLOR
+        - OPACITY
       description: >-
         Scopes allow a variable to be shown/hidden in the variable picker UI for
         various fields. This declutters the Figma UI if you have a large number
         of variables. Currently only supported on `FLOAT` and `COLOR` variables.
-              
+
+
         `ALL_SCOPES` is a special scope that means that the variable will be shown in the picker UI for all current and any future fields. If `ALL_SCOPES` is set, no additional scopes can be set.
 
 
@@ -5779,6 +6018,12 @@ components:
 
         - `GAP`
 
+        - `STROKE_FLOAT`
+
+        - `EFFECT_FLOAT`
+
+        - `OPACITY`
+
 
         Valid scopes for `COLOR` variables:
 
@@ -5793,6 +6038,8 @@ components:
         - `TEXT_FILL`
 
         - `STROKE_COLOR`
+
+        - `EFFECT_COLOR`
     VariableCodeSyntax:
       type: object
       description: An object containing platform-specific code syntax definitions for
@@ -5907,7 +6154,8 @@ components:
           description: >-
             Whether this variable is hidden when publishing the current file as
             a library.
-              
+
+
             If the parent `VariableCollection` is marked as `hiddenFromPublishing`, then this variable will also be hidden from publishing via the UI. `hiddenFromPublishing` is independently toggled for a variable and collection. However, both must be true for a given variable to be publishable.
         scopes:
           type: array
@@ -5915,7 +6163,8 @@ components:
             An array of scopes in the UI where this variable is shown. Setting
             this property will show/hide this variable in the variable picker UI
             for different fields.
-                      
+
+
             Setting scopes for a variable does not prevent that variable from being bound in other scopes (for example, via the Plugin API). This only limits the variables that are shown in pickers within the Figma UI.
           items:
             $ref: "#/components/schemas/VariableScope"
@@ -5957,7 +6206,8 @@ components:
           description: >-
             The UTC ISO 8601 time at which the variable collection was last
             updated.
-              
+
+
             This timestamp will change any time a variable in the collection is changed.
       required:
         - id
@@ -6278,20 +6528,22 @@ components:
           description: Must correspond to a mode in the variable collection that contains
             the target variable.
         value:
-          description: The value for the variable. The value must match the variable's
-            type. If setting to a variable alias, the alias must resolve to this
-            type.
-          oneOf:
-            - type: boolean
-            - type: number
-            - type: string
-            - $ref: "#/components/schemas/RGB"
-            - $ref: "#/components/schemas/RGBA"
-            - $ref: "#/components/schemas/VariableAlias"
+          $ref: "#/components/schemas/VariableValue"
       required:
         - variableId
         - modeId
         - value
+    VariableValue:
+      description: The value for the variable. The value must match the variable's
+        type. If setting to a variable alias, the alias must resolve to this
+        type.
+      oneOf:
+        - type: boolean
+        - type: number
+        - type: string
+        - $ref: "#/components/schemas/RGB"
+        - $ref: "#/components/schemas/RGBA"
+        - $ref: "#/components/schemas/VariableAlias"
     DevResource:
       type: object
       description: A dev resource in a file
@@ -6556,7 +6808,9 @@ components:
                 type: object
                 description: A map from node IDs to URLs of the rendered images.
                 additionalProperties:
-                  type: string
+                  type:
+                    - string
+                    - "null"
                   description: A URL to the requested image.
                   format: uri
             required:
@@ -6685,12 +6939,7 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              comment:
-                $ref: "#/components/schemas/Comment"
-            required:
-              - comment
+            $ref: "#/components/schemas/Comment"
     DeleteCommentResponse:
       description: Response from the DELETE /v1/files/{file_key}/comments/{comment_id}
         endpoint.
@@ -7249,6 +7498,12 @@ components:
                       created objects
                     additionalProperties:
                       type: string
+                required:
+                  - tempIdToRealId
+            required:
+              - status
+              - error
+              - meta
     GetDevResourcesResponse:
       description: Response from the GET /v1/files/{file_key}/dev_resources endpoint.
       content:

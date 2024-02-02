@@ -26,13 +26,15 @@ export type IsLayerTrait = {
 
   /**
    * Whether the layer is fixed while the parent is scrolling
+   *
+   * @deprecated
    */
   isFixed?: boolean
 
   /**
    * How layer should be treated when the frame is resized
    */
-  scrollBehavior?: 'SCROLLS' | 'FIXED' | 'STICKY_SCROLLS'
+  scrollBehavior: 'SCROLLS' | 'FIXED' | 'STICKY_SCROLLS'
 
   /**
    * The rotation of the node, if not 0.
@@ -40,36 +42,44 @@ export type IsLayerTrait = {
   rotation?: number
 
   /**
-   * A mapping of a layer's property to component property name of component
-   * properties attached to this node. The component property name can be used to
-   * look up more information on the corresponding component's or component set's
-   * componentPropertyDefinitions.
+   * A mapping of a layer's property to component property name of component properties attached to
+   * this node. The component property name can be used to look up more information on the
+   * corresponding component's or component set's componentPropertyDefinitions.
    */
   componentPropertyReferences?: { [key: string]: string }
 
   /**
-   * Data written by plugins that is visible only to the plugin that wrote it.
-   * Requires the `pluginData` to include the ID of the plugin.
+   * Data written by plugins that is visible only to the plugin that wrote it. Requires the
+   * `pluginData` to include the ID of the plugin.
    */
   pluginData?: unknown
 
   /**
-   * Data written by plugins that is visible to all plugins. Requires the
-   * `pluginData` parameter to include the string "shared".
+   * Data written by plugins that is visible to all plugins. Requires the `pluginData` parameter to
+   * include the string "shared".
    */
   sharedPluginData?: unknown
 
   /**
-   * A mapping of field to the variables applied to this field. Most fields will
-   * only map to a single VariableAlias. However, for fills, strokes, size,
-   * component properties, and text range fills, it is possible to have multiple
-   * variables bound to the field.
+   * A mapping of field to the variables applied to this field. Most fields will only map to a single
+   * `VariableAlias`. However, for properties like `fills`, `strokes`, `size`, `componentProperties`,
+   * and `textRangeFills`, it is possible to have multiple variables bound to the field.
    */
   boundVariables?: {
     size?: {
       x?: VariableAlias
 
       y?: VariableAlias
+    }
+
+    individualStrokeWeights?: {
+      top?: VariableAlias
+
+      bottom?: VariableAlias
+
+      left?: VariableAlias
+
+      right?: VariableAlias
     }
 
     characters?: VariableAlias
@@ -104,6 +114,8 @@ export type IsLayerTrait = {
 
     counterAxisSpacing?: VariableAlias
 
+    opacity?: VariableAlias
+
     fills?: VariableAlias[]
 
     strokes?: VariableAlias[]
@@ -111,11 +123,15 @@ export type IsLayerTrait = {
     componentProperties?: { [key: string]: VariableAlias }
 
     textRangeFills?: VariableAlias[]
+
+    effects?: VariableAlias[]
+
+    layoutGrids?: VariableAlias[]
   }
 
   /**
-   * A mapping of variable collection ID to mode ID representing the explicitly
-   * set modes for this node.
+   * A mapping of variable collection ID to mode ID representing the explicitly set modes for this
+   * node.
    */
   explicitVariableModes?: { [key: string]: string }
 }
@@ -134,11 +150,10 @@ export type HasLayoutTrait = {
   absoluteBoundingBox: Rectangle | null
 
   /**
-   * The actual bounds of a node accounting for drop shadows, thick strokes, and
-   * anything else that may fall outside the node's regular bounding box defined
-   * in `x`, `y`, `width`, and `height`. The `x` and `y` inside this property
-   * represent the absolute position of the node on the page. This value will be
-   * `null` if the node is invisible.
+   * The actual bounds of a node accounting for drop shadows, thick strokes, and anything else that
+   * may fall outside the node's regular bounding box defined in `x`, `y`, `width`, and `height`. The
+   * `x` and `y` inside this property represent the absolute position of the node on the page. This
+   * value will be `null` if the node is invisible.
    */
   absoluteRenderBounds: Rectangle | null
 
@@ -153,77 +168,73 @@ export type HasLayoutTrait = {
   constraints?: LayoutConstraint
 
   /**
-   * The top two rows of a matrix that represents the 2D transform of this node
-   * relative to its parent. The bottom row of the matrix is implicitly always (0,
-   * 0, 1). Use to transform coordinates in geometry. Only present if
-   * `geometry=paths` is passed.
+   * The top two rows of a matrix that represents the 2D transform of this node relative to its
+   * parent. The bottom row of the matrix is implicitly always (0, 0, 1). Use to transform coordinates
+   * in geometry. Only present if `geometry=paths` is passed.
    */
   relativeTransform?: Transform
 
   /**
-   * Width and height of element. This is different from the width and height of
-   * the bounding box in that the absolute bounding box represents the element
-   * after scaling and rotation. Only present if `geometry=paths` is passed.
+   * Width and height of element. This is different from the width and height of the bounding box in
+   * that the absolute bounding box represents the element after scaling and rotation. Only present if
+   * `geometry=paths` is passed.
    */
   size?: Vector
 
   /**
-   * Determines if the layer should stretch along the parent's counter axis. This
-   * property is only provided for direct children of auto-layout frames.
+   * Determines if the layer should stretch along the parent's counter axis. This property is only
+   * provided for direct children of auto-layout frames.
    *
    * - `INHERIT`
    * - `STRETCH`
    *
-   * In previous versions of auto layout, determined how the layer is aligned
-   * inside an auto-layout frame. This property is only provided for direct
-   * children of auto-layout frames.
+   * In previous versions of auto layout, determined how the layer is aligned inside an auto-layout
+   * frame. This property is only provided for direct children of auto-layout frames.
    *
    * - `MIN`
    * - `CENTER`
    * - `MAX`
    * - `STRETCH`
    *
-   * In horizontal auto-layout frames, "MIN" and "MAX" correspond to "TOP" and
-   * "BOTTOM". In vertical auto-layout frames, "MIN" and "MAX" correspond to
-   * "LEFT" and "RIGHT".
+   * In horizontal auto-layout frames, "MIN" and "MAX" correspond to "TOP" and "BOTTOM". In vertical
+   * auto-layout frames, "MIN" and "MAX" correspond to "LEFT" and "RIGHT".
    */
   layoutAlign?: 'INHERIT' | 'STRETCH' | 'MIN' | 'CENTER' | 'MAX'
 
   /**
-   * This property is applicable only for direct children of auto-layout frames,
-   * ignored otherwise. Determines whether a layer should stretch along the
-   * parent's primary axis. A `0` corresponds to a fixed size and `1` corresponds
-   * to stretch.
+   * This property is applicable only for direct children of auto-layout frames, ignored otherwise.
+   * Determines whether a layer should stretch along the parent's primary axis. A `0` corresponds to a
+   * fixed size and `1` corresponds to stretch.
    */
   layoutGrow?: 0 | 1
 
   /**
-   * Determines whether a layer's size and position should be determined by
-   * auto-layout settings or manually adjustable.
+   * Determines whether a layer's size and position should be determined by auto-layout settings or
+   * manually adjustable.
    */
   layoutPositioning?: 'AUTO' | 'ABSOLUTE'
 
   /**
-   * The minimum width of the frame. This property is only applicable for
-   * auto-layout frames or direct children of auto-layout frames.
+   * The minimum width of the frame. This property is only applicable for auto-layout frames or direct
+   * children of auto-layout frames.
    */
   minWidth?: number
 
   /**
-   * The maximum width of the frame. This property is only applicable for
-   * auto-layout frames or direct children of auto-layout frames.
+   * The maximum width of the frame. This property is only applicable for auto-layout frames or direct
+   * children of auto-layout frames.
    */
   maxWidth?: number
 
   /**
-   * The minimum height of the frame. This property is only applicable for
-   * auto-layout frames or direct children of auto-layout frames.
+   * The minimum height of the frame. This property is only applicable for auto-layout frames or
+   * direct children of auto-layout frames.
    */
   minHeight?: number
 
   /**
-   * The maximum height of the frame. This property is only applicable for
-   * auto-layout frames or direct children of auto-layout frames.
+   * The maximum height of the frame. This property is only applicable for auto-layout frames or
+   * direct children of auto-layout frames.
    */
   maxHeight?: number
 
@@ -253,20 +264,24 @@ export type HasFramePropertiesTrait = {
   clipsContent: boolean
 
   /**
-   * Background of the node. This is deprecated, as backgrounds for frames are now
-   * in the `fills` field.
+   * Background of the node. This is deprecated, as backgrounds for frames are now in the `fills`
+   * field.
+   *
+   * @deprecated
    */
   background?: Paint[]
 
   /**
-   * Background color of the node. This is deprecated, as frames now support more
-   * than a solid color as a background. Please use the `fills` field instead.
+   * Background color of the node. This is deprecated, as frames now support more than a solid color
+   * as a background. Please use the `fills` field instead.
+   *
+   * @deprecated
    */
   backgroundColor?: RGBA
 
   /**
-   * An array of layout grids attached to this node (see layout grids section for
-   * more details). GROUP nodes do not have this attribute
+   * An array of layout grids attached to this node (see layout grids section for more details). GROUP
+   * nodes do not have this attribute
    */
   layoutGrids?: LayoutGrid[]
 
@@ -285,74 +300,69 @@ export type HasFramePropertiesTrait = {
   layoutMode?: 'NONE' | 'HORIZONTAL' | 'VERTICAL'
 
   /**
-   * Whether the primary axis has a fixed length (determined by the user) or an
-   * automatic length (determined by the layout engine). This property is only
-   * applicable for auto-layout frames.
+   * Whether the primary axis has a fixed length (determined by the user) or an automatic length
+   * (determined by the layout engine). This property is only applicable for auto-layout frames.
    */
   primaryAxisSizingMode?: 'FIXED' | 'AUTO'
 
   /**
-   * Whether the counter axis has a fixed length (determined by the user) or an
-   * automatic length (determined by the layout engine). This property is only
-   * applicable for auto-layout frames.
+   * Whether the counter axis has a fixed length (determined by the user) or an automatic length
+   * (determined by the layout engine). This property is only applicable for auto-layout frames.
    */
   counterAxisSizingMode?: 'FIXED' | 'AUTO'
 
   /**
-   * Determines how the auto-layout frame's children should be aligned in the
-   * primary axis direction. This property is only applicable for auto-layout
-   * frames.
+   * Determines how the auto-layout frame's children should be aligned in the primary axis direction.
+   * This property is only applicable for auto-layout frames.
    */
   primaryAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'SPACE_BETWEEN'
 
   /**
-   * Determines how the auto-layout frame's children should be aligned in the
-   * counter axis direction. This property is only applicable for auto-layout
-   * frames.
+   * Determines how the auto-layout frame's children should be aligned in the counter axis direction.
+   * This property is only applicable for auto-layout frames.
    */
   counterAxisAlignItems?: 'MIN' | 'CENTER' | 'MAX' | 'BASELINE'
 
   /**
-   * The padding between the left border of the frame and its children. This
-   * property is only applicable for auto-layout frames.
+   * The padding between the left border of the frame and its children. This property is only
+   * applicable for auto-layout frames.
    */
   paddingLeft?: number
 
   /**
-   * The padding between the right border of the frame and its children. This
-   * property is only applicable for auto-layout frames.
+   * The padding between the right border of the frame and its children. This property is only
+   * applicable for auto-layout frames.
    */
   paddingRight?: number
 
   /**
-   * The padding between the top border of the frame and its children. This
-   * property is only applicable for auto-layout frames.
+   * The padding between the top border of the frame and its children. This property is only
+   * applicable for auto-layout frames.
    */
   paddingTop?: number
 
   /**
-   * The padding between the bottom border of the frame and its children. This
-   * property is only applicable for auto-layout frames.
+   * The padding between the bottom border of the frame and its children. This property is only
+   * applicable for auto-layout frames.
    */
   paddingBottom?: number
 
   /**
-   * The distance between children of the frame. Can be negative. This property is
-   * only applicable for auto-layout frames.
+   * The distance between children of the frame. Can be negative. This property is only applicable for
+   * auto-layout frames.
    */
   itemSpacing?: number
 
   /**
-   * Determines the canvas stacking order of layers in this frame. When true, the
-   * first layer will be draw on top. This property is only applicable for
-   * auto-layout frames.
+   * Determines the canvas stacking order of layers in this frame. When true, the first layer will be
+   * draw on top. This property is only applicable for auto-layout frames.
    */
   itemReverseZIndex?: boolean
 
   /**
-   * Determines whether strokes are included in layout calculations. When true,
-   * auto-layout frames behave like css "box-sizing: border-box". This property is
-   * only applicable for auto-layout frames.
+   * Determines whether strokes are included in layout calculations. When true, auto-layout frames
+   * behave like css "box-sizing: border-box". This property is only applicable for auto-layout
+   * frames.
    */
   strokesIncludedInLayout?: boolean
 
@@ -362,23 +372,21 @@ export type HasFramePropertiesTrait = {
   layoutWrap?: 'NO_WRAP' | 'WRAP'
 
   /**
-   * The distance between wrapped tracks of an auto-layout frame. This property is
-   * only applicable for auto-layout frames with `layoutWrap: "WRAP"`
+   * The distance between wrapped tracks of an auto-layout frame. This property is only applicable for
+   * auto-layout frames with `layoutWrap: "WRAP"`
    */
   counterAxisSpacing?: number
 
   /**
-   * Determines how the auto-layout frame’s wrapped tracks should be aligned in
-   * the counter axis direction. This property is only applicable for auto-layout
-   * frames with `layoutWrap: "WRAP"`.
+   * Determines how the auto-layout frame’s wrapped tracks should be aligned in the counter axis
+   * direction. This property is only applicable for auto-layout frames with `layoutWrap: "WRAP"`.
    */
   counterAxisAlignContent?: 'AUTO' | 'SPACE_BETWEEN'
 }
 
 export type HasBlendModeAndOpacityTrait = {
   /**
-   * How this node blends with nodes behind it in the scene (see blend mode
-   * section for more details)
+   * How this node blends with nodes behind it in the scene (see blend mode section for more details)
    */
   blendMode: BlendMode
 
@@ -398,21 +406,21 @@ export type HasExportSettingsTrait = {
 export type HasGeometryTrait = MinimalFillsTrait &
   MinimalStrokesTrait & {
     /**
-     * Map from ID to PaintOverride for looking up fill overrides. To see which
-     * regions are overriden, you must use the `geometry=paths` option. Each path
-     * returned may have an `overrideID` which maps to this table.
+     * Map from ID to PaintOverride for looking up fill overrides. To see which regions are overriden,
+     * you must use the `geometry=paths` option. Each path returned may have an `overrideID` which maps
+     * to this table.
      */
     fillOverrideTable?: { [key: string]: PaintOverride | null }
 
     /**
-     * Only specified if parameter `geometry=paths` is used. An array of paths
-     * representing the object fill.
+     * Only specified if parameter `geometry=paths` is used. An array of paths representing the object
+     * fill.
      */
     fillGeometry?: Path[]
 
     /**
-     * Only specified if parameter `geometry=paths` is used. An array of paths
-     * representing the object stroke.
+     * Only specified if parameter `geometry=paths` is used. An array of paths representing the object
+     * stroke.
      */
     strokeGeometry?: Path[]
 
@@ -436,9 +444,8 @@ export type HasGeometryTrait = MinimalFillsTrait &
       | 'WASHI_TAPE_6'
 
     /**
-     * Only valid if `strokeJoin` is "MITER". The corner angle, in degrees, below
-     * which `strokeJoin` will be set to "BEVEL" to avoid super sharp corners. By
-     * default this is 28.96 degrees.
+     * Only valid if `strokeJoin` is "MITER". The corner angle, in degrees, below which `strokeJoin`
+     * will be set to "BEVEL" to avoid super sharp corners. By default this is 28.96 degrees.
      */
     strokeMiterAngle?: number
   }
@@ -450,9 +457,8 @@ export type MinimalFillsTrait = {
   fills: Paint[]
 
   /**
-   * A mapping of a StyleType to style ID (see Style) of styles present on this
-   * node. The style ID can be used to look up more information about the style in
-   * the top-level styles field.
+   * A mapping of a StyleType to style ID (see Style) of styles present on this node. The style ID can
+   * be used to look up more information about the style in the top-level styles field.
    */
   styles?: { [key: string]: string }
 }
@@ -478,25 +484,25 @@ export type MinimalStrokesTrait = {
   strokeAlign?: 'INSIDE' | 'OUTSIDE' | 'CENTER'
 
   /**
-   * A string enum with value of "MITER", "BEVEL", or "ROUND", describing how
-   * corners in vector paths are rendered.
+   * A string enum with value of "MITER", "BEVEL", or "ROUND", describing how corners in vector paths
+   * are rendered.
    */
   strokeJoin?: 'MITER' | 'BEVEL' | 'ROUND'
 
   /**
-   * An array of floating point numbers describing the pattern of dash length and
-   * gap lengths that the vector stroke will use when drawn.
+   * An array of floating point numbers describing the pattern of dash length and gap lengths that the
+   * vector stroke will use when drawn.
    *
-   * For example a value of [1, 2] indicates that the stroke will be drawn with a
-   * dash of length 1 followed by a gap of length 2, repeated.
+   * For example a value of [1, 2] indicates that the stroke will be drawn with a dash of length 1
+   * followed by a gap of length 2, repeated.
    */
   strokeDashes?: number[]
 }
 
 export type IndividualStrokesTrait = {
   /**
-   * An object including the top, bottom, left, and right stroke weights. Only
-   * returned if individual stroke weights are used.
+   * An object including the top, bottom, left, and right stroke weights. Only returned if individual
+   * stroke weights are used.
    */
   individualStrokeWeights?: StrokeWeights
 }
@@ -508,16 +514,15 @@ export type CornerTrait = {
   cornerRadius?: number
 
   /**
-   * A value that lets you control how "smooth" the corners are. Ranges from 0 to
-   * 1. 0 is the default and means that the corner is perfectly circular. A value
-   * of 0.6 means the corner matches the iOS 7 "squircle" icon shape. Other values
-   * produce various other curves.
+   * A value that lets you control how "smooth" the corners are. Ranges from 0 to 1. 0 is the default
+   * and means that the corner is perfectly circular. A value of 0.6 means the corner matches the iOS
+   * 7 "squircle" icon shape. Other values produce various other curves.
    */
   cornerSmoothing?: number
 
   /**
-   * Array of length 4 of the radius of each corner of the frame, starting in the
-   * top left and proceeding clockwise.
+   * Array of length 4 of the radius of each corner of the frame, starting in the top left and
+   * proceeding clockwise.
    *
    * Values are given in the order top-left, top-right, bottom-right, bottom-left.
    */
@@ -526,10 +531,9 @@ export type CornerTrait = {
 
 export type HasEffectsTrait = {
   /**
-   * An array of effects attached to this node (see effects section for more
-   * details)
+   * An array of effects attached to this node (see effects section for more details)
    */
-  effects?: Effect[]
+  effects: Effect[]
 }
 
 export type HasMaskTrait = {
@@ -539,26 +543,31 @@ export type HasMaskTrait = {
   isMask?: boolean
 
   /**
-   * If this layer is a mask, this property describes the operation used to mask
-   * the layer's siblings. The value may be one of the following:
+   * If this layer is a mask, this property describes the operation used to mask the layer's siblings.
+   * The value may be one of the following:
    *
-   * - ALPHA: the mask node's alpha channel will be used to determine the opacity of
-   *   each pixel in the masked result.
-   * - VECTOR: if the mask node has visible fill paints, every pixel inside the
-   *   node's fill regions will be fully visible in the masked result. If the mask
-   *   has visible stroke paints, every pixel inside the node's stroke regions
-   *   will be fully visible in the masked result.
-   * - LUMINANCE: the luminance value of each pixel of the mask node will be used to
-   *   determine the opacity of that pixel in the masked result.
+   * - ALPHA: the mask node's alpha channel will be used to determine the opacity of each pixel in the
+   *   masked result.
+   * - VECTOR: if the mask node has visible fill paints, every pixel inside the node's fill regions will
+   *   be fully visible in the masked result. If the mask has visible stroke paints, every pixel
+   *   inside the node's stroke regions will be fully visible in the masked result.
+   * - LUMINANCE: the luminance value of each pixel of the mask node will be used to determine the
+   *   opacity of that pixel in the masked result.
    */
   maskType?: 'ALPHA' | 'VECTOR' | 'LUMINANCE'
+
+  /**
+   * True if maskType is VECTOR. This field is deprecated; use maskType instead.
+   *
+   * @deprecated
+   */
+  isMaskOutline?: boolean
 }
 
 export type ComponentPropertiesTrait = {
   /**
-   * A mapping of name to `ComponentPropertyDefinition` for every component
-   * property on this component. Each property has a type, defaultValue, and other
-   * optional values.
+   * A mapping of name to `ComponentPropertyDefinition` for every component property on this
+   * component. Each property has a type, defaultValue, and other optional values.
    */
   componentPropertyDefinitions?: { [key: string]: ComponentPropertyDefinition }
 }
@@ -575,10 +584,9 @@ export type TypePropertiesTrait = {
   style: TypeStyle
 
   /**
-   * Array with same number of elements as characters in text rendered using this
-   * style. Each element is a reference to the `styleOverrideTable` and maps to
-   * the corresponding character in the characters field. Elements with value 0
-   * have the default type style.
+   * Array with same number of elements as characters in text rendered using this style. Each element
+   * is a reference to the `styleOverrideTable` and maps to the corresponding character in the
+   * characters field. Elements with value 0 have the default type style.
    */
   characterStyleOverrides: number[]
 
@@ -588,10 +596,10 @@ export type TypePropertiesTrait = {
   styleOverrideTable: { [key: string]: TypeStyle }
 
   /**
-   * An array with the same number of elements as lines in the text node, where
-   * lines are delimited by newline or paragraph separator characters. Each
-   * element in the array corresponds to the list type of a specific line. List
-   * types are represented as string enums with one of these possible values:
+   * An array with the same number of elements as lines in the text node, where lines are delimited by
+   * newline or paragraph separator characters. Each element in the array corresponds to the list type
+   * of a specific line. List types are represented as string enums with one of these possible
+   * values:
    *
    * - `NONE`: Not a list item.
    * - `ORDERED`: Text is an ordered list (numbered).
@@ -600,10 +608,9 @@ export type TypePropertiesTrait = {
   lineTypes: ('NONE' | 'ORDERED' | 'UNORDERED')[]
 
   /**
-   * An array with the same number of elements as lines in the text node, where
-   * lines are delimited by newline or paragraph separator characters. Each
-   * element in the array corresponds to the indentation level of a specific
-   * line.
+   * An array with the same number of elements as lines in the text node, where lines are delimited by
+   * newline or paragraph separator characters. Each element in the array corresponds to the
+   * indentation level of a specific line.
    */
   lineIndentations: number[]
 }
@@ -622,9 +629,8 @@ export type TransitionSourceTrait = {
   transitionNodeID?: string
 
   /**
-   * The duration of the prototyping transition on this node (in milliseconds).
-   * This will override the default transition duration on the prototype, for this
-   * node.
+   * The duration of the prototyping transition on this node (in milliseconds). This will override the
+   * default transition duration on the prototype, for this node.
    */
   transitionDuration?: number
 
@@ -638,7 +644,7 @@ export type DevStatusTrait = {
   /**
    * Whether the node is marked ready for development.
    */
-  devStatus?: { type?: 'NONE' | 'READY_FOR_DEV' }
+  devStatus?: { type: 'NONE' | 'READY_FOR_DEV' }
 }
 
 export type FrameTraits = IsLayerTrait &
@@ -666,33 +672,31 @@ export type DefaultShapeTraits = IsLayerTrait &
 
 export type CornerRadiusShapeTraits = DefaultShapeTraits & CornerTrait
 
-export type RectangularShapeTraits = DefaultShapeTraits &
-  CornerTrait &
-  IndividualStrokesTrait
+export type RectangularShapeTraits = DefaultShapeTraits & CornerTrait & IndividualStrokesTrait
 
 export type Node =
   | BooleanOperationNode
-  | SectionNode
-  | FrameNode
-  | GroupNode
   | ComponentNode
   | ComponentSetNode
-  | VectorNode
-  | StarNode
-  | LineNode
+  | ConnectorNode
   | EllipseNode
-  | RegularPolygonNode
+  | EmbedNode
+  | FrameNode
+  | GroupNode
+  | InstanceNode
+  | LineNode
+  | LinkUnfurlNode
   | RectangleNode
-  | TextNode
+  | RegularPolygonNode
+  | SectionNode
+  | ShapeWithTextNode
+  | SliceNode
+  | StarNode
+  | StickyNode
   | TableNode
   | TableCellNode
-  | SliceNode
-  | InstanceNode
-  | EmbedNode
-  | LinkUnfurlNode
-  | StickyNode
-  | ShapeWithTextNode
-  | ConnectorNode
+  | TextNode
+  | VectorNode
   | WashiTapeNode
   | WidgetNode
   | DocumentNode
@@ -715,15 +719,15 @@ export type CanvasNode = {
   backgroundColor: RGBA
 
   /**
-   * Node ID that corresponds to the start frame for prototypes. This is
-   * deprecated with the introduction of multiple flows. Please use the
-   * `flowStartingPoints` field.
+   * Node ID that corresponds to the start frame for prototypes. This is deprecated with the
+   * introduction of multiple flows. Please use the `flowStartingPoints` field.
+   *
+   * @deprecated
    */
-  prototypeStartNodeID?: string | null
+  prototypeStartNodeID: string | null
 
   /**
-   * An array of flow starting points sorted by its position in the prototype
-   * settings panel.
+   * An array of flow starting points sorted by its position in the prototype settings panel.
    */
   flowStartingPoints: FlowStartingPoint[]
 
@@ -736,31 +740,34 @@ export type CanvasNode = {
 
 export type SubcanvasNode =
   | BooleanOperationNode
-  | SectionNode
-  | FrameNode
-  | GroupNode
   | ComponentNode
   | ComponentSetNode
-  | VectorNode
-  | StarNode
-  | LineNode
+  | ConnectorNode
   | EllipseNode
-  | RegularPolygonNode
+  | EmbedNode
+  | FrameNode
+  | GroupNode
+  | InstanceNode
+  | LineNode
+  | LinkUnfurlNode
   | RectangleNode
-  | TextNode
+  | RegularPolygonNode
+  | SectionNode
+  | ShapeWithTextNode
+  | SliceNode
+  | StarNode
+  | StickyNode
   | TableNode
   | TableCellNode
-  | SliceNode
-  | InstanceNode
-  | EmbedNode
-  | LinkUnfurlNode
-  | StickyNode
-  | ShapeWithTextNode
-  | ConnectorNode
+  | TextNode
+  | VectorNode
   | WashiTapeNode
   | WidgetNode
 
 export type BooleanOperationNode = {
+  /**
+   * The type of this node, represented by the string literal "BOOLEAN_OPERATION"
+   */
   type: 'BOOLEAN_OPERATION'
 
   /**
@@ -778,6 +785,9 @@ export type BooleanOperationNode = {
   TransitionSourceTrait
 
 export type SectionNode = {
+  /**
+   * The type of this node, represented by the string literal "SECTION"
+   */
   type: 'SECTION'
 
   /**
@@ -797,36 +807,87 @@ export type FrameNode = {
   type: 'FRAME'
 } & FrameTraits
 
-export type GroupNode = { type: 'GROUP' } & FrameTraits
+export type GroupNode = {
+  /**
+   * The type of this node, represented by the string literal "GROUP"
+   */
+  type: 'GROUP'
+} & FrameTraits
 
-export type ComponentNode = { type: 'COMPONENT' } & FrameTraits &
+export type ComponentNode = {
+  /**
+   * The type of this node, represented by the string literal "COMPONENT"
+   */
+  type: 'COMPONENT'
+} & FrameTraits &
   ComponentPropertiesTrait
 
-export type ComponentSetNode = { type: 'COMPONENT_SET' } & FrameTraits &
+export type ComponentSetNode = {
+  /**
+   * The type of this node, represented by the string literal "COMPONENT_SET"
+   */
+  type: 'COMPONENT_SET'
+} & FrameTraits &
   ComponentPropertiesTrait
 
-export type VectorNode = { type: 'VECTOR' } & CornerRadiusShapeTraits
+export type VectorNode = {
+  /**
+   * The type of this node, represented by the string literal "VECTOR"
+   */
+  type: 'VECTOR'
+} & CornerRadiusShapeTraits
 
-export type StarNode = { type: 'STAR' } & CornerRadiusShapeTraits
+export type StarNode = {
+  /**
+   * The type of this node, represented by the string literal "STAR"
+   */
+  type: 'STAR'
+} & CornerRadiusShapeTraits
 
-export type LineNode = { type: 'LINE' } & DefaultShapeTraits
+export type LineNode = {
+  /**
+   * The type of this node, represented by the string literal "LINE"
+   */
+  type: 'LINE'
+} & DefaultShapeTraits
 
 export type EllipseNode = {
+  /**
+   * The type of this node, represented by the string literal "ELLIPSE"
+   */
   type: 'ELLIPSE'
 
   arcData: ArcData
 } & DefaultShapeTraits
 
 export type RegularPolygonNode = {
+  /**
+   * The type of this node, represented by the string literal "REGULAR_POLYGON"
+   */
   type: 'REGULAR_POLYGON'
 } & CornerRadiusShapeTraits
 
-export type RectangleNode = { type: 'RECTANGLE' } & RectangularShapeTraits
+export type RectangleNode = {
+  /**
+   * The type of this node, represented by the string literal "RECTANGLE"
+   */
+  type: 'RECTANGLE'
+} & RectangularShapeTraits
 
-export type TextNode = { type: 'TEXT' } & DefaultShapeTraits &
+export type TextNode = {
+  /**
+   * The type of this node, represented by the string literal "TEXT"
+   */
+  type: 'TEXT'
+} & DefaultShapeTraits &
   TypePropertiesTrait
 
-export type TableNode = { type: 'TABLE' } & IsLayerTrait &
+export type TableNode = {
+  /**
+   * The type of this node, represented by the string literal "TABLE"
+   */
+  type: 'TABLE'
+} & IsLayerTrait &
   HasChildrenTrait &
   HasLayoutTrait &
   MinimalStrokesTrait &
@@ -834,14 +895,27 @@ export type TableNode = { type: 'TABLE' } & IsLayerTrait &
   HasBlendModeAndOpacityTrait &
   HasExportSettingsTrait
 
-export type TableCellNode = { type: 'TABLE_CELL' } & IsLayerTrait &
+export type TableCellNode = {
+  /**
+   * The type of this node, represented by the string literal "TABLE_CELL"
+   */
+  type: 'TABLE_CELL'
+} & IsLayerTrait &
   MinimalFillsTrait &
   HasLayoutTrait &
   HasTextSublayerTrait
 
-export type SliceNode = { type: 'SLICE' } & IsLayerTrait
+export type SliceNode = {
+  /**
+   * The type of this node, represented by the string literal "SLICE"
+   */
+  type: 'SLICE'
+} & IsLayerTrait
 
 export type InstanceNode = {
+  /**
+   * The type of this node, represented by the string literal "INSTANCE"
+   */
   type: 'INSTANCE'
 
   /**
@@ -850,8 +924,7 @@ export type InstanceNode = {
   componentId: string
 
   /**
-   * If true, this node has been marked as exposed to its containing component or
-   * component set.
+   * If true, this node has been marked as exposed to its containing component or component set.
    */
   isExposedInstance?: boolean
 
@@ -861,23 +934,36 @@ export type InstanceNode = {
   exposedInstances?: string[]
 
   /**
-   * A mapping of name to `ComponentProperty` for all component properties on this
-   * instance. Each property has a type, value, and other optional values.
+   * A mapping of name to `ComponentProperty` for all component properties on this instance. Each
+   * property has a type, value, and other optional values.
    */
   componentProperties?: { [key: string]: ComponentProperty }
 
   /**
-   * An array of all of the fields directly overridden on this instance. Inherited
-   * overrides are not included.
+   * An array of all of the fields directly overridden on this instance. Inherited overrides are not
+   * included.
    */
   overrides: Overrides[]
 } & FrameTraits
 
-export type EmbedNode = { type: 'EMBED' } & IsLayerTrait
+export type EmbedNode = {
+  /**
+   * The type of this node, represented by the string literal "EMBED"
+   */
+  type: 'EMBED'
+} & IsLayerTrait
 
-export type LinkUnfurlNode = { type: 'LINK_UNFURL' } & IsLayerTrait
+export type LinkUnfurlNode = {
+  /**
+   * The type of this node, represented by the string literal "LINK_UNFURL"
+   */
+  type: 'LINK_UNFURL'
+} & IsLayerTrait
 
 export type StickyNode = {
+  /**
+   * The type of this node, represented by the string literal "STICKY"
+   */
   type: 'STICKY'
 
   /**
@@ -894,12 +980,15 @@ export type StickyNode = {
   HasTextSublayerTrait
 
 export type ShapeWithTextNode = {
+  /**
+   * The type of this node, represented by the string literal "SHAPE_WITH_TEXT"
+   */
   type: 'SHAPE_WITH_TEXT'
 
   /**
-   * Geometric shape type. Most shape types have the same name as their tooltip
-   * but there are a few exceptions. ENG_DATABASE: Cylinder, ENG_QUEUE: Horizontal
-   * cylinder, ENG_FILE: File, ENG_FOLDER: Folder.
+   * Geometric shape type. Most shape types have the same name as their tooltip but there are a few
+   * exceptions. ENG_DATABASE: Cylinder, ENG_QUEUE: Horizontal cylinder, ENG_FILE: File, ENG_FOLDER:
+   * Folder.
    */
   shapeType: ShapeType
 } & IsLayerTrait &
@@ -914,6 +1003,9 @@ export type ShapeWithTextNode = {
   MinimalStrokesTrait
 
 export type ConnectorNode = {
+  /**
+   * The type of this node, represented by the string literal "CONNECTOR"
+   */
   type: 'CONNECTOR'
 
   /**
@@ -965,9 +1057,19 @@ export type ConnectorNode = {
   HasTextSublayerTrait &
   MinimalStrokesTrait
 
-export type WashiTapeNode = { type: 'WASHI_TAPE' } & DefaultShapeTraits
+export type WashiTapeNode = {
+  /**
+   * The type of this node, represented by the string literal "WASHI_TAPE"
+   */
+  type: 'WASHI_TAPE'
+} & DefaultShapeTraits
 
-export type WidgetNode = { type: 'WIDGET' } & IsLayerTrait &
+export type WidgetNode = {
+  /**
+   * The type of this node, represented by the string literal "WIDGET"
+   */
+  type: 'WIDGET'
+} & IsLayerTrait &
   HasExportSettingsTrait &
   HasChildrenTrait
 
@@ -1017,8 +1119,7 @@ export type RGBA = {
 }
 
 /**
- * A flow starting point used when launching a prototype to enter Presentation
- * view.
+ * A flow starting point used when launching a prototype to enter Presentation view.
  */
 export type FlowStartingPoint = {
   /**
@@ -1051,13 +1152,13 @@ export type Size = {
  * The device used to view a prototype.
  */
 export type PrototypeDevice = {
-  type?: 'NONE' | 'PRESET' | 'CUSTOM' | 'PRESENTATION'
+  type: 'NONE' | 'PRESET' | 'CUSTOM' | 'PRESENTATION'
 
   size?: Size
 
-  presentIdentifier?: string
+  presetIdentifier?: string
 
-  rotation?: 'NONE' | 'CCW_90'
+  rotation: 'NONE' | 'CCW_90'
 }
 
 /**
@@ -1071,12 +1172,12 @@ export type Constraint = {
    * - `WIDTH`: Scale proportionally and set width to `value`.
    * - `HEIGHT`: Scale proportionally and set height to `value`.
    */
-  type?: 'SCALE' | 'WIDTH' | 'HEIGHT'
+  type: 'SCALE' | 'WIDTH' | 'HEIGHT'
 
   /**
    * See type property for effect of this field.
    */
-  value?: number
+  value: number
 }
 
 /**
@@ -1182,10 +1283,10 @@ export type ColorStop = {
 }
 
 /**
- * A transformation matrix is standard way in computer graphics to represent
- * translation and rotation. These are the top two rows of a 3x3 matrix. The
- * bottom row of the matrix is assumed to be [0, 0, 1]. This is known as an
- * affine transform and is enough to represent translation, rotation, and skew.
+ * A transformation matrix is standard way in computer graphics to represent translation and
+ * rotation. These are the top two rows of a 3x3 matrix. The bottom row of the matrix is assumed to
+ * be [0, 0, 1]. This is known as an affine transform and is enough to represent translation,
+ * rotation, and skew.
  *
  * The identity transform is [[1, 0, 0], [0, 1, 0]].
  *
@@ -1209,11 +1310,10 @@ export type ColorStop = {
  * - The y axis (t[0][1], t[1][1])
  * - The translation offset (t[0][2], t[1][2])
  *
- * The most common usage of the Transform matrix is the `relativeTransform
- * property`. This particular usage of the matrix has a few additional
- * restrictions. The translation offset can take on any value but we do enforce
- * that the axis vectors are unit vectors (i.e. have length 1). The axes are not
- * required to be at 90° angles to each other.
+ * The most common usage of the Transform matrix is the `relativeTransform property`. This
+ * particular usage of the matrix has a few additional restrictions. The translation offset can take
+ * on any value but we do enforce that the axis vectors are unit vectors (i.e. have length 1). The
+ * axes are not required to be at 90° angles to each other.
  */
 export type Transform = number[][]
 
@@ -1236,76 +1336,85 @@ export type ImageFilters = {
   shadows?: number
 }
 
-/**
- * A solid color, gradient, or image texture that can be applied as fills or
- * strokes
- */
-export type Paint = {
-  /**
-   * Type of paint as a string enum
-   */
-  type:
-    | 'SOLID'
-    | 'GRADIENT_LINEAR'
-    | 'GRADIENT_RADIAL'
-    | 'GRADIENT_ANGULAR'
-    | 'GRADIENT_DIAMOND'
-    | 'IMAGE'
-    | 'EMOJI'
-    | 'VIDEO'
-
+export type BasePaint = {
   /**
    * Is the paint enabled?
    */
   visible?: boolean
 
   /**
-   * Overall opacity of paint (colors within the paint can also have opacity
-   * values which would blend with this)
+   * Overall opacity of paint (colors within the paint can also have opacity values which would blend
+   * with this)
    */
   opacity?: number
 
   /**
+   * How this node blends with nodes behind it in the scene
+   */
+  blendMode: BlendMode
+}
+
+export type SolidPaint = {
+  /**
+   * The string literal "SOLID" representing the paint's type. Always check the `type` before reading
+   * other properties.
+   */
+  type: 'SOLID'
+
+  /**
    * Solid color of the paint
    */
-  color?: RGBA
+  color: RGBA
 
   /**
    * The variables bound to a particular field on this paint
    */
   boundVariables?: { color?: VariableAlias }
+} & BasePaint
+
+export type GradientPaint = {
+  /**
+   * The string literal representing the paint's type. Always check the `type` before reading other
+   * properties.
+   */
+  type: 'GRADIENT_LINEAR' | 'GRADIENT_RADIAL' | 'GRADIENT_ANGULAR' | 'GRADIENT_DIAMOND'
 
   /**
-   * How this node blends with nodes behind it in the scene
+   * This field contains three vectors, each of which are a position in normalized object space
+   * (normalized object space is if the top left corner of the bounding box of the object is (0, 0)
+   * and the bottom right is (1,1)). The first position corresponds to the start of the gradient
+   * (value 0 for the purposes of calculating gradient stops), the second position is the end of the
+   * gradient (value 1), and the third handle position determines the width of the gradient.
    */
-  blendMode?: BlendMode
+  gradientHandlePositions: Vector[]
 
   /**
-   * This field contains three vectors, each of which are a position in normalized
-   * object space (normalized object space is if the top left corner of the
-   * bounding box of the object is (0, 0) and the bottom right is (1,1)). The
-   * first position corresponds to the start of the gradient (value 0 for the
-   * purposes of calculating gradient stops), the second position is the end of
-   * the gradient (value 1), and the third handle position determines the width of
-   * the gradient.
+   * Positions of key points along the gradient axis with the colors anchored there. Colors along the
+   * gradient are interpolated smoothly between neighboring gradient stops.
    */
-  gradientHandlePositions?: Vector[]
+  gradientStops: ColorStop[]
+} & BasePaint
 
+export type ImagePaint = {
   /**
-   * Positions of key points along the gradient axis with the colors anchored
-   * there. Colors along the gradient are interpolated smoothly between
-   * neighboring gradient stops.
+   * The string literal "IMAGE" representing the paint's type. Always check the `type` before reading
+   * other properties.
    */
-  gradientStops?: ColorStop[]
+  type: 'IMAGE'
 
   /**
    * Image scaling mode.
    */
-  scaleMode?: 'FILL' | 'FIT' | 'TILE' | 'STRETCH'
+  scaleMode: 'FILL' | 'FIT' | 'TILE' | 'STRETCH'
 
   /**
-   * Affine transform applied to the image, only present if `scaleMode` is
-   * `STRETCH`
+   * A reference to an image embedded in this node. To download the image using this reference, use
+   * the `GET file images` endpoint to retrieve the mapping from image references to image URLs.
+   */
+  imageRef: string
+
+  /**
+   * Affine transform applied to the image, only present if `scaleMode` is `STRETCH`
    */
   imageTransform?: Transform
 
@@ -1315,30 +1424,24 @@ export type Paint = {
   scalingFactor?: number
 
   /**
+   * Defines what image filters have been applied to this paint, if any. If this property is not
+   * defined, no filters have been applied.
+   */
+  filters?: ImageFilters
+
+  /**
    * Image rotation, in degrees.
    */
   rotation?: number
 
   /**
-   * A reference to an image embedded in this node. To download the image using
-   * this reference, use the `GET file images` endpoint to retrieve the mapping
-   * from image references to image URLs.
-   */
-  imageRef?: string
-
-  /**
-   * Defines what image filters have been applied to this paint, if any. If this
-   * property is not defined, no filters have been applied.
-   */
-  filters?: ImageFilters
-
-  /**
-   * A reference to an animated GIF embedded in this node. To download the image
-   * using this reference, use the `GET file images` endpoint to retrieve the
-   * mapping from image references to image URLs.
+   * A reference to an animated GIF embedded in this node. To download the image using this reference,
+   * use the `GET file images` endpoint to retrieve the mapping from image references to image URLs.
    */
   gifRef?: string
-}
+} & BasePaint
+
+export type Paint = SolidPaint | GradientPaint | ImagePaint
 
 /**
  * Layout constraint relative to containing Frame
@@ -1350,8 +1453,8 @@ export type LayoutConstraint = {
    * - `TOP`: Node is laid out relative to top of the containing frame
    * - `BOTTOM`: Node is laid out relative to bottom of the containing frame
    * - `CENTER`: Node is vertically centered relative to containing frame
-   * - `TOP_BOTTOM`: Both top and bottom of node are constrained relative to
-   *   containing frame (node stretches with frame)
+   * - `TOP_BOTTOM`: Both top and bottom of node are constrained relative to containing frame (node
+   *   stretches with frame)
    * - `SCALE`: Node scales vertically with containing frame
    */
   vertical: 'TOP' | 'BOTTOM' | 'CENTER' | 'TOP_BOTTOM' | 'SCALE'
@@ -1362,8 +1465,8 @@ export type LayoutConstraint = {
    * - `LEFT`: Node is laid out relative to left of the containing frame
    * - `RIGHT`: Node is laid out relative to right of the containing frame
    * - `CENTER`: Node is horizontally centered relative to containing frame
-   * - `LEFT_RIGHT`: Both left and right of node are constrained relative to
-   *   containing frame (node stretches with frame)
+   * - `LEFT_RIGHT`: Both left and right of node are constrained relative to containing frame (node
+   *   stretches with frame)
    * - `SCALE`: Node scales horizontally with containing frame
    */
   horizontal: 'LEFT' | 'RIGHT' | 'CENTER' | 'LEFT_RIGHT' | 'SCALE'
@@ -1446,63 +1549,130 @@ export type LayoutGrid = {
    * Number of columns or rows
    */
   count: number
+
+  /**
+   * The variables bound to a particular field on this layout grid
+   */
+  boundVariables?: {
+    gutterSize?: VariableAlias
+
+    numSections?: VariableAlias
+
+    sectionSize?: VariableAlias
+
+    offset?: VariableAlias
+  }
 }
 
 /**
- * A visual effect such as a shadow or blur
+ * Base properties shared by all shadow effects
  */
-export type Effect = {
-  /**
-   * Type of effect as a string enum
-   *
-   * - `INNER_SHADOW`: An inner shadow
-   * - `DROP_SHADOW`: A drop shadow
-   * - `LAYER_BLUR`: Layer blur
-   * - `BACKGROUND_BLUR`: Background blur
-   */
-  type: 'INNER_SHADOW' | 'DROP_SHADOW' | 'LAYER_BLUR' | 'BACKGROUND_BLUR'
-
-  /**
-   * Is the effect active?
-   */
-  visible: boolean
-
-  /**
-   * Radius of the blur effect (applies to shadows as well)
-   */
-  radius?: number
-
+export type BaseShadowEffect = {
   /**
    * The color of the shadow
    */
-  color?: RGBA
+  color: RGBA
 
   /**
    * Blend mode of the shadow
    */
-  blendMode?: BlendMode
+  blendMode: BlendMode
 
   /**
    * How far the shadow is projected in the x and y directions
    */
-  offset?: Vector
+  offset: Vector
 
   /**
-   * How far the shadow spreads
+   * Radius of the blur effect (applies to shadows as well)
+   */
+  radius: number
+
+  /**
+   * The distance by which to expand (or contract) the shadow.
+   *
+   * For drop shadows, a positive `spread` value creates a shadow larger than the node, whereas a
+   * negative value creates a shadow smaller than the node.
+   *
+   * For inner shadows, a positive `spread` value contracts the shadow. Spread values are only
+   * accepted on rectangles and ellipses, or on frames, components, and instances with visible fill
+   * paints and `clipsContent` enabled. When left unspecified, the default value is 0.
    */
   spread?: number
 
   /**
-   * Whether to show the shadow behind translucent or transparent pixels (applies
-   * only to drop shadows)
+   * Whether this shadow is visible.
    */
-  showShadowBehindNode?: boolean
+  visible: boolean
+
+  /**
+   * The variables bound to a particular field on this shadow effect
+   */
+  boundVariables?: {
+    radius?: VariableAlias
+
+    spread?: VariableAlias
+
+    color?: VariableAlias
+
+    offsetX?: VariableAlias
+
+    offsetY?: VariableAlias
+  }
 }
 
+export type DropShadowEffect = {
+  /**
+   * A string literal representing the effect's type. Always check the type before reading other
+   * properties.
+   */
+  type: 'DROP_SHADOW'
+
+  /**
+   * Whether to show the shadow behind translucent or transparent pixels
+   */
+  showShadowBehindNode: boolean
+} & BaseShadowEffect
+
+export type InnerShadowEffect = {
+  /**
+   * A string literal representing the effect's type. Always check the type before reading other
+   * properties.
+   */
+  type?: 'INNER_SHADOW'
+} & BaseShadowEffect
+
 /**
- * A set of properties that can be applied to nodes and published. Styles for a
- * property can be created in the corresponding property's panel while editing a
- * file.
+ * A blur effect
+ */
+export type BlurEffect = {
+  /**
+   * A string literal representing the effect's type. Always check the type before reading other
+   * properties.
+   */
+  type: 'LAYER_BLUR' | 'BACKGROUND_BLUR'
+
+  /**
+   * Whether this blur is active.
+   */
+  visible: boolean
+
+  /**
+   * Radius of the blur effect
+   */
+  radius: number
+
+  /**
+   * The variables bound to a particular field on this blur effect
+   */
+  boundVariables?: { radius?: VariableAlias }
+}
+
+export type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
+
+/**
+ * A set of properties that can be applied to nodes and published. Styles for a property can be
+ * created in the corresponding property's panel while editing a file.
  */
 export type Style = {
   /**
@@ -1533,17 +1703,11 @@ export type Style = {
  *
  * - `EASE_IN`: Ease in with an animation curve similar to CSS ease-in.
  * - `EASE_OUT`: Ease out with an animation curve similar to CSS ease-out.
- * - `EASE_IN_AND_OUT`: Ease in and then out with an animation curve similar to
- *   CSS ease-in-out.
+ * - `EASE_IN_AND_OUT`: Ease in and then out with an animation curve similar to CSS ease-in-out.
  * - `LINEAR`: No easing, similar to CSS linear.
  * - `GENTLE_SPRING`: Gentle spring animation similar to react-spring.
  */
-export type EasingType =
-  | 'EASE_IN'
-  | 'EASE_OUT'
-  | 'EASE_IN_AND_OUT'
-  | 'LINEAR'
-  | 'GENTLE_SPRING'
+export type EasingType = 'EASE_IN' | 'EASE_OUT' | 'EASE_IN_AND_OUT' | 'LINEAR' | 'GENTLE_SPRING'
 
 /**
  * Individual stroke weights
@@ -1592,24 +1756,23 @@ export type Path = {
   /**
    * A series of path commands that encodes how to draw the path.
    */
-  path?: string
+  path: string
 
   /**
-   * The winding rule for the path (same as in SVGs). This determines whether a
-   * given point in space is inside or outside the path.
+   * The winding rule for the path (same as in SVGs). This determines whether a given point in space
+   * is inside or outside the path.
    */
-  windingRule?: 'NONZERO' | 'EVENODD'
+  windingRule: 'NONZERO' | 'EVENODD'
 
   /**
-   * If there is a per-region fill, this refers to an ID in the
-   * `fillOverrideTable`.
+   * If there is a per-region fill, this refers to an ID in the `fillOverrideTable`.
    */
   overrideID?: number
 }
 
 /**
- * Information about the arc properties of an ellipse. 0° is the x axis and
- * increasing angles rotate clockwise.
+ * Information about the arc properties of an ellipse. 0° is the x axis and increasing angles rotate
+ * clockwise.
  */
 export type ArcData = {
   /**
@@ -1635,7 +1798,7 @@ export type Hyperlink = {
   /**
    * The type of hyperlink. Can be either `URL` or `NODE`.
    */
-  type?: 'URL' | 'NODE'
+  type: 'URL' | 'NODE'
 
   /**
    * The URL that the hyperlink points to, if `type` is `URL`.
@@ -1703,23 +1866,22 @@ export type TypeStyle = {
   textDecoration?: 'NONE' | 'STRIKETHROUGH' | 'UNDERLINE'
 
   /**
-   * Dimensions along which text will auto resize, default is that the text does
-   * not auto-resize. TRUNCATE means that the text will be shortened and trailing
-   * text will be replaced with "…" if the text contents is larger than the
-   * bounds. `TRUNCATE` as a return value is deprecated and will be removed in a
-   * future version. Read from `textTruncation` instead.
+   * Dimensions along which text will auto resize, default is that the text does not auto-resize.
+   * TRUNCATE means that the text will be shortened and trailing text will be replaced with "…" if the
+   * text contents is larger than the bounds. `TRUNCATE` as a return value is deprecated and will be
+   * removed in a future version. Read from `textTruncation` instead.
    */
   textAutoResize?: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
 
   /**
-   * Whether this text node will truncate with an ellipsis when the text contents
-   * is larger than the text node.
+   * Whether this text node will truncate with an ellipsis when the text contents is larger than the
+   * text node.
    */
   textTruncation?: 'DISABLED' | 'ENDING'
 
   /**
-   * When `textTruncation: "ENDING"` is set, `maxLines` determines how many lines
-   * a text node can grow to before it truncates.
+   * When `textTruncation: "ENDING"` is set, `maxLines` determines how many lines a text node can grow
+   * to before it truncates.
    */
   maxLines?: number
 
@@ -1749,9 +1911,9 @@ export type TypeStyle = {
   hyperlink?: Hyperlink
 
   /**
-   * A map of OpenType feature flags to 1 or 0, 1 if it is enabled and 0 if it is
-   * disabled. Note that some flags aren't reflected here. For example, SMCP
-   * (small caps) is still represented by the `textCase` field.
+   * A map of OpenType feature flags to 1 or 0, 1 if it is enabled and 0 if it is disabled. Note that
+   * some flags aren't reflected here. For example, SMCP (small caps) is still represented by the
+   * `textCase` field.
    */
   opentypeFlags?: { [key: string]: number }
 
@@ -1761,15 +1923,14 @@ export type TypeStyle = {
   lineHeightPx?: number
 
   /**
-   * Line height as a percentage of normal line height. This is deprecated; in a
-   * future version of the API only lineHeightPx and lineHeightPercentFontSize
-   * will be returned.
+   * Line height as a percentage of normal line height. This is deprecated; in a future version of the
+   * API only lineHeightPx and lineHeightPercentFontSize will be returned.
    */
   lineHeightPercent?: number
 
   /**
-   * Line height as a percentage of the font size. Only returned when
-   * `lineHeightPercent` (deprecated) is not 100.
+   * Line height as a percentage of the font size. Only returned when `lineHeightPercent` (deprecated)
+   * is not 100.
    */
   lineHeightPercentFontSize?: number
 
@@ -1782,11 +1943,7 @@ export type TypeStyle = {
 /**
  * Component property type.
  */
-export type ComponentPropertyType =
-  | 'BOOLEAN'
-  | 'INSTANCE_SWAP'
-  | 'TEXT'
-  | 'VARIANT'
+export type ComponentPropertyType = 'BOOLEAN' | 'INSTANCE_SWAP' | 'TEXT' | 'VARIANT'
 
 /**
  * Instance swap preferred value.
@@ -1795,12 +1952,12 @@ export type InstanceSwapPreferredValue = {
   /**
    * Type of node for this preferred value.
    */
-  type?: 'COMPONENT' | 'COMPONENT_SET'
+  type: 'COMPONENT' | 'COMPONENT_SET'
 
   /**
    * Key of this component or component set.
    */
-  key?: string
+  key: string
 }
 
 /**
@@ -1823,8 +1980,7 @@ export type ComponentPropertyDefinition = {
   variantOptions?: string[]
 
   /**
-   * Preferred values for this property. Only applicable if type is
-   * `INSTANCE_SWAP`.
+   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP`.
    */
   preferredValues?: InstanceSwapPreferredValue[]
 }
@@ -1836,42 +1992,37 @@ export type ComponentProperty = {
   /**
    * Type of this component property.
    */
-  type?: ComponentPropertyType
+  type: ComponentPropertyType
 
   /**
    * Value of the property for this component instance.
    */
-  value?: boolean | string
+  value: boolean | string
 
   /**
-   * Preferred values for this property. Only applicable if type is
-   * `INSTANCE_SWAP`.
+   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP`.
    */
   preferredValues?: InstanceSwapPreferredValue[]
 
   /**
-   * A mapping of field to the variables applied to this field. Most fields will
-   * only map to a single VariableAlias. However, for fills, strokes, size, and
-   * component properties, it is possible to have multiple variables bound to the
-   * field.
+   * The variables bound to a particular field on this component property
    */
   boundVariables?: { value?: VariableAlias }
 }
 
 /**
- * Fields directly overridden on an instance. Inherited overrides are not
- * included.
+ * Fields directly overridden on an instance. Inherited overrides are not included.
  */
 export type Overrides = {
   /**
    * A unique ID for a node.
    */
-  id?: string
+  id: string
 
   /**
    * An array of properties.
    */
-  overriddenFields?: string[]
+  overriddenFields: string[]
 }
 
 /**
@@ -1882,9 +2033,32 @@ export type ShapeType =
   | 'ELLIPSE'
   | 'ROUNDED_RECTANGLE'
   | 'DIAMOND'
+  | 'TRIANGLE_UP'
   | 'TRIANGLE_DOWN'
   | 'PARALLELOGRAM_RIGHT'
   | 'PARALLELOGRAM_LEFT'
+  | 'ENG_DATABASE'
+  | 'ENG_QUEUE'
+  | 'ENG_FILE'
+  | 'ENG_FOLDER'
+  | 'TRAPEZOID'
+  | 'PREDEFINED_PROCESS'
+  | 'SHIELD'
+  | 'DOCUMENT_SINGLE'
+  | 'DOCUMENT_MULTIPLE'
+  | 'MANUAL_INPUT'
+  | 'HEXAGON'
+  | 'CHEVRON'
+  | 'PENTAGON'
+  | 'OCTAGON'
+  | 'STAR'
+  | 'PLUS'
+  | 'ARROW_LEFT'
+  | 'ARROW_RIGHT'
+  | 'SUMMING_JUNCTION'
+  | 'OR'
+  | 'SPEECH_BUBBLE'
+  | 'INTERNAL_STORAGE'
 
 /**
  * Stores canvas location for a connector start/end point.
@@ -1921,8 +2095,7 @@ export type ConnectorLineType = 'STRAIGHT' | 'ELBOWED'
 export type ConnectorTextBackground = CornerTrait & MinimalFillsTrait
 
 /**
- * A description of a main component. Helps you identify which component
- * instances are attached to.
+ * A description of a main component. Helps you identify which component instances are attached to.
  */
 export type Component = {
   /**
@@ -1957,8 +2130,7 @@ export type Component = {
 }
 
 /**
- * A description of a main component. Helps you identify which component
- * instances are attached to.
+ * A description of a component set, which is a node containing a set of variants of a component.
  */
 export type ComponentSet = {
   /**
@@ -1982,8 +2154,7 @@ export type ComponentSet = {
   documentationLinks?: DocumentationLink[]
 
   /**
-   * Whether this component set is a remote component set that doesn't live in
-   * this file
+   * Whether this component set is a remote component set that doesn't live in this file
    */
   remote?: boolean
 }
@@ -2005,15 +2176,15 @@ export type VariableAlias = {
   type: 'VARIABLE_ALIAS'
 
   /**
-   * The id of the variable that the current variable is aliased to. This variable
-   * can be a local or remote variable, and both can be retrieved via the GET
-   * /v1/files/:file_key/variables/local endpoint.
+   * The id of the variable that the current variable is aliased to. This variable can be a local or
+   * remote variable, and both can be retrieved via the GET /v1/files/:file_key/variables/local
+   * endpoint.
    */
   id: string
 }
 
 /**
- * A relative offset within a frame.
+ * Position of a comment relative to the frame to which it is attached.
  */
 export type FrameOffset = {
   /**
@@ -2022,7 +2193,7 @@ export type FrameOffset = {
   node_id: string
 
   /**
-   * 2D vector offset within the frame.
+   * 2D vector offset within the frame from the top-left corner.
    */
   node_offset: Vector
 }
@@ -2052,14 +2223,13 @@ export type Region = {
   region_width: number
 
   /**
-   * The corner of the comment region to pin to the node's corner as a string
-   * enum.
+   * The corner of the comment region to pin to the node's corner as a string enum.
    */
-  comment_pin_corner?: 'top-left' | 'top-right' | 'botom-left' | 'bottom-right'
+  comment_pin_corner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 }
 
 /**
- * Position of a region comment on the canvas.
+ * Position of a region comment relative to the frame to which it is attached.
  */
 export type FrameOffsetRegion = {
   /**
@@ -2068,7 +2238,7 @@ export type FrameOffsetRegion = {
   node_id: string
 
   /**
-   * 2D vector offset within the frame.
+   * 2D vector offset within the frame from the top-left corner.
    */
   node_offset: Vector
 
@@ -2083,10 +2253,9 @@ export type FrameOffsetRegion = {
   region_width: number
 
   /**
-   * The corner of the comment region to pin to the node's corner as a string
-   * enum.
+   * The corner of the comment region to pin to the node's corner as a string enum.
    */
-  comment_pin_corner?: 'top-left' | 'top-right' | 'botom-left' | 'bottom-right'
+  comment_pin_corner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 }
 
 /**
@@ -2099,11 +2268,10 @@ export type Comment = {
   id: string
 
   /**
-   * Positioning information of the comment. Includes information on the location
-   * of the comment pin, which is either the absolute coordinates on the canvas or
-   * a relative offset within a frame. If the comment is a region, it will also
-   * contain the region height, width, and position of the anchor in regards to
-   * the region.
+   * Positioning information of the comment. Includes information on the location of the comment pin,
+   * which is either the absolute coordinates on the canvas or a relative offset within a frame. If
+   * the comment is a region, it will also contain the region height, width, and position of the
+   * anchor in regards to the region.
    */
   client_meta: Vector | FrameOffset | Region | FrameOffsetRegion
 
@@ -2138,8 +2306,7 @@ export type Comment = {
   message: string
 
   /**
-   * Only set for top level comments. The number displayed with the comment in the
-   * UI
+   * Only set for top level comments. The number displayed with the comment in the UI
    */
   order_id?: string
 
@@ -2167,12 +2334,11 @@ export type Reaction = {
 }
 
 /**
- * The emoji type of reaction as shortcode (e.g. `:heart:`,
- * `:+1::skin-tone-2:`). The list of accepted emoji shortcodes can be found in
- * [this
+ * The emoji type of reaction as shortcode (e.g. `:heart:`, `:+1::skin-tone-2:`). The list of
+ * accepted emoji shortcodes can be found in [this
  * file](https://raw.githubusercontent.com/missive/emoji-mart/main/packages/emoji-mart-data/sets/14/native.json)
- * under the top-level emojis and aliases fields, with optional skin tone
- * modifiers when applicable.
+ * under the top-level emojis and aliases fields, with optional skin tone modifiers when
+ * applicable.
  */
 export type Emoji = string
 
@@ -2227,8 +2393,7 @@ export type FrameInfo = {
 }
 
 /**
- * An arrangement of published UI elements that can be instantiated across figma
- * files.
+ * An arrangement of published UI elements that can be instantiated across figma files.
  */
 export type PublishedComponent = {
   /**
@@ -2489,9 +2654,8 @@ export type WebhookV2 = {
   endpoint: string
 
   /**
-   * Optional user-provided description or name for the webhook. This is provided
-   * to help make maintaining a number of webhooks more convenient. Max length 140
-   * characters.
+   * Optional user-provided description or name for the webhook. This is provided to help make
+   * maintaining a number of webhooks more convenient. Max length 140 characters.
    */
   description: string | null
 }
@@ -2565,8 +2729,7 @@ export type WebhookV2RequestInfo = {
 export type WebhookV2ResponseInfo = object | null
 
 /**
- * An object representing the library item information in the payload of the
- * `LIBRARY_PUBLISH` event
+ * An object representing the library item information in the payload of the `LIBRARY_PUBLISH` event
  */
 export type LibraryItemData = {
   /**
@@ -2581,9 +2744,8 @@ export type LibraryItemData = {
 }
 
 /**
- * An object representing a fragment of a comment left by a user, used in the
- * payload of the `FILE_COMMENT` event. Note only ONE of the fields below will
- * be set
+ * An object representing a fragment of a comment left by a user, used in the payload of the
+ * `FILE_COMMENT` event. Note only ONE of the fields below will be set
  */
 export type CommentFragment = {
   /**
@@ -2599,8 +2761,7 @@ export type CommentFragment = {
 
 export type WebhookBasePayload = {
   /**
-   * The passcode specified when the webhook was created, should match what was
-   * initially provided
+   * The passcode specified when the webhook was created, should match what was initially provided
    */
   passcode: string
 
@@ -2923,8 +3084,8 @@ export type ActivityLogTeamEntity = {
 }
 
 /**
- * Part of the organizational hierarchy of managing files and users within
- * Figma, only available on the Enterprise Plan
+ * Part of the organizational hierarchy of managing files and users within Figma, only available on
+ * the Enterprise Plan
  */
 export type ActivityLogWorkspaceEntity = {
   /**
@@ -3042,15 +3203,14 @@ export type ActivityLog = {
     type: string
 
     /**
-     * Metadata of the action. Each action type supports its own metadata
-     * attributes.
+     * Metadata of the action. Each action type supports its own metadata attributes.
      */
     details: object | null
   }
 
   /**
-   * The resource the actor took the action on. It can be a user, file, project or
-   * other resource types.
+   * The resource the actor took the action on. It can be a user, file, project or other resource
+   * types.
    */
   entity:
     | ActivityLogUserEntity
@@ -3088,8 +3248,7 @@ export type ActivityLog = {
     org_id: string
 
     /**
-     * The id of the team where the event took place -- if this took place in a
-     * specific team.
+     * The id of the team where the event took place -- if this took place in a specific team.
      */
     team_id: string | null
   }
@@ -3110,19 +3269,18 @@ export type PaymentStatus = {
 }
 
 /**
- * An object describing a user's payment information for a plugin, widget, or
- * Community file.
+ * An object describing a user's payment information for a plugin, widget, or Community file.
  */
 export type PaymentInformation = {
   /**
-   * The ID of the user whose payment information was queried. Can be used to
-   * verify the validity of a response.
+   * The ID of the user whose payment information was queried. Can be used to verify the validity of a
+   * response.
    */
   user_id: string
 
   /**
-   * The ID of the plugin, widget, or Community file that was queried. Can be used
-   * to verify the validity of a response.
+   * The ID of the plugin, widget, or Community file that was queried. Can be used to verify the
+   * validity of a response.
    */
   resource_id: string
 
@@ -3134,28 +3292,26 @@ export type PaymentInformation = {
   payment_status: PaymentStatus
 
   /**
-   * The UTC ISO 8601 timestamp indicating when the user purchased the resource.
-   * No value is given if the user has never purchased the resource.
+   * The UTC ISO 8601 timestamp indicating when the user purchased the resource. No value is given if
+   * the user has never purchased the resource.
    *
-   * Note that a value will still be returned if the user had purchased the
-   * resource, but no longer has active access to it (e.g. purchase refunded,
-   * subscription ended).
+   * Note that a value will still be returned if the user had purchased the resource, but no longer
+   * has active access to it (e.g. purchase refunded, subscription ended).
    */
   date_of_purchase?: string
 }
 
 /**
- * Scopes allow a variable to be shown/hidden in the variable picker UI for
- * various fields. This declutters the Figma UI if you have a large number of
- * variables. Currently only supported on `FLOAT` and `COLOR` variables.
+ * Scopes allow a variable to be shown/hidden in the variable picker UI for various fields. This
+ * declutters the Figma UI if you have a large number of variables. Currently only supported on
+ * `FLOAT` and `COLOR` variables.
  *
- * `ALL_SCOPES` is a special scope that means that the variable will be shown in
- * the picker UI for all current and any future fields. If `ALL_SCOPES` is set,
- * no additional scopes can be set.
+ * `ALL_SCOPES` is a special scope that means that the variable will be shown in the picker UI for
+ * all current and any future fields. If `ALL_SCOPES` is set, no additional scopes can be set.
  *
- * Likewise, `ALL_FILLS` is a special scope that means that the variable will be
- * shown in the picker UI for all current and any future color fill fields. If
- * `ALL_FILLS` is set, no additional fill scopes can be set.
+ * Likewise, `ALL_FILLS` is a special scope that means that the variable will be shown in the picker
+ * UI for all current and any future color fill fields. If `ALL_FILLS` is set, no additional fill
+ * scopes can be set.
  *
  * Valid scopes for `FLOAT` variables:
  *
@@ -3163,6 +3319,9 @@ export type PaymentInformation = {
  * - `TEXT_CONTENT`
  * - `WIDTH_HEIGHT`
  * - `GAP`
+ * - `STROKE_FLOAT`
+ * - `EFFECT_FLOAT`
+ * - `OPACITY`
  *
  * Valid scopes for `COLOR` variables:
  *
@@ -3172,10 +3331,12 @@ export type PaymentInformation = {
  * - `SHAPE_FILL`
  * - `TEXT_FILL`
  * - `STROKE_COLOR`
+ * - `EFFECT_COLOR`
  */
 export type VariableScope =
   | 'ALL_SCOPES'
   | 'TEXT_CONTENT'
+  | 'CORNER_RADIUS'
   | 'WIDTH_HEIGHT'
   | 'GAP'
   | 'ALL_FILLS'
@@ -3183,10 +3344,14 @@ export type VariableScope =
   | 'SHAPE_FILL'
   | 'TEXT_FILL'
   | 'STROKE_COLOR'
+  | 'STROKE_FLOAT'
+  | 'EFFECT_FLOAT'
+  | 'EFFECT_COLOR'
+  | 'OPACITY'
 
 /**
- * An object containing platform-specific code syntax definitions for a
- * variable. All platforms are optional.
+ * An object containing platform-specific code syntax definitions for a variable. All platforms are
+ * optional.
  */
 export type VariableCodeSyntax = {
   WEB?: string
@@ -3241,25 +3406,22 @@ export type LocalVariableCollection = {
   remote: boolean
 
   /**
-   * Whether this variable collection is hidden when publishing the current file
-   * as a library.
+   * Whether this variable collection is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing: boolean
 
   /**
-   * The ids of the variables in the collection. Note that the order of these
-   * variables is roughly the same as what is shown in Figma Design, however it
-   * does not account for groups. As a result, the order of these variables may
-   * not exactly reflect the exact ordering and grouping shown in the authoring
-   * UI.
+   * The ids of the variables in the collection. Note that the order of these variables is roughly the
+   * same as what is shown in Figma Design, however it does not account for groups. As a result, the
+   * order of these variables may not exactly reflect the exact ordering and grouping shown in the
+   * authoring UI.
    */
   variableIds: string[]
 }
 
 /**
- * A Variable is a single design token that defines values for each of the modes
- * in its VariableCollection. These values can be applied to various kinds of
- * design properties.
+ * A Variable is a single design token that defines values for each of the modes in its
+ * VariableCollection. These values can be applied to various kinds of design properties.
  */
 export type LocalVariable = {
   /**
@@ -3303,25 +3465,21 @@ export type LocalVariable = {
   description: string
 
   /**
-   * Whether this variable is hidden when publishing the current file as a
-   * library.
+   * Whether this variable is hidden when publishing the current file as a library.
    *
-   * If the parent `VariableCollection` is marked as `hiddenFromPublishing`, then
-   * this variable will also be hidden from publishing via the UI.
-   * `hiddenFromPublishing` is independently toggled for a variable and
-   * collection. However, both must be true for a given variable to be
-   * publishable.
+   * If the parent `VariableCollection` is marked as `hiddenFromPublishing`, then this variable will
+   * also be hidden from publishing via the UI. `hiddenFromPublishing` is independently toggled for a
+   * variable and collection. However, both must be true for a given variable to be publishable.
    */
   hiddenFromPublishing: boolean
 
   /**
-   * An array of scopes in the UI where this variable is shown. Setting this
-   * property will show/hide this variable in the variable picker UI for different
-   * fields.
+   * An array of scopes in the UI where this variable is shown. Setting this property will show/hide
+   * this variable in the variable picker UI for different fields.
    *
-   * Setting scopes for a variable does not prevent that variable from being bound
-   * in other scopes (for example, via the Plugin API). This only limits the
-   * variables that are shown in pickers within the Figma UI.
+   * Setting scopes for a variable does not prevent that variable from being bound in other scopes
+   * (for example, via the Plugin API). This only limits the variables that are shown in pickers
+   * within the Figma UI.
    */
   scopes: VariableScope[]
 
@@ -3338,8 +3496,8 @@ export type PublishedVariableCollection = {
   id: string
 
   /**
-   * The ID of the variable collection that is used by subscribing files. This ID
-   * changes every time the variable collection is modified and published.
+   * The ID of the variable collection that is used by subscribing files. This ID changes every time
+   * the variable collection is modified and published.
    */
   subscribed_id: string
 
@@ -3362,9 +3520,8 @@ export type PublishedVariableCollection = {
 }
 
 /**
- * A Variable is a single design token that defines values for each of the modes
- * in its VariableCollection. These values can be applied to various kinds of
- * design properties.
+ * A Variable is a single design token that defines values for each of the modes in its
+ * VariableCollection. These values can be applied to various kinds of design properties.
  */
 export type PublishedVariable = {
   /**
@@ -3373,8 +3530,8 @@ export type PublishedVariable = {
   id: string
 
   /**
-   * The ID of the variable that is used by subscribing files. This ID changes
-   * every time the variable is modified and published.
+   * The ID of the variable that is used by subscribing files. This ID changes every time the variable
+   * is modified and published.
    */
   subscribed_id: string
 
@@ -3424,14 +3581,13 @@ export type VariableCollectionCreate = {
   name: string
 
   /**
-   * The initial mode refers to the mode that is created by default. You can set a
-   * temporary id here, in order to reference this mode later in this request.
+   * The initial mode refers to the mode that is created by default. You can set a temporary id here,
+   * in order to reference this mode later in this request.
    */
   initialModeId?: string
 
   /**
-   * Whether this variable collection is hidden when publishing the current file
-   * as a library.
+   * Whether this variable collection is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing?: boolean
 }
@@ -3456,8 +3612,7 @@ export type VariableCollectionUpdate = {
   name?: string
 
   /**
-   * Whether this variable collection is hidden when publishing the current file
-   * as a library.
+   * Whether this variable collection is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing?: boolean
 }
@@ -3502,8 +3657,8 @@ export type VariableModeCreate = {
   name: string
 
   /**
-   * The variable collection that will contain the mode. You can use the temporary
-   * id of a variable collection.
+   * The variable collection that will contain the mode. You can use the temporary id of a variable
+   * collection.
    */
   variableCollectionId: string
 }
@@ -3548,10 +3703,7 @@ export type VariableModeDelete = {
   id: string
 }
 
-export type VariableModeChange =
-  | VariableModeCreate
-  | VariableModeUpdate
-  | VariableModeDelete
+export type VariableModeChange = VariableModeCreate | VariableModeUpdate | VariableModeDelete
 
 /**
  * An object that contains details about creating a `Variable`.
@@ -3573,8 +3725,8 @@ export type VariableCreate = {
   name: string
 
   /**
-   * The variable collection that will contain the variable. You can use the
-   * temporary id of a variable collection.
+   * The variable collection that will contain the variable. You can use the temporary id of a
+   * variable collection.
    */
   variableCollectionId: string
 
@@ -3589,15 +3741,13 @@ export type VariableCreate = {
   description?: string
 
   /**
-   * Whether this variable is hidden when publishing the current file as a
-   * library.
+   * Whether this variable is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing?: boolean
 
   /**
-   * An array of scopes in the UI where this variable is shown. Setting this
-   * property will show/hide this variable in the variable picker UI for different
-   * fields.
+   * An array of scopes in the UI where this variable is shown. Setting this property will show/hide
+   * this variable in the variable picker UI for different fields.
    */
   scopes?: VariableScope[]
 
@@ -3629,15 +3779,13 @@ export type VariableUpdate = {
   description?: string
 
   /**
-   * Whether this variable is hidden when publishing the current file as a
-   * library.
+   * Whether this variable is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing?: boolean
 
   /**
-   * An array of scopes in the UI where this variable is shown. Setting this
-   * property will show/hide this variable in the variable picker UI for different
-   * fields.
+   * An array of scopes in the UI where this variable is shown. Setting this property will show/hide
+   * this variable in the variable picker UI for different fields.
    */
   scopes?: VariableScope[]
 
@@ -3662,8 +3810,7 @@ export type VariableDelete = {
 export type VariableChange = VariableCreate | VariableUpdate | VariableDelete
 
 /**
- * An object that represents a value for a given mode of a variable. All
- * properties are required.
+ * An object that represents a value for a given mode of a variable. All properties are required.
  */
 export type VariableModeValue = {
   /**
@@ -3672,17 +3819,18 @@ export type VariableModeValue = {
   variableId: string
 
   /**
-   * Must correspond to a mode in the variable collection that contains the target
-   * variable.
+   * Must correspond to a mode in the variable collection that contains the target variable.
    */
   modeId: string
 
-  /**
-   * The value for the variable. The value must match the variable's type. If
-   * setting to a variable alias, the alias must resolve to this type.
-   */
-  value: boolean | number | string | RGB | RGBA | VariableAlias
+  value: VariableValue
 }
+
+/**
+ * The value for the variable. The value must match the variable's type. If setting to a variable
+ * alias, the alias must resolve to this type.
+ */
+export type VariableValue = boolean | number | string | RGB | RGBA | VariableAlias
 
 /**
  * A dev resource in a file
@@ -3715,8 +3863,8 @@ export type DevResource = {
 }
 
 /**
- * If pagination is needed due to the length of the response, identifies the
- * next and previous pages.
+ * If pagination is needed due to the length of the response, identifies the next and previous
+ * pages.
  */
 export type ResponsePagination = {
   /**
@@ -3804,8 +3952,8 @@ export type GetFileResponse = {
   thumbnailUrl?: string
 
   /**
-   * The version number of the file. This number is incremented when a file is
-   * modified and can be used to check if the file has changed between requests.
+   * The version number of the file. This number is incremented when a file is modified and can be
+   * used to check if the file has changed between requests.
    */
   version: string
 
@@ -3832,8 +3980,7 @@ export type GetFileResponse = {
   styles: { [key: string]: Style }
 
   /**
-   * The key of the main file for this file. If present, this file is a component
-   * or component set.
+   * The key of the main file for this file. If present, this file is a component or component set.
    */
   mainFileKey?: string
 
@@ -3893,8 +4040,8 @@ export type GetFileNodesResponse = {
   thumbnailUrl: string
 
   /**
-   * The version number of the file. This number is incremented when a file is
-   * modified and can be used to check if the file has changed between requests.
+   * The version number of the file. This number is incremented when a file is modified and can be
+   * used to check if the file has changed between requests.
    */
   version: string
 
@@ -3940,7 +4087,7 @@ export type GetImagesResponse = {
   /**
    * A map from node IDs to URLs of the rendered images.
    */
-  images: { [key: string]: string }
+  images: { [key: string]: string | null }
 }
 
 /**
@@ -4040,7 +4187,7 @@ export type GetCommentsResponse = {
 /**
  * Response from the POST /v1/files/{file_key}/comments endpoint.
  */
-export type PostCommentsResponse = { comment: Comment }
+export type PostCommentsResponse = Comment
 
 /**
  * Response from the DELETE /v1/files/{file_key}/comments/{comment_id} endpoint.
@@ -4058,8 +4205,7 @@ export type DeleteCommentResponse = {
 }
 
 /**
- * Response from the GET /v1/files/{file_key}/comments/{comment_id}/reactions
- * endpoint.
+ * Response from the GET /v1/files/{file_key}/comments/{comment_id}/reactions endpoint.
  */
 export type GetCommentReactionsResponse = {
   /**
@@ -4071,8 +4217,7 @@ export type GetCommentReactionsResponse = {
 }
 
 /**
- * Response from the POST /v1/files/{file_key}/comments/{comment_id}/reactions
- * endpoint.
+ * Response from the POST /v1/files/{file_key}/comments/{comment_id}/reactions endpoint.
  */
 export type PostCommentReactionsResponse = {
   /**
@@ -4087,8 +4232,7 @@ export type PostCommentReactionsResponse = {
 }
 
 /**
- * Response from the DELETE /v1/files/{file_key}/comments/{comment_id}/reactions
- * endpoint.
+ * Response from the DELETE /v1/files/{file_key}/comments/{comment_id}/reactions endpoint.
  */
 export type DeleteCommentReactionResponse = {
   /**
@@ -4107,8 +4251,7 @@ export type DeleteCommentReactionResponse = {
  */
 export type GetMeResponse = User & {
   /**
-   * Email associated with the user's account. This property is only present on
-   * the /v1/me endpoint.
+   * Email associated with the user's account. This property is only present on the /v1/me endpoint.
    */
   email: string
 }
@@ -4428,19 +4571,18 @@ export type PostVariablesResponse = {
   /**
    * The response status code.
    */
-  status?: 200
+  status: 200
 
   /**
    * For successful requests, this value is always `false`.
    */
-  error?: false
+  error: false
 
-  meta?: {
+  meta: {
     /**
-     * A map of temporary ids in the request to the real ids of the newly created
-     * objects
+     * A map of temporary ids in the request to the real ids of the newly created objects
      */
-    tempIdToRealId?: { [key: string]: string }
+    tempIdToRealId: { [key: string]: string }
   }
 }
 
@@ -4510,151 +4652,135 @@ export type PutDevResourcesResponse = {
 }
 
 /**
- * Response from the DELETE /v1/files/{file_key}/dev_resources/{dev_resource_id}
- * endpoint.
+ * Response from the DELETE /v1/files/{file_key}/dev_resources/{dev_resource_id} endpoint.
  */
 export type DeleteDevResourceResponse = void
 
 /**
- * Bad request. Parameters are invalid or malformed. Please check the input
- * formats. This error can also happen if the requested resources are too large
- * to complete the request, which results in a timeout. Please reduce the number
- * and size of objects requested.
+ * Bad request. Parameters are invalid or malformed. Please check the input formats. This error can
+ * also happen if the requested resources are too large to complete the request, which results in a
+ * timeout. Please reduce the number and size of objects requested.
  */
-export type BadRequestErrorResponseWithErrMessage =
-  ErrorResponsePayloadWithErrMessage & {
-    /**
-     * Status code
-     */
-    status: 400
-  }
+export type BadRequestErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 400
+}
 
 /**
- * Bad request. Parameters are invalid or malformed. Please check the input
- * formats. This error can also happen if the requested resources are too large
- * to complete the request, which results in a timeout. Please reduce the number
- * and size of objects requested.
+ * Bad request. Parameters are invalid or malformed. Please check the input formats. This error can
+ * also happen if the requested resources are too large to complete the request, which results in a
+ * timeout. Please reduce the number and size of objects requested.
  */
-export type BadRequestErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 400
-  }
+export type BadRequestErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 400
+}
 
 /**
  * Token is missing or incorrect.
  */
-export type UnauthorizedErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 401
-  }
+export type UnauthorizedErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 401
+}
 
 /**
- * The request was valid, but the server is refusing action. The user might not
- * have the necessary permissions for a resource, or may need an account of some
- * sort.
+ * The request was valid, but the server is refusing action. The user might not have the necessary
+ * permissions for a resource, or may need an account of some sort.
  */
-export type ForbiddenErrorResponseWithErrMessage =
-  ErrorResponsePayloadWithErrMessage & {
-    /**
-     * Status code
-     */
-    status: 403
-  }
+export type ForbiddenErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 403
+}
 
 /**
- * The request was valid, but the server is refusing action. The user might not
- * have the necessary permissions for a resource, or may need an account of some
- * sort.
+ * The request was valid, but the server is refusing action. The user might not have the necessary
+ * permissions for a resource, or may need an account of some sort.
  */
-export type ForbiddenErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 403
-  }
+export type ForbiddenErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 403
+}
 
 /**
  * The requested file or resource was not found.
  */
-export type NotFoundErrorResponseWithErrMessage =
-  ErrorResponsePayloadWithErrMessage & {
-    /**
-     * Status code
-     */
-    status: 404
-  }
+export type NotFoundErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 404
+}
 
 /**
  * The requested file or resource was not found.
  */
-export type NotFoundErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 404
-  }
+export type NotFoundErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 404
+}
 
 /**
- * In some cases API requests may be throttled or rate limited. Please wait a
- * while before attempting the request again (typically a minute).
+ * In some cases API requests may be throttled or rate limited. Please wait a while before
+ * attempting the request again (typically a minute).
  */
-export type TooManyRequestsErrorResponseWithErrMessage =
-  ErrorResponsePayloadWithErrMessage & {
-    /**
-     * Status code
-     */
-    status: 429
-  }
+export type TooManyRequestsErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 429
+}
 
 /**
- * In some cases API requests may be throttled or rate limited. Please wait a
- * while before attempting the request again (typically a minute).
+ * In some cases API requests may be throttled or rate limited. Please wait a while before
+ * attempting the request again (typically a minute).
  */
-export type TooManyRequestsErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 429
-  }
+export type TooManyRequestsErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 429
+}
 
 /**
  * An internal server error occurred.
  */
-export type InternalServerErrorResponseWithErrMessage =
-  ErrorResponsePayloadWithErrMessage & {
-    /**
-     * Status code
-     */
-    status: 500
-  }
+export type InternalServerErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 500
+}
 
 /**
  * An internal server error occurred.
  */
-export type InternalServerErrorResponseWithErrorBoolean =
-  ErrorResponsePayloadWithErrorBoolean & {
-    /**
-     * Status code
-     */
-    status: 500
-  }
+export type InternalServerErrorResponseWithErrorBoolean = ErrorResponsePayloadWithErrorBoolean & {
+  /**
+   * Status code
+   */
+  status: 500
+}
 
 /**
  * Path parameters for GET /v1/files/{file_key}
  */
 export type GetFilePathParams = {
   /**
-   * File to export JSON from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to export JSON from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4664,32 +4790,27 @@ export type GetFilePathParams = {
  */
 export type GetFileQueryParams = {
   /**
-   * A specific version ID to get. Omitting this will get the current version of
-   * the file.
+   * A specific version ID to get. Omitting this will get the current version of the file.
    */
   version?: string
   /**
-   * Comma separated list of nodes that you care about in the document. If
-   * specified, only a subset of the document will be returned corresponding to
-   * the nodes listed, their children, and everything between the root node and
-   * the listed nodes.
+   * Comma separated list of nodes that you care about in the document. If specified, only a subset of
+   * the document will be returned corresponding to the nodes listed, their children, and everything
+   * between the root node and the listed nodes.
    *
-   * Note: There may be other nodes included in the returned JSON that are outside
-   * the ancestor chains of the desired nodes. The response may also include
-   * dependencies of anything in the nodes' subtrees. For example, if a node
-   * subtree contains an instance of a local component that lives elsewhere in
-   * that file, that component and its ancestor chain will also be included.
+   * Note: There may be other nodes included in the returned JSON that are outside the ancestor chains
+   * of the desired nodes. The response may also include dependencies of anything in the nodes'
+   * subtrees. For example, if a node subtree contains an instance of a local component that lives
+   * elsewhere in that file, that component and its ancestor chain will also be included.
    *
-   * For historical reasons, top-level canvas nodes are always returned,
-   * regardless of whether they are listed in the `ids` parameter. This quirk may
-   * be removed in a future version of the API.
+   * For historical reasons, top-level canvas nodes are always returned, regardless of whether they
+   * are listed in the `ids` parameter. This quirk may be removed in a future version of the API.
    */
   ids?: string
   /**
-   * Positive integer representing how deep into the document tree to traverse.
-   * For example, setting this to 1 returns only Pages, setting it to 2 returns
-   * Pages and all top level objects on each page. Not setting this parameter
-   * returns all nodes.
+   * Positive integer representing how deep into the document tree to traverse. For example, setting
+   * this to 1 returns only Pages, setting it to 2 returns Pages and all top level objects on each
+   * page. Not setting this parameter returns all nodes.
    */
   depth?: number
   /**
@@ -4697,16 +4818,15 @@ export type GetFileQueryParams = {
    */
   geometry?: string
   /**
-   * A comma separated list of plugin IDs and/or the string "shared". Any data
-   * present in the document written by those plugins will be included in the
-   * result in the `pluginData` and `sharedPluginData` properties.
+   * A comma separated list of plugin IDs and/or the string "shared". Any data present in the document
+   * written by those plugins will be included in the result in the `pluginData` and
+   * `sharedPluginData` properties.
    */
   plugin_data?: string
   /**
-   * Returns branch metadata for the requested file. If the file is a branch, the
-   * main file's key will be included in the returned response. If the file has
-   * branches, their metadata will be included in the returned response. Default:
-   * false.
+   * Returns branch metadata for the requested file. If the file is a branch, the main file's key will
+   * be included in the returned response. If the file has branches, their metadata will be included
+   * in the returned response. Default: false.
    */
   branch_data?: boolean
 }
@@ -4716,8 +4836,8 @@ export type GetFileQueryParams = {
  */
 export type GetFileNodesPathParams = {
   /**
-   * File to export JSON from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to export JSON from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4731,18 +4851,17 @@ export type GetFileNodesQueryParams = {
    */
   ids: string
   /**
-   * A specific version ID to get. Omitting this will get the current version of
-   * the file.
+   * A specific version ID to get. Omitting this will get the current version of the file.
    */
   version?: string
   /**
-   * Positive integer representing how deep into the node tree to traverse. For
-   * example, setting this to 1 will return only the children directly underneath
-   * the desired nodes. Not setting this parameter returns all nodes.
+   * Positive integer representing how deep into the node tree to traverse. For example, setting this
+   * to 1 will return only the children directly underneath the desired nodes. Not setting this
+   * parameter returns all nodes.
    *
-   * Note: this parameter behaves differently from the same parameter in the `GET
-   * /v1/files/:key` endpoint. In this endpoint, the depth will be counted
-   * starting from the desired node rather than the document root node.
+   * Note: this parameter behaves differently from the same parameter in the `GET /v1/files/:key`
+   * endpoint. In this endpoint, the depth will be counted starting from the desired node rather than
+   * the document root node.
    */
   depth?: number
   /**
@@ -4750,9 +4869,9 @@ export type GetFileNodesQueryParams = {
    */
   geometry?: string
   /**
-   * A comma separated list of plugin IDs and/or the string "shared". Any data
-   * present in the document written by those plugins will be included in the
-   * result in the `pluginData` and `sharedPluginData` properties.
+   * A comma separated list of plugin IDs and/or the string "shared". Any data present in the document
+   * written by those plugins will be included in the result in the `pluginData` and
+   * `sharedPluginData` properties.
    */
   plugin_data?: string
 }
@@ -4762,8 +4881,8 @@ export type GetFileNodesQueryParams = {
  */
 export type GetImagesPathParams = {
   /**
-   * File to export images from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to export images from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4777,8 +4896,7 @@ export type GetImagesQueryParams = {
    */
   ids: string
   /**
-   * A specific version ID to get. Omitting this will get the current version of
-   * the file.
+   * A specific version ID to get. Omitting this will get the current version of the file.
    */
   version?: string
   /**
@@ -4790,44 +4908,41 @@ export type GetImagesQueryParams = {
    */
   format?: 'jpg' | 'png' | 'svg' | 'pdf'
   /**
-   * Whether text elements are rendered as outlines (vector paths) or as `<text>`
-   * elements in SVGs.
+   * Whether text elements are rendered as outlines (vector paths) or as `<text>` elements in SVGs.
    *
-   * Rendering text elements as outlines guarantees that the text looks exactly
-   * the same in the SVG as it does in the browser/inside Figma.
+   * Rendering text elements as outlines guarantees that the text looks exactly the same in the SVG as
+   * it does in the browser/inside Figma.
    *
-   * Exporting as `<text>` allows text to be selectable inside SVGs and generally
-   * makes the SVG easier to read. However, this relies on the browser's rendering
-   * engine which can vary between browsers and/or operating systems. As such,
-   * visual accuracy is not guaranteed as the result could look different than in
-   * Figma.
+   * Exporting as `<text>` allows text to be selectable inside SVGs and generally makes the SVG easier
+   * to read. However, this relies on the browser's rendering engine which can vary between browsers
+   * and/or operating systems. As such, visual accuracy is not guaranteed as the result could look
+   * different than in Figma.
    */
   svg_outline_text?: boolean
   /**
-   * Whether to include id attributes for all SVG elements. Adds the layer name to
-   * the `id` attribute of an svg element.
+   * Whether to include id attributes for all SVG elements. Adds the layer name to the `id` attribute
+   * of an svg element.
    */
   svg_include_id?: boolean
   /**
-   * Whether to include node id attributes for all SVG elements. Adds the node id
-   * to a `data-node-id` attribute of an svg element.
+   * Whether to include node id attributes for all SVG elements. Adds the node id to a `data-node-id`
+   * attribute of an svg element.
    */
   svg_include_node_id?: boolean
   /**
-   * Whether to simplify inside/outside strokes and use stroke attribute if
-   * possible instead of `<mask>`.
+   * Whether to simplify inside/outside strokes and use stroke attribute if possible instead of
+   * `<mask>`.
    */
   svg_simplify_stroke?: boolean
   /**
-   * Whether content that overlaps the node should be excluded from rendering.
-   * Passing false (i.e., rendering overlaps) may increase processing time, since
-   * more of the document must be included in rendering.
+   * Whether content that overlaps the node should be excluded from rendering. Passing false (i.e.,
+   * rendering overlaps) may increase processing time, since more of the document must be included in
+   * rendering.
    */
   contents_only?: boolean
   /**
-   * Use the full dimensions of the node regardless of whether or not it is
-   * cropped or the space around it is empty. Use this to export text nodes
-   * without cropping.
+   * Use the full dimensions of the node regardless of whether or not it is cropped or the space
+   * around it is empty. Use this to export text nodes without cropping.
    */
   use_absolute_bounds?: boolean
 }
@@ -4837,8 +4952,8 @@ export type GetImagesQueryParams = {
  */
 export type GetImageFillsPathParams = {
   /**
-   * File to get image URLs from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to get image URLs from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4868,8 +4983,7 @@ export type GetProjectFilesPathParams = {
  */
 export type GetProjectFilesQueryParams = {
   /**
-   * Returns branch metadata in the response for each main file with a branch
-   * inside the project.
+   * Returns branch metadata in the response for each main file with a branch inside the project.
    */
   branch_data?: boolean
 }
@@ -4879,9 +4993,8 @@ export type GetProjectFilesQueryParams = {
  */
 export type GetFileVersionsPathParams = {
   /**
-   * File to get version history from. This can be a file key or branch key. Use
-   * `GET /v1/files/:key` with the `branch_data` query param to get the branch
-   * key.
+   * File to get version history from. This can be a file key or branch key. Use `GET /v1/files/:key`
+   * with the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4891,20 +5004,18 @@ export type GetFileVersionsPathParams = {
  */
 export type GetFileVersionsQueryParams = {
   /**
-   * The number of items returned in a page of the response. If not included,
-   * `page_size` is `30`.
+   * The number of items returned in a page of the response. If not included, `page_size` is `30`.
    */
   page_size?: number
   /**
-   * A version ID for one of the versions in the history. Gets versions before
-   * this ID. Used for paginating. If the response is not paginated, this link
-   * returns the same data in the current response.
+   * A version ID for one of the versions in the history. Gets versions before this ID. Used for
+   * paginating. If the response is not paginated, this link returns the same data in the current
+   * response.
    */
   before?: number
   /**
-   * A version ID for one of the versions in the history. Gets versions after this
-   * ID. Used for paginating. If the response is not paginated, this property is
-   * not included.
+   * A version ID for one of the versions in the history. Gets versions after this ID. Used for
+   * paginating. If the response is not paginated, this property is not included.
    */
   after?: number
 }
@@ -4914,8 +5025,8 @@ export type GetFileVersionsQueryParams = {
  */
 export type GetCommentsPathParams = {
   /**
-   * File to get comments from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to get comments from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4925,8 +5036,7 @@ export type GetCommentsPathParams = {
  */
 export type GetCommentsQueryParams = {
   /**
-   * If enabled, will return comments as their markdown equivalents when
-   * applicable.
+   * If enabled, will return comments as their markdown equivalents when applicable.
    */
   as_md?: boolean
 }
@@ -4936,8 +5046,8 @@ export type GetCommentsQueryParams = {
  */
 export type PostCommentsPathParams = {
   /**
-   * File to add comments in. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to add comments in. This can be a file key or branch key. Use `GET /v1/files/:key` with the
+   * `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -4952,8 +5062,8 @@ export type PostCommentsRequestBody = {
   message: string
 
   /**
-   * The ID of the comment to reply to, if any. This must be a root comment. You
-   * cannot reply to other replies (a comment that has a parent_id).
+   * The ID of the comment to reply to, if any. This must be a root comment. You cannot reply to other
+   * replies (a comment that has a parent_id).
    */
   comment_id?: string
 
@@ -4968,8 +5078,8 @@ export type PostCommentsRequestBody = {
  */
 export type DeleteCommentPathParams = {
   /**
-   * File to delete comment from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to delete comment from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
   /**
@@ -4979,14 +5089,12 @@ export type DeleteCommentPathParams = {
 }
 
 /**
- * Path parameters for DELETE
- * /v1/files/{file_key}/comments/{comment_id}/reactions
+ * Path parameters for DELETE /v1/files/{file_key}/comments/{comment_id}/reactions
  */
 export type DeleteCommentReactionPathParams = {
   /**
-   * File to delete comment reaction from. This can be a file key or branch key.
-   * Use `GET /v1/files/:key` with the `branch_data` query param to get the
-   * branch key.
+   * File to delete comment reaction from. This can be a file key or branch key. Use `GET
+   * /v1/files/:key` with the `branch_data` query param to get the branch key.
    */
   file_key: string
   /**
@@ -4996,8 +5104,7 @@ export type DeleteCommentReactionPathParams = {
 }
 
 /**
- * Query parameters for DELETE
- * /v1/files/{file_key}/comments/{comment_id}/reactions
+ * Query parameters for DELETE /v1/files/{file_key}/comments/{comment_id}/reactions
  */
 export type DeleteCommentReactionQueryParams = { emoji: Emoji }
 
@@ -5006,9 +5113,8 @@ export type DeleteCommentReactionQueryParams = { emoji: Emoji }
  */
 export type GetCommentReactionsPathParams = {
   /**
-   * File to get comment containing reactions from. This can be a file key or
-   * branch key. Use `GET /v1/files/:key` with the `branch_data` query param to
-   * get the branch key.
+   * File to get comment containing reactions from. This can be a file key or branch key. Use `GET
+   * /v1/files/:key` with the `branch_data` query param to get the branch key.
    */
   file_key: string
   /**
@@ -5032,9 +5138,8 @@ export type GetCommentReactionsQueryParams = {
  */
 export type PostCommentReactionsPathParams = {
   /**
-   * File to post comment reactions to. This can be a file key or branch key. Use
-   * `GET /v1/files/:key` with the `branch_data` query param to get the branch
-   * key.
+   * File to post comment reactions to. This can be a file key or branch key. Use `GET
+   * /v1/files/:key` with the `branch_data` query param to get the branch key.
    */
   file_key: string
   /**
@@ -5044,8 +5149,7 @@ export type PostCommentReactionsPathParams = {
 }
 
 /**
- * Request body parameters for POST
- * /v1/files/{file_key}/comments/{comment_id}/reactions
+ * Request body parameters for POST /v1/files/{file_key}/comments/{comment_id}/reactions
  */
 export type PostCommentReactionsRequestBody = { emoji: Emoji }
 
@@ -5068,15 +5172,13 @@ export type GetTeamComponentsQueryParams = {
    */
   page_size?: number
   /**
-   * Cursor indicating which id after which to start retrieving components for.
-   * Exclusive with before. The cursor value is an internally tracked integer that
-   * doesn't correspond to any Ids.
+   * Cursor indicating which id after which to start retrieving components for. Exclusive with before.
+   * The cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   after?: number
   /**
-   * Cursor indicating which id before which to start retrieving components for.
-   * Exclusive with after. The cursor value is an internally tracked integer that
-   * doesn't correspond to any Ids.
+   * Cursor indicating which id before which to start retrieving components for. Exclusive with after.
+   * The cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   before?: number
 }
@@ -5086,8 +5188,8 @@ export type GetTeamComponentsQueryParams = {
  */
 export type GetFileComponentsPathParams = {
   /**
-   * File to list components from. This must be a main file key, not a branch
-   * key, as it is not possible to publish from branches.
+   * File to list components from. This must be a main file key, not a branch key, as it is not
+   * possible to publish from branches.
    */
   file_key: string
 }
@@ -5121,15 +5223,13 @@ export type GetTeamComponentSetsQueryParams = {
    */
   page_size?: number
   /**
-   * Cursor indicating which id after which to start retrieving component sets
-   * for. Exclusive with before. The cursor value is an internally tracked integer
-   * that doesn't correspond to any Ids.
+   * Cursor indicating which id after which to start retrieving component sets for. Exclusive with
+   * before. The cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   after?: number
   /**
-   * Cursor indicating which id before which to start retrieving component sets
-   * for. Exclusive with after. The cursor value is an internally tracked integer
-   * that doesn't correspond to any Ids.
+   * Cursor indicating which id before which to start retrieving component sets for. Exclusive with
+   * after. The cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   before?: number
 }
@@ -5139,8 +5239,8 @@ export type GetTeamComponentSetsQueryParams = {
  */
 export type GetFileComponentSetsPathParams = {
   /**
-   * File to list component sets from. This must be a main file key, not a branch
-   * key, as it is not possible to publish from branches.
+   * File to list component sets from. This must be a main file key, not a branch key, as it is not
+   * possible to publish from branches.
    */
   file_key: string
 }
@@ -5174,15 +5274,13 @@ export type GetTeamStylesQueryParams = {
    */
   page_size?: number
   /**
-   * Cursor indicating which id after which to start retrieving styles for.
-   * Exclusive with before. The cursor value is an internally tracked integer that
-   * doesn't correspond to any Ids.
+   * Cursor indicating which id after which to start retrieving styles for. Exclusive with before. The
+   * cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   after?: number
   /**
-   * Cursor indicating which id before which to start retrieving styles for.
-   * Exclusive with after. The cursor value is an internally tracked integer that
-   * doesn't correspond to any Ids.
+   * Cursor indicating which id before which to start retrieving styles for. Exclusive with after. The
+   * cursor value is an internally tracked integer that doesn't correspond to any Ids.
    */
   before?: number
 }
@@ -5192,8 +5290,8 @@ export type GetTeamStylesQueryParams = {
  */
 export type GetFileStylesPathParams = {
   /**
-   * File to list styles from. This must be a main file key, not a branch key, as
-   * it is not possible to publish from branches.
+   * File to list styles from. This must be a main file key, not a branch key, as it is not possible
+   * to publish from branches.
    */
   file_key: string
 }
@@ -5220,14 +5318,14 @@ export type PostWebhooksRequestBody = {
   team_id: string
 
   /**
-   * The HTTP endpoint that will receive a POST request when the event triggers.
-   * Max length 2048 characters.
+   * The HTTP endpoint that will receive a POST request when the event triggers. Max length 2048
+   * characters.
    */
   endpoint: string
 
   /**
-   * String that will be passed back to your webhook endpoint to verify that it is
-   * being called by Figma. Max length 100 characters.
+   * String that will be passed back to your webhook endpoint to verify that it is being called by
+   * Figma. Max length 100 characters.
    */
   passcode: string
 
@@ -5279,14 +5377,14 @@ export type PutWebhookRequestBody = {
   event_type: WebhookV2Event
 
   /**
-   * The HTTP endpoint that will receive a POST request when the event triggers.
-   * Max length 2048 characters.
+   * The HTTP endpoint that will receive a POST request when the event triggers. Max length 2048
+   * characters.
    */
   endpoint: string
 
   /**
-   * String that will be passed back to your webhook endpoint to verify that it is
-   * being called by Figma. Max length 100 characters.
+   * String that will be passed back to your webhook endpoint to verify that it is being called by
+   * Figma. Max length 100 characters.
    */
   passcode: string
 
@@ -5326,23 +5424,22 @@ export type GetWebhookRequestsPathParams = {
  */
 export type GetActivityLogsQueryParams = {
   /**
-   * Event type(s) to include in the response. Can have multiple values separated
-   * by comma. All events are returned by default.
+   * Event type(s) to include in the response. Can have multiple values separated by comma. All
+   * events are returned by default.
    */
   events?: string
   /**
-   * Unix timestamp of the least recent event to include. This param defaults to
-   * one year ago if unspecified. Events prior to one year ago are not available.
+   * Unix timestamp of the least recent event to include. This param defaults to one year ago if
+   * unspecified. Events prior to one year ago are not available.
    */
   start_time?: number
   /**
-   * Unix timestamp of the most recent event to include. This param defaults to
-   * the current timestamp if unspecified.
+   * Unix timestamp of the most recent event to include. This param defaults to the current timestamp
+   * if unspecified.
    */
   end_time?: number
   /**
-   * Maximum number of events to return. This param defaults to 1000 if
-   * unspecified.
+   * Maximum number of events to return. This param defaults to 1000 if unspecified.
    */
   limit?: number
   /**
@@ -5356,36 +5453,32 @@ export type GetActivityLogsQueryParams = {
  */
 export type GetPaymentsQueryParams = {
   /**
-   * Short-lived token returned from "getPluginPaymentTokenAsync" in the plugin
-   * payments API and used to authenticate to this endpoint. Read more about
-   * generating this token through "Calling the Payments REST API from a plugin
-   * or widget" below.
+   * Short-lived token returned from "getPluginPaymentTokenAsync" in the plugin payments API and used
+   * to authenticate to this endpoint. Read more about generating this token through "Calling the
+   * Payments REST API from a plugin or widget" below.
    */
   plugin_payment_token?: string
   /**
-   * The ID of the user to query payment information about. You can get the user
-   * ID by having the user OAuth2 to the Figma REST API.
+   * The ID of the user to query payment information about. You can get the user ID by having the user
+   * OAuth2 to the Figma REST API.
    */
   user_id?: number
   /**
-   * The ID of the Community file to query a user's payment information on. You
-   * can get the Community file ID from the file's Community page (look for the
-   * number after "file/" in the URL). Provide exactly one of "community_file_id",
-   * "plugin_id", or "widget_id".
+   * The ID of the Community file to query a user's payment information on. You can get the Community
+   * file ID from the file's Community page (look for the number after "file/" in the URL). Provide
+   * exactly one of "community_file_id", "plugin_id", or "widget_id".
    */
   community_file_id?: number
   /**
-   * The ID of the plugin to query a user's payment information on. You can get
-   * the plugin ID from the plugin's manifest, or from the plugin's Community page
-   * (look for the number after "plugin/" in the URL). Provide exactly one of
-   * "community_file_id", "plugin_id", or "widget_id".
+   * The ID of the plugin to query a user's payment information on. You can get the plugin ID from the
+   * plugin's manifest, or from the plugin's Community page (look for the number after "plugin/" in
+   * the URL). Provide exactly one of "community_file_id", "plugin_id", or "widget_id".
    */
   plugin_id?: number
   /**
-   * The ID of the widget to query a user's payment information on. You can get
-   * the widget ID from the widget's manifest, or from the widget's Community page
-   * (look for the number after "widget/" in the URL). Provide exactly one of
-   * "community_file_id", "plugin_id", or "widget_id".
+   * The ID of the widget to query a user's payment information on. You can get the widget ID from the
+   * widget's manifest, or from the widget's Community page (look for the number after "widget/" in
+   * the URL). Provide exactly one of "community_file_id", "plugin_id", or "widget_id".
    */
   widget_id?: number
 }
@@ -5395,8 +5488,8 @@ export type GetPaymentsQueryParams = {
  */
 export type GetLocalVariablesPathParams = {
   /**
-   * File to get variables from. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to get variables from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -5406,8 +5499,8 @@ export type GetLocalVariablesPathParams = {
  */
 export type GetPublishedVariablesPathParams = {
   /**
-   * File to get variables from. This must be a main file key, not a branch key,
-   * as it is not possible to publish from branches.
+   * File to get variables from. This must be a main file key, not a branch key, as it is not
+   * possible to publish from branches.
    */
   file_key: string
 }
@@ -5417,8 +5510,8 @@ export type GetPublishedVariablesPathParams = {
  */
 export type PostVariablesPathParams = {
   /**
-   * File to modify variables in. This can be a file key or branch key. Use `GET
-   * /v1/files/:key` with the `branch_data` query param to get the branch key.
+   * File to modify variables in. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
    */
   file_key: string
 }
@@ -5453,8 +5546,7 @@ export type PostVariablesRequestBody = {
  */
 export type GetDevResourcesPathParams = {
   /**
-   * The file to get the dev resources from. This must be a main file key, not a
-   * branch key.
+   * The file to get the dev resources from. This must be a main file key, not a branch key.
    */
   file_key: string
 }
@@ -5464,9 +5556,9 @@ export type GetDevResourcesPathParams = {
  */
 export type GetDevResourcesQueryParams = {
   /**
-   * Comma separated list of nodes that you care about in the document. If
-   * specified, only dev resources attached to these nodes will be returned. If
-   * not specified, all dev resources in the file will be returned.
+   * Comma separated list of nodes that you care about in the document. If specified, only dev
+   * resources attached to these nodes will be returned. If not specified, all dev resources in the
+   * file will be returned.
    */
   node_ids?: string
 }
@@ -5527,13 +5619,11 @@ export type PutDevResourcesRequestBody = {
 }
 
 /**
- * Path parameters for DELETE
- * /v1/files/{file_key}/dev_resources/{dev_resource_id}
+ * Path parameters for DELETE /v1/files/{file_key}/dev_resources/{dev_resource_id}
  */
 export type DeleteDevResourcePathParams = {
   /**
-   * The file to delete the dev resource from. This must be a main file key, not
-   * a branch key.
+   * The file to delete the dev resource from. This must be a main file key, not a branch key.
    */
   file_key: string
   /**
