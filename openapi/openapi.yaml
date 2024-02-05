@@ -616,7 +616,7 @@ paths:
         - OAuth2:
             - file_comments:write
       description: Posts a new comment on the file.
-      operationId: postComments
+      operationId: postComment
       parameters:
         - name: file_key
           in: path
@@ -653,7 +653,7 @@ paths:
                 - message
       responses:
         "200":
-          $ref: "#/components/responses/PostCommentsResponse"
+          $ref: "#/components/responses/PostCommentResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "403":
@@ -754,7 +754,7 @@ paths:
         - OAuth2:
             - file_comments:write
       description: Posts a new comment reaction on a file comment.
-      operationId: postCommentReactions
+      operationId: postCommentReaction
       parameters:
         - name: file_key
           in: path
@@ -784,7 +784,7 @@ paths:
                 - emoji
       responses:
         "200":
-          $ref: "#/components/responses/PostCommentReactionsResponse"
+          $ref: "#/components/responses/PostCommentReactionResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "403":
@@ -1213,7 +1213,7 @@ paths:
         PING event to the endpoint when it is created. If this behavior is not
         desired, you can create the webhook and set the status to PAUSED and
         reactivate it later.
-      operationId: postWebhooks
+      operationId: postWebhook
       requestBody:
         description: The webhook to create.
         required: true
@@ -1435,7 +1435,7 @@ paths:
                     strategy.
       responses:
         "200":
-          $ref: "#/components/responses/PostWebhooksResponse"
+          $ref: "#/components/responses/PostWebhookResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "403":
@@ -6934,7 +6934,7 @@ components:
                   $ref: "#/components/schemas/Comment"
             required:
               - comments
-    PostCommentsResponse:
+    PostCommentResponse:
       description: Response from the POST /v1/files/{file_key}/comments endpoint.
       content:
         application/json:
@@ -6979,7 +6979,7 @@ components:
             required:
               - reactions
               - pagination
-    PostCommentReactionsResponse:
+    PostCommentReactionResponse:
       description: Response from the POST
         /v1/files/{file_key}/comments/{comment_id}/reactions endpoint.
       content:
@@ -7291,7 +7291,7 @@ components:
               - status
               - error
               - meta
-    PostWebhooksResponse:
+    PostWebhookResponse:
       description: Response from the POST /v2/webhooks endpoint.
       content:
         application/json:

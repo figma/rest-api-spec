@@ -4187,7 +4187,7 @@ export type GetCommentsResponse = {
 /**
  * Response from the POST /v1/files/{file_key}/comments endpoint.
  */
-export type PostCommentsResponse = Comment
+export type PostCommentResponse = Comment
 
 /**
  * Response from the DELETE /v1/files/{file_key}/comments/{comment_id} endpoint.
@@ -4219,7 +4219,7 @@ export type GetCommentReactionsResponse = {
 /**
  * Response from the POST /v1/files/{file_key}/comments/{comment_id}/reactions endpoint.
  */
-export type PostCommentReactionsResponse = {
+export type PostCommentReactionResponse = {
   /**
    * The status of the request.
    */
@@ -4424,7 +4424,7 @@ export type GetStyleResponse = {
 /**
  * Response from the POST /v2/webhooks endpoint.
  */
-export type PostWebhooksResponse = WebhookV2
+export type PostWebhookResponse = WebhookV2
 
 /**
  * Response from the GET /v2/webhooks/{webhook_id} endpoint.
@@ -5044,7 +5044,7 @@ export type GetCommentsQueryParams = {
 /**
  * Path parameters for POST /v1/files/{file_key}/comments
  */
-export type PostCommentsPathParams = {
+export type PostCommentPathParams = {
   /**
    * File to add comments in. This can be a file key or branch key. Use `GET /v1/files/:key` with the
    * `branch_data` query param to get the branch key.
@@ -5055,7 +5055,7 @@ export type PostCommentsPathParams = {
 /**
  * Request body parameters for POST /v1/files/{file_key}/comments
  */
-export type PostCommentsRequestBody = {
+export type PostCommentRequestBody = {
   /**
    * The text contents of the comment to post.
    */
@@ -5136,7 +5136,7 @@ export type GetCommentReactionsQueryParams = {
 /**
  * Path parameters for POST /v1/files/{file_key}/comments/{comment_id}/reactions
  */
-export type PostCommentReactionsPathParams = {
+export type PostCommentReactionPathParams = {
   /**
    * File to post comment reactions to. This can be a file key or branch key. Use `GET
    * /v1/files/:key` with the `branch_data` query param to get the branch key.
@@ -5151,7 +5151,7 @@ export type PostCommentReactionsPathParams = {
 /**
  * Request body parameters for POST /v1/files/{file_key}/comments/{comment_id}/reactions
  */
-export type PostCommentReactionsRequestBody = { emoji: Emoji }
+export type PostCommentReactionRequestBody = { emoji: Emoji }
 
 /**
  * Path parameters for GET /v1/teams/{team_id}/components
@@ -5309,7 +5309,7 @@ export type GetStylePathParams = {
 /**
  * Request body parameters for POST /v2/webhooks
  */
-export type PostWebhooksRequestBody = {
+export type PostWebhookRequestBody = {
   event_type: WebhookV2Event
 
   /**
