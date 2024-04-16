@@ -3865,6 +3865,121 @@ export type DevResource = {
 }
 
 /**
+ * Library analytics actions data broken down by component.
+ */
+export type LibraryAnalyticsActionsByComponent = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * Unique, stable id of the component.
+   */
+  component_key: string
+
+  /**
+   * Name of the component.
+   */
+  component_name: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics action data broken down by team.
+ */
+export type LibraryAnalyticsActionsByTeam = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * The name of the team using the library.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the team belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics usage data broken down by component.
+ */
+export type LibraryAnalyticsUsagesByComponent = {
+  /**
+   * Unique, stable id of the component.
+   */
+  component_key: string
+
+  /**
+   * Name of the component.
+   */
+  component_name: string
+
+  /**
+   * The number of instances of the component within the organization.
+   */
+  num_instances: number
+
+  /**
+   * The number of teams using the component within the organization.
+   */
+  num_teams_using: number
+
+  /**
+   * The number of files using the component within the organization.
+   */
+  num_files_using: number
+}
+
+/**
+ * Library analytics usage data broken down by file.
+ */
+export type LibraryAnalyticsUsagesByFile = {
+  /**
+   * The name of the file using the library.
+   */
+  file_name: string
+
+  /**
+   * The name of the team the file belongs to.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the file belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of component instances from the library used within the file.
+   */
+  num_instances: number
+}
+
+/**
  * If pagination is needed due to the length of the response, identifies the next and previous
  * pages.
  */
@@ -4657,6 +4772,51 @@ export type PutDevResourcesResponse = {
  * Response from the DELETE /v1/files/{file_key}/dev_resources/{dev_resource_id} endpoint.
  */
 export type DeleteDevResourceResponse = void
+
+/**
+ * Response from the GET /v1/analytics/libraries/{file_key}/actions.
+ */
+export type GetLibraryAnalyticsActionsResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsActionsByComponent[] | LibraryAnalyticsActionsByTeam[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the PUT /v1/analytics/libraries/{file_key}/usages.
+ */
+export type GetLibraryAnalyticsUsagesResponse = {
+  /**
+   * An array of analytics data when breaking down usage by component.
+   */
+  components?: LibraryAnalyticsUsagesByComponent[]
+
+  /**
+   * An array of analytics data when breaking down usage by file.
+   */
+  files?: LibraryAnalyticsUsagesByFile[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data.
+   */
+  cursor?: string
+}
 
 /**
  * Bad request. Parameters are invalid or malformed. Please check the input formats. This error can
@@ -5632,4 +5792,71 @@ export type DeleteDevResourcePathParams = {
    * The id of the dev resource to delete.
    */
   dev_resource_id: string
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/actions
+ */
+export type GetLibraryAnalyticsActionsPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/actions
+ */
+export type GetLibraryAnalyticsActionsQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by. Accepts "component" or "team".
+   */
+  group_by: 'component' | 'team'
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the earliest week to include. Dates are rounded back to the
+   * nearest start of a week. Defaults to one year prior.
+   */
+  start_date?: string
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the latest week to include. Dates are rounded forward to the
+   * nearest end of a week. Defaults to the latest computed week.
+   */
+  end_date?: string
+  /**
+   * How to order response rows by week. This param can be either "asc" or "desc" (default).
+   */
+  order?: 'asc' | 'desc'
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/usages
+ */
+export type GetLibraryAnalyticsUsagesPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/usages
+ */
+export type GetLibraryAnalyticsUsagesQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by. Accepts "component" or "file".
+   */
+  group_by: 'component' | 'file'
+  /**
+   * How to order response rows by number of instances. This param can be either "asc" or "desc"
+   * (default).
+   */
+  order?: 'asc' | 'desc'
 }

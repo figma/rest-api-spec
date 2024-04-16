@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.11.0
+  version: 0.12.0
   description: >-
     This is the OpenAPI specification for the [Figma REST
     API](https://www.figma.com/developers/api).
@@ -82,6 +82,11 @@ tags:
     externalDocs:
       description: Dev resource endpoints documentation
       url: https://www.figma.com/developers/api#dev-resources
+  - name: Library Analytics
+    description: Get analytics data for your published libraries.
+    externalDocs:
+      description: Library analytics endpoints documentation
+      url: https://www.figma.com/developers/api#library-analytics
 paths:
   /v1/files/{file_key}:
     get:
@@ -2166,6 +2171,136 @@ paths:
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
         "500":
           $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/actions:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics action data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics actions data broken down by the
+        requested dimension.
+      operationId: getLibraryAnalyticsActions
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by. Accepts
+            "component" or "team".
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - component
+              - team
+        - name: start_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the earliest week to include.
+            Dates are rounded back to the nearest start of a week. Defaults to
+            one year prior.
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the latest week to include.
+            Dates are rounded forward to the nearest end of a week. Defaults to
+            the latest computed week.
+          in: query
+          schema:
+            type: string
+        - name: order
+          description: How to order response rows by week. This param can be either "asc"
+            or "desc" (default).
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsActionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/usages:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics usage data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics usage data broken down by the
+        requested dimension.
+      operationId: getLibraryAnalyticsUsages
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by. Accepts
+            "component" or "file".
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - component
+              - file
+        - name: order
+          description: How to order response rows by number of instances. This param can
+            be either "asc" or "desc" (default).
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: desc
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsUsagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
 components:
   securitySchemes:
     PersonalAccessToken:
@@ -2189,6 +2324,7 @@ components:
             file_comments:write: Post and delete comments and comment reactions in files.
             file_dev_resources:read: Read dev resources in files.
             file_dev_resources:write: Write to dev resources in files.
+            library_analytics:read: Read library analytics data.
             webhooks:write: Create and manage webhooks.
     OrgOAuth2:
       type: oauth2
@@ -6573,6 +6709,101 @@ components:
         - url
         - file_key
         - node_id
+    LibraryAnalyticsActionsByComponent:
+      type: object
+      description: Library analytics actions data broken down by component.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        component_key:
+          type: string
+          description: Unique, stable id of the component.
+        component_name:
+          type: string
+          description: Name of the component.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - component_key
+        - component_name
+        - detachments
+        - insertions
+    LibraryAnalyticsActionsByTeam:
+      type: object
+      description: Library analytics action data broken down by team.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        team_name:
+          type: string
+          description: The name of the team using the library.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the team belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - team_name
+        - detachments
+        - insertions
+    LibraryAnalyticsUsagesByComponent:
+      type: object
+      description: Library analytics usage data broken down by component.
+      properties:
+        component_key:
+          type: string
+          description: Unique, stable id of the component.
+        component_name:
+          type: string
+          description: Name of the component.
+        num_instances:
+          type: number
+          description: The number of instances of the component within the organization.
+        num_teams_using:
+          type: number
+          description: The number of teams using the component within the organization.
+        num_files_using:
+          type: number
+          description: The number of files using the component within the organization.
+      required:
+        - component_key
+        - component_name
+        - num_instances
+        - num_teams_using
+        - num_files_using
+    LibraryAnalyticsUsagesByFile:
+      type: object
+      description: Library analytics usage data broken down by file.
+      properties:
+        file_name:
+          type: string
+          description: The name of the file using the library.
+        team_name:
+          type: string
+          description: The name of the team the file belongs to.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the file belongs to.
+        num_instances:
+          type: number
+          description: The number of component instances from the library used within the
+            file.
+      required:
+        - file_name
+        - team_name
+        - num_instances
     ResponsePagination:
       type: object
       description: If pagination is needed due to the length of the response,
@@ -7588,6 +7819,56 @@ components:
     DeleteDevResourceResponse:
       description: Response from the DELETE
         /v1/files/{file_key}/dev_resources/{dev_resource_id} endpoint.
+    GetLibraryAnalyticsActionsResponse:
+      description: Response from the GET /v1/analytics/libraries/{file_key}/actions.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsActionsByComponent"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsActionsByTeam"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsUsagesResponse:
+      description: Response from the PUT /v1/analytics/libraries/{file_key}/usages.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              components:
+                description: An array of analytics data when breaking down usage by component.
+                type: array
+                items:
+                  $ref: "#/components/schemas/LibraryAnalyticsUsagesByComponent"
+              files:
+                description: An array of analytics data when breaking down usage by file.
+                type: array
+                items:
+                  $ref: "#/components/schemas/LibraryAnalyticsUsagesByFile"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data.
+            required:
+              - next_page
     BadRequestErrorResponseWithErrMessage:
       description: Bad request. Parameters are invalid or malformed. Please check the
         input formats. This error can also happen if the requested resources are
