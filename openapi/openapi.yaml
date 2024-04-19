@@ -2531,7 +2531,7 @@ components:
         layoutAlign:
           type: string
           description: >-
-            
+
             Determines if the layer should stretch along the parent's counter axis. This property is only provided for direct children of auto-layout frames.
 
 
@@ -3792,7 +3792,7 @@ components:
           type: string
           description: Unique identifier specifying the frame.
         name:
-          type: number
+          type: string
           description: Name of flow.
       required:
         - nodeId
@@ -6072,7 +6072,7 @@ components:
           description: >-
             The current payment status of the user on the resource, as a string
             enum:
-              
+
             - `UNPAID`: user has not paid for the resource
 
             - `PAID`: user has an active purchase on the resource
@@ -6111,7 +6111,7 @@ components:
             The UTC ISO 8601 timestamp indicating when the user purchased the
             resource. No value is given if the user has never purchased the
             resource.
-              
+
             Note that a value will still be returned if the user had purchased the resource, but no longer has active access to it (e.g. purchase refunded, subscription ended).
       required:
         - user_id
