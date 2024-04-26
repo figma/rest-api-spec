@@ -116,6 +116,22 @@ export type IsLayerTrait = {
 
     opacity?: VariableAlias
 
+    fontFamily?: VariableAlias[]
+
+    fontSize?: VariableAlias[]
+
+    fontStyle?: VariableAlias[]
+
+    fontWeight?: VariableAlias[]
+
+    letterSpacing?: VariableAlias[]
+
+    lineHeight?: VariableAlias[]
+
+    paragraphSpacing?: VariableAlias[]
+
+    paragraphIndent?: VariableAlias[]
+
     fills?: VariableAlias[]
 
     strokes?: VariableAlias[]
@@ -953,14 +969,16 @@ export type EmbedNode = {
    * The type of this node, represented by the string literal "EMBED"
    */
   type: 'EMBED'
-} & IsLayerTrait
+} & IsLayerTrait &
+  HasExportSettingsTrait
 
 export type LinkUnfurlNode = {
   /**
    * The type of this node, represented by the string literal "LINK_UNFURL"
    */
   type: 'LINK_UNFURL'
-} & IsLayerTrait
+} & IsLayerTrait &
+  HasExportSettingsTrait
 
 export type StickyNode = {
   /**
@@ -1132,7 +1150,7 @@ export type FlowStartingPoint = {
   /**
    * Name of flow.
    */
-  name: number
+  name: string
 }
 
 /**
@@ -1270,7 +1288,7 @@ export type Vector = {
 }
 
 /**
- * A single color stop with its position along the gradient axis and color.
+ * A single color stop with its position along the gradient axis, color, and bound variables if any
  */
 export type ColorStop = {
   /**
@@ -1282,6 +1300,11 @@ export type ColorStop = {
    * Color attached to corresponding position.
    */
   color: RGBA
+
+  /**
+   * The variables bound to a particular gradient stop
+   */
+  boundVariables?: { color?: VariableAlias }
 }
 
 /**
@@ -1940,6 +1963,27 @@ export type TypeStyle = {
    * The unit of the line height value specified by the user.
    */
   lineHeightUnit?: 'PIXELS' | 'FONT_SIZE_%' | 'INTRINSIC_%'
+
+  /**
+   * The variables bound to a particular field on this style
+   */
+  boundVariables?: {
+    fontFamily?: VariableAlias
+
+    fontSize?: VariableAlias
+
+    fontStyle?: VariableAlias
+
+    fontWeight?: VariableAlias
+
+    letterSpacing?: VariableAlias
+
+    lineHeight?: VariableAlias
+
+    paragraphSpacing?: VariableAlias
+
+    paragraphIndent?: VariableAlias
+  }
 }
 
 /**

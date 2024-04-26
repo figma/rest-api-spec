@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.12.0
+  version: 0.13.0
   description: >-
     This is the OpenAPI specification for the [Figma REST
     API](https://www.figma.com/developers/api).
@@ -2447,6 +2447,38 @@ components:
               $ref: "#/components/schemas/VariableAlias"
             opacity:
               $ref: "#/components/schemas/VariableAlias"
+            fontFamily:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            fontSize:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            fontStyle:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            fontWeight:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            letterSpacing:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            lineHeight:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            paragraphSpacing:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
+            paragraphIndent:
+              type: array
+              items:
+                $ref: "#/components/schemas/VariableAlias"
             fills:
               type: array
               items:
@@ -3581,6 +3613,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
+        - $ref: "#/components/schemas/HasExportSettingsTrait"
     LinkUnfurlNode:
       allOf:
         - type: object
@@ -3594,6 +3627,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/IsLayerTrait"
+        - $ref: "#/components/schemas/HasExportSettingsTrait"
     StickyNode:
       allOf:
         - type: object
@@ -3792,7 +3826,7 @@ components:
           type: string
           description: Unique identifier specifying the frame.
         name:
-          type: number
+          type: string
           description: Name of flow.
       required:
         - nodeId
@@ -3944,7 +3978,8 @@ components:
         - y
     ColorStop:
       type: object
-      description: A single color stop with its position along the gradient axis and color.
+      description: A single color stop with its position along the gradient axis,
+        color, and bound variables if any
       properties:
         position:
           type: number
@@ -3952,6 +3987,12 @@ components:
         color:
           $ref: "#/components/schemas/RGBA"
           description: Color attached to corresponding position.
+        boundVariables:
+          type: object
+          description: The variables bound to a particular gradient stop
+          properties:
+            color:
+              $ref: "#/components/schemas/VariableAlias"
       required:
         - position
         - color
@@ -4703,6 +4744,26 @@ components:
             - PIXELS
             - FONT_SIZE_%
             - INTRINSIC_%
+        boundVariables:
+          type: object
+          description: The variables bound to a particular field on this style
+          properties:
+            fontFamily:
+              $ref: "#/components/schemas/VariableAlias"
+            fontSize:
+              $ref: "#/components/schemas/VariableAlias"
+            fontStyle:
+              $ref: "#/components/schemas/VariableAlias"
+            fontWeight:
+              $ref: "#/components/schemas/VariableAlias"
+            letterSpacing:
+              $ref: "#/components/schemas/VariableAlias"
+            lineHeight:
+              $ref: "#/components/schemas/VariableAlias"
+            paragraphSpacing:
+              $ref: "#/components/schemas/VariableAlias"
+            paragraphIndent:
+              $ref: "#/components/schemas/VariableAlias"
     ComponentPropertyType:
       type: string
       description: Component property type.
