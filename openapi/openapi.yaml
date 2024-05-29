@@ -1,11 +1,9 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.13.0
-  description: >-
-    This is the OpenAPI specification for the [Figma REST
-    API](https://www.figma.com/developers/api).
-
+  version: 0.14.0
+  description: |-
+    This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
     Note: we are releasing the OpenAPI specification as a beta given the large surface area and complexity of the REST API. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues).
   termsOfService: https://www.figma.com/developer-terms/
@@ -97,14 +95,10 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - files:read
-      description: >-
-        Returns the document identified by `file_key` as a JSON object. The file
-        key can be parsed from any Figma file url:
-        `https://www.figma.com/file/{file_key}/{title}`.
-
+      description: |-
+        Returns the document identified by `file_key` as a JSON object. The file key can be parsed from any Figma file url: `https://www.figma.com/file/{file_key}/{title}`.
 
         The `document` property contains a node of type `DOCUMENT`.
-
 
         The `components` property contains a mapping from node IDs to component metadata. This is to help you determine which components each instance comes from.
       operationId: getFile
@@ -125,15 +119,10 @@ paths:
             type: string
         - name: ids
           in: query
-          description: >-
-            Comma separated list of nodes that you care about in the document.
-            If specified, only a subset of the document will be returned
-            corresponding to the nodes listed, their children, and everything
-            between the root node and the listed nodes.
-
+          description: |-
+            Comma separated list of nodes that you care about in the document. If specified, only a subset of the document will be returned corresponding to the nodes listed, their children, and everything between the root node and the listed nodes.
 
             Note: There may be other nodes included in the returned JSON that are outside the ancestor chains of the desired nodes. The response may also include dependencies of anything in the nodes' subtrees. For example, if a node subtree contains an instance of a local component that lives elsewhere in that file, that component and its ancestor chain will also be included.
-
 
             For historical reasons, top-level canvas nodes are always returned, regardless of whether they are listed in the `ids` parameter. This quirk may be removed in a future version of the API.
           schema:
@@ -190,30 +179,21 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - files:read
-      description: >-
-        Returns the nodes referenced to by `ids` as a JSON object. The nodes are
-        retrieved from the Figma file referenced to by `file_key`.
-
+      description: |-
+        Returns the nodes referenced to by `ids` as a JSON object. The nodes are retrieved from the Figma file referenced to by `file_key`.
 
         The node ID and file key can be parsed from any Figma node url: `https://www.figma.com/file/{file_key}/{title}?node-id={id}`
 
-
         The `name`, `lastModified`, `thumbnailUrl`, `editorType`, and `version` attributes are all metadata of the specified file.
-
 
         The `linkAccess` field describes the file link share permission level. There are 5 types of permissions a shared link can have: `"inherit"`, `"view"`, `"edit"`, `"org_view"`, and `"org_edit"`. `"inherit"` is the default permission applied to files created in a team project, and will inherit the project's permissions. `"org_view"` and `"org_edit"` restrict the link to org users.
 
-
         The `document` attribute contains a Node of type `DOCUMENT`.
-
 
         The `components` key contains a mapping from node IDs to component metadata. This is to help you determine which components each instance comes from.
 
-
         By default, no vector data is returned. To return vector data, pass the geometry=paths parameter to the endpoint.
-
         Each node can also inherit properties from applicable styles. The styles key contains a mapping from style IDs to style metadata.
-
 
         Important: the nodes map may contain values that are `null`. This may be due to the node id not existing within the specified file.
       operationId: getFileNodes
@@ -240,12 +220,8 @@ paths:
             type: string
         - name: depth
           in: query
-          description: >-
-            Positive integer representing how deep into the node tree to
-            traverse. For example, setting this to 1 will return only the
-            children directly underneath the desired nodes. Not setting this
-            parameter returns all nodes.
-
+          description: |-
+            Positive integer representing how deep into the node tree to traverse. For example, setting this to 1 will return only the children directly underneath the desired nodes. Not setting this parameter returns all nodes.
 
             Note: this parameter behaves differently from the same parameter in the `GET /v1/files/:key` endpoint. In this endpoint, the depth will be counted starting from the desired node rather than the document root node.
           schema:
@@ -285,23 +261,17 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - files:read
-      description: >
+      description: |
         Renders images from a file.
-
 
         If no error occurs, `"images"` will be populated with a map from node IDs to URLs of the rendered images, and `"status"` will be omitted. The image assets will expire after 30 days. Images up to 32 megapixels can be exported. Any images that are larger will be scaled down.
 
-
         Important: the image map may contain values that are `null`. This indicates that rendering of that specific node has failed. This may be due to the node id not existing, or other reasons such has the node having no renderable components. It is guaranteed that any node that was requested for rendering will be represented in this map whether or not the render succeeded.
-
 
         To render multiple images from the same file, use the `ids` query parameter to specify multiple node ids.
 
-
         ```
-
         GET /v1/images/:key?ids=1:2,1:3,1:4
-
         ```
       operationId: getImages
       parameters:
@@ -345,13 +315,10 @@ paths:
             default: png
         - name: svg_outline_text
           in: query
-          description: >-
-            Whether text elements are rendered as outlines (vector paths) or as
-            `<text>` elements in SVGs.
-
+          description: |-
+            Whether text elements are rendered as outlines (vector paths) or as `<text>` elements in SVGs.
 
             Rendering text elements as outlines guarantees that the text looks exactly the same in the SVG as it does in the browser/inside Figma.
-
 
             Exporting as `<text>` allows text to be selectable inside SVGs and generally makes the SVG easier to read. However, this relies on the browser's rendering engine which can vary between browsers and/or operating systems. As such, visual accuracy is not guaranteed as the result could look different than in Figma.
           schema:
@@ -417,13 +384,8 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - files:read
-      description: >-
-        Returns download links for all images present in image fills in a
-        document. Image fills are how Figma represents any user supplied images.
-        When you drag an image into Figma, we create a rectangle with a single
-        fill that represents the image, and the user is able to transform the
-        rectangle (and properties on the fill) as they wish.
-
+      description: |-
+        Returns download links for all images present in image fills in a document. Image fills are how Figma represents any user supplied images. When you drag an image into Figma, we create a rectangle with a single fill that represents the image, and the user is able to transform the rectangle (and properties on the fill) as they wish.
 
         This endpoint returns a mapping from image references to the URLs at which the images may be download. Image URLs will expire after no more than 14 days. Image references are located in the output of the GET files endpoint under the `imageRef` attribute in a `Paint`.
       operationId: getImageFills
@@ -1273,9 +1235,8 @@ paths:
                       $ref: "#/components/schemas/WebhookPingPayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1303,9 +1264,8 @@ paths:
                       $ref: "#/components/schemas/WebhookFileUpdatePayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1336,9 +1296,8 @@ paths:
                       $ref: "#/components/schemas/WebhookFileVersionUpdatePayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1367,9 +1326,8 @@ paths:
                       $ref: "#/components/schemas/WebhookFileDeletePayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1386,11 +1344,8 @@ paths:
                 - OAuth2:
                     - webhooks:write
               requestBody:
-                description: >-
-                  This is useful for workflow integrations. This webhook could
-                  integrate with Slack, Asana or Jira, notifying designers to
-                  modify their assets when new components are published.
-
+                description: |-
+                  This is useful for workflow integrations. This webhook could integrate with Slack, Asana or Jira, notifying designers to modify their assets when new components are published.
 
                   Note: when a library is published, a separate `LIBRARY_PUBLISH` event will be triggered for each type of library asset (components, styles, and variables) that has changes.
                 required: true
@@ -1400,9 +1355,8 @@ paths:
                       $ref: "#/components/schemas/WebhookLibraryPublishPayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1429,9 +1383,8 @@ paths:
                       $ref: "#/components/schemas/WebhookFileCommentPayload"
               responses:
                 "200":
-                  description: >-
-                    Your server implementation should return this HTTP status
-                    code
+                  description: |-
+                    Your server implementation should return this HTTP status code
                                         if the data was received successfully
                 "400":
                   description: If your server returns a non-200 status code, or takes too long,
@@ -1697,13 +1650,8 @@ paths:
       summary: Get payments
       security:
         - PersonalAccessToken: []
-      description: >-
-        There are two methods to query for a user's payment information on a
-        plugin, widget, or Community file. The first method, using plugin
-        payment tokens, is typically used when making queries from a plugin's or
-        widget's code. The second method, providing a user ID and resource ID,
-        is typically used when making queries from anywhere else.
-
+      description: |-
+        There are two methods to query for a user's payment information on a plugin, widget, or Community file. The first method, using plugin payment tokens, is typically used when making queries from a plugin's or widget's code. The second method, providing a user ID and resource ID, is typically used when making queries from anywhere else.
 
         Note that you can only query for resources that you own. In most cases, this means that you can only query resources that you originally created.
       operationId: getPayments
@@ -1819,23 +1767,17 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - file_variables:read
-      description: >-
+      description: |-
         **This API is available to full members of Enterprise orgs.**
-
 
         The `GET /v1/files/:file_key/variables/published` endpoint returns the variables that are published from the given file.
 
-
         The response for this endpoint contains some key differences compared to the `GET /v1/files/:file_key/variables/local` endpoint:
 
-
         - Each variable and variable collection contains a `subscribed_id`.
-
         - Modes are omitted for published variable collections
 
-
         Published variables have two ids: an id that is assigned in the file where it is created (`id`), and an id that is used by subscribing files (`subscribed_id`). The `id` and `key` are stable over the lifetime of the variable. The `subscribed_id` changes every time the variable is modified and published. The same is true for variable collections.
-
 
         The `updatedAt` fields are ISO 8601 timestamps that indicate the last time that a change to a variable was published. For variable collections, this timestamp will change any time a variable in the collection is changed.
       operationId: getPublishedVariables
@@ -1869,19 +1811,14 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - file_variables:write
-      description: >-
-        **This API is available to full members of Enterprise orgs with Editor
-        seats.**
-
+      description: |-
+        **This API is available to full members of Enterprise orgs with Editor seats.**
 
         The `POST /v1/files/:file_key/variables` endpoint lets you bulk create, update, and delete variables and variable collections.
 
-
         The request body supports the following 4 top-level arrays. Changes from these arrays will be applied in the below order, and within each array, by array order.
 
-
         - **variableCollections**: For creating, updating, and deleting variable collections
-
         - **variableModes**: For creating, updating, and deleting modes within variable collections
           - Each collection can have a maximum of 40 modes
           - Mode names cannot be longer than 40 characters
@@ -1893,22 +1830,15 @@ paths:
 
         Temporary ids can be used to reference an object later in the same POST request body. They can be used at create time in the `id` property of variable collections, modes, variables, and in the `initialModeId` property of variable collections. They are scoped to a single request body, and must be unique within the body. The mapping of temporary ids to real ids is returned in the response.
 
-
         This endpoint has the following key behaviors:
 
-
         - The request body must be 4MB or less.
-
         - Must include an `action` property for collections, modes, and variables to tell the API whether to create, update, or delete the object.
-
         - When creating a collection, mode, or variable, you can include a temporary `id` that can be referenced in dependent objects in the same request. For example, you can create a new collection with the id `"my_new_collection"`. You can then set `variableCollectionId` to `"my_new_collection"` in new modes or variables. Temporary ids must be unique in the request body.
-
         - New collections always come with one mode. You can reference this mode by setting `initialModeId` to a temporary id in the request body. This is useful if you want to set values for variables in the mode in the `variableModeValues` array.
           - The `tempIdToRealId` array returns a mapping of the temporary ids in the request, to the real ids of the newly created objects.
         - When adding new modes or variables, default variable values will be applied, consistent with what happens in the UI.
-
         - Everything to be created, updated, and deleted in the request body is treated as one atomic operation. If there is any validation failure, you will get a 400 status code response, and no changes will be persisted.
-
         - You will not be able to update remote variables or variable collections. You can only update variables in the file where they were originally created.
       operationId: postVariables
       parameters:
@@ -2015,19 +1945,14 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - file_dev_resources:write
-      description: >-
+      description: |-
         Bulk create dev resources across multiple files.
-
         Dev resources that are successfully created will show up in the links_created array in the response.
-
 
         If there are any dev resources that cannot be created, you may still get a 200 response. These resources will show up in the errors array. Some reasons a dev resource cannot be created include:
 
-
         - Resource points to a `file_key` that cannot be found.
-
         - The node already has the maximum of 10 dev resources.
-
         - Another dev resource for the node has the same url.
       operationId: postDevResources
       requestBody:
@@ -2084,12 +2009,10 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - file_dev_resources:write
-      description: >-
+      description: |-
         Bulk update dev resources across multiple files.
 
-
         Ids for dev resources that are successfully updated will show up in the `links_updated` array in the response.
-
 
         If there are any dev resources that cannot be updated, you may still get a 200 response. These resources will show up in the `errors` array.
       operationId: putDevResources
@@ -2562,27 +2485,19 @@ components:
             `geometry=paths` is passed.
         layoutAlign:
           type: string
-          description: >-
+          description: |-
             
             Determines if the layer should stretch along the parent's counter axis. This property is only provided for direct children of auto-layout frames.
 
-
             - `INHERIT`
-
             - `STRETCH`
-
 
             In previous versions of auto layout, determined how the layer is aligned inside an auto-layout frame. This property is only provided for direct children of auto-layout frames.
 
-
             - `MIN`
-
             - `CENTER`
-
             - `MAX`
-
             - `STRETCH`
-
 
             In horizontal auto-layout frames, "MIN" and "MAX" correspond to "TOP" and "BOTTOM". In vertical auto-layout frames, "MIN" and "MAX" correspond to "LEFT" and "RIGHT".
           enum:
@@ -2631,14 +2546,10 @@ components:
           default: 0
         layoutSizingHorizontal:
           type: string
-          description: >-
-            The horizontal sizing setting on this auto-layout frame or frame
-            child.
-
+          description: |-
+            The horizontal sizing setting on this auto-layout frame or frame child.
             - `FIXED`
-
             - `HUG`: only valid on auto-layout frames and text nodes
-
             - `FILL`: only valid on auto-layout frame children
           enum:
             - FIXED
@@ -2646,14 +2557,10 @@ components:
             - FILL
         layoutSizingVertical:
           type: string
-          description: >-
-            The vertical sizing setting on this auto-layout frame or frame
-            child.
-
+          description: |-
+            The vertical sizing setting on this auto-layout frame or frame child.
             - `FIXED`
-
             - `HUG`: only valid on auto-layout frames and text nodes
-
             - `FILL`: only valid on auto-layout frame children
           enum:
             - FIXED
@@ -2935,10 +2842,8 @@ components:
           type: array
           items:
             type: number
-          description: >-
-            An array of floating point numbers describing the pattern of dash
-            length and gap lengths that the vector stroke will use when drawn.
-
+          description: |-
+            An array of floating point numbers describing the pattern of dash length and gap lengths that the vector stroke will use when drawn.
 
             For example a value of [1, 2] indicates that the stroke will be drawn with a dash of length 1 followed by a gap of length 2, repeated.
     IndividualStrokesTrait:
@@ -2967,10 +2872,8 @@ components:
             type: number
           minItems: 4
           maxItems: 4
-          description: >-
-            Array of length 4 of the radius of each corner of the frame,
-            starting in the top left and proceeding clockwise.
-
+          description: |-
+            Array of length 4 of the radius of each corner of the frame, starting in the top left and proceeding clockwise.
 
             Values are given in the order top-left, top-right, bottom-right, bottom-left.
     HasEffectsTrait:
@@ -2993,15 +2896,11 @@ components:
           default: false
         maskType:
           type: string
-          description: >-
-            If this layer is a mask, this property describes the operation used
-            to mask the layer's siblings. The value may be one of the following:
-
+          description: |-
+            If this layer is a mask, this property describes the operation used to mask the layer's siblings. The value may be one of the following:
 
             - ALPHA: the mask node's alpha channel will be used to determine the opacity of each pixel in the masked result.
-
             - VECTOR: if the mask node has visible fill paints, every pixel inside the node's fill regions will be fully visible in the masked result. If the mask has visible stroke paints, every pixel inside the node's stroke regions will be fully visible in the masked result.
-
             - LUMINANCE: the luminance value of each pixel of the mask node will be used to determine the opacity of that pixel in the masked result.
           enum:
             - ALPHA
@@ -3057,18 +2956,11 @@ components:
               - NONE
               - ORDERED
               - UNORDERED
-          description: >-
-            An array with the same number of elements as lines in the text node,
-            where lines are delimited by newline or paragraph separator
-            characters. Each element in the array corresponds to the list type
-            of a specific line. List types are represented as string enums with
-            one of these possible values:
-
+          description: |-
+            An array with the same number of elements as lines in the text node, where lines are delimited by newline or paragraph separator characters. Each element in the array corresponds to the list type of a specific line. List types are represented as string enums with one of these possible values:
 
             - `NONE`: Not a list item.
-
             - `ORDERED`: Text is an ordered list (numbered).
-
             - `UNORDERED`: Text is an unordered list (bulleted).
         lineIndentations:
           type: array
@@ -4006,46 +3898,30 @@ components:
         minItems: 3
       maxItems: 2
       minItems: 2
-      description: >-
-        A transformation matrix is standard way in computer graphics to
-        represent translation and rotation. These are the top two rows of a 3x3
-        matrix. The bottom row of the matrix is assumed to be [0, 0, 1]. This is
-        known as an affine transform and is enough to represent translation,
-        rotation, and skew.
-
+      description: |-
+        A transformation matrix is standard way in computer graphics to represent translation and rotation. These are the top two rows of a 3x3 matrix. The bottom row of the matrix is assumed to be [0, 0, 1]. This is known as an affine transform and is enough to represent translation, rotation, and skew.
 
         The identity transform is [[1, 0, 0], [0, 1, 0]].
 
-
         A translation matrix will typically look like:
 
-
         ```
-
         [[1, 0, tx],
           [0, 1, ty]]
         ```
 
-
         and a rotation matrix will typically look like:
 
-
         ```
-
         [[cos(angle), sin(angle), 0],
           [-sin(angle), cos(angle), 0]]
         ```
 
-
         Another way to think about this transform is as three vectors:
 
-
         - The x axis (t[0][0], t[1][0])
-
         - The y axis (t[0][1], t[1][1])
-
         - The translation offset (t[0][2], t[1][2])
-
 
         The most common usage of the Transform matrix is the `relativeTransform property`. This particular usage of the matrix has a few additional restrictions. The translation offset can take on any value but we do enforce that the axis vectors are unit vectors (i.e. have length 1). The axes are not required to be at 90° angles to each other.
     ImageFilters:
@@ -4216,18 +4092,13 @@ components:
       properties:
         vertical:
           type: string
-          description: >-
+          description: |-
             Vertical constraint (relative to containing frame) as an enum:
 
-
             - `TOP`: Node is laid out relative to top of the containing frame
-
             - `BOTTOM`: Node is laid out relative to bottom of the containing frame
-
             - `CENTER`: Node is vertically centered relative to containing frame
-
             - `TOP_BOTTOM`: Both top and bottom of node are constrained relative to containing frame (node stretches with frame)
-
             - `SCALE`: Node scales vertically with containing frame
           enum:
             - TOP
@@ -4237,18 +4108,13 @@ components:
             - SCALE
         horizontal:
           type: string
-          description: >-
+          description: |-
             Horizontal constraint (relative to containing frame) as an enum:
 
-
             - `LEFT`: Node is laid out relative to left of the containing frame
-
             - `RIGHT`: Node is laid out relative to right of the containing frame
-
             - `CENTER`: Node is horizontally centered relative to containing frame
-
             - `LEFT_RIGHT`: Both left and right of node are constrained relative to containing frame (node stretches with frame)
-
             - `SCALE`: Node scales horizontally with containing frame
           enum:
             - LEFT
@@ -4368,12 +4234,10 @@ components:
           minimum: 0
         spread:
           type: number
-          description: >-
+          description: |-
             The distance by which to expand (or contract) the shadow.
 
-
             For drop shadows, a positive `spread` value creates a shadow larger than the node, whereas a negative value creates a shadow smaller than the node.
-
 
             For inner shadows, a positive `spread` value contracts the shadow. Spread values are only accepted on rectangles and ellipses, or on frames, components, and instances with visible fill paints and `clipsContent` enabled. When left unspecified, the default value is 0.
           default: 0
@@ -4499,18 +4363,13 @@ components:
         - styleType
     EasingType:
       type: string
-      description: >-
+      description: |-
         This type is a string enum with the following possible values
 
-
         - `EASE_IN`: Ease in with an animation curve similar to CSS ease-in.
-
         - `EASE_OUT`: Ease out with an animation curve similar to CSS ease-out.
-
         - `EASE_IN_AND_OUT`: Ease in and then out with an animation curve similar to CSS ease-in-out.
-
         - `LINEAR`: No easing, similar to CSS linear.
-
         - `GENTLE_SPRING`: Gentle spring animation similar to react-spring.
       enum:
         - EASE_IN
@@ -6130,14 +5989,11 @@ components:
       properties:
         type:
           type: string
-          description: >-
-            The current payment status of the user on the resource, as a string
-            enum:
+          description: |-
+            The current payment status of the user on the resource, as a string enum:
               
             - `UNPAID`: user has not paid for the resource
-
             - `PAID`: user has an active purchase on the resource
-
             - `TRIAL`: user is in the trial period for a subscription resource
           enum:
             - UNPAID
@@ -6168,10 +6024,8 @@ components:
         date_of_purchase:
           type: string
           format: date-time
-          description: >-
-            The UTC ISO 8601 timestamp indicating when the user purchased the
-            resource. No value is given if the user has never purchased the
-            resource.
+          description: |-
+            The UTC ISO 8601 timestamp indicating when the user purchased the resource. No value is given if the user has never purchased the resource.
               
             Note that a value will still be returned if the user had purchased the resource, but no longer has active access to it (e.g. purchase refunded, subscription ended).
       required:
@@ -6196,49 +6050,49 @@ components:
         - EFFECT_FLOAT
         - EFFECT_COLOR
         - OPACITY
-      description: >-
-        Scopes allow a variable to be shown/hidden in the variable picker UI for
-        various fields. This declutters the Figma UI if you have a large number
-        of variables. Currently only supported on `FLOAT` and `COLOR` variables.
+        - FONT_FAMILY
+        - FONT_STYLE
+        - FONT_WEIGHT
+        - FONT_SIZE
+        - LINE_HEIGHT
+        - LETTER_SPACING
+        - PARAGRAPH_SPACING
+        - PARAGRAPH_INDENT
+      description: |-
+        Scopes allow a variable to be shown or hidden in the variable picker for various fields. This declutters the Figma UI if you have a large number of variables. Variable scopes are currently supported on `FLOAT`, `STRING`, and `COLOR` variables.
 
+        `ALL_SCOPES` is a special scope that means that the variable will be shown in the variable picker for all variable fields. If `ALL_SCOPES` is set, no additional scopes can be set.
 
-        `ALL_SCOPES` is a special scope that means that the variable will be shown in the picker UI for all current and any future fields. If `ALL_SCOPES` is set, no additional scopes can be set.
-
-
-        Likewise, `ALL_FILLS` is a special scope that means that the variable will be shown in the picker UI for all current and any future color fill fields. If `ALL_FILLS` is set, no additional fill scopes can be set.
-
+        `ALL_FILLS` is a special scope that means that the variable will be shown in the variable picker for all fill fields. If `ALL_FILLS` is set, no additional fill scopes can be set.
 
         Valid scopes for `FLOAT` variables:
-
         - `ALL_SCOPES`
-
         - `TEXT_CONTENT`
-
         - `WIDTH_HEIGHT`
-
         - `GAP`
-
         - `STROKE_FLOAT`
-
         - `EFFECT_FLOAT`
-
         - `OPACITY`
+        - `FONT_WEIGHT`
+        - `FONT_SIZE`
+        - `LINE_HEIGHT`
+        - `LETTER_SPACING`
+        - `PARAGRAPH_SPACING`
+        - `PARAGRAPH_INDENT`
 
+        Valid scopes for `STRING` variables:
+        - `ALL_SCOPES`
+        - `TEXT_CONTENT`
+        - `FONT_FAMILY`
+        - `FONT_STYLE`
 
         Valid scopes for `COLOR` variables:
-
         - `ALL_SCOPES`
-
         - `ALL_FILLS`
-
         - `FRAME_FILL`
-
         - `SHAPE_FILL`
-
         - `TEXT_FILL`
-
         - `STROKE_COLOR`
-
         - `EFFECT_COLOR`
     VariableCodeSyntax:
       type: object
@@ -6352,19 +6206,14 @@ components:
           description: The description of this variable.
         hiddenFromPublishing:
           type: boolean
-          description: >-
-            Whether this variable is hidden when publishing the current file as
-            a library.
-
+          description: |-
+            Whether this variable is hidden when publishing the current file as a library.
 
             If the parent `VariableCollection` is marked as `hiddenFromPublishing`, then this variable will also be hidden from publishing via the UI. `hiddenFromPublishing` is independently toggled for a variable and collection. However, both must be true for a given variable to be publishable.
         scopes:
           type: array
-          description: >-
-            An array of scopes in the UI where this variable is shown. Setting
-            this property will show/hide this variable in the variable picker UI
-            for different fields.
-
+          description: |-
+            An array of scopes in the UI where this variable is shown. Setting this property will show/hide this variable in the variable picker UI for different fields.
 
             Setting scopes for a variable does not prevent that variable from being bound in other scopes (for example, via the Plugin API). This only limits the variables that are shown in pickers within the Figma UI.
           items:
@@ -6404,10 +6253,8 @@ components:
         updatedAt:
           type: string
           format: date-time
-          description: >-
-            The UTC ISO 8601 time at which the variable collection was last
-            updated.
-
+          description: |-
+            The UTC ISO 8601 time at which the variable collection was last updated.
 
             This timestamp will change any time a variable in the collection is changed.
       required:
