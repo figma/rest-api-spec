@@ -3348,16 +3348,15 @@ export type PaymentInformation = {
 }
 
 /**
- * Scopes allow a variable to be shown/hidden in the variable picker UI for various fields. This
- * declutters the Figma UI if you have a large number of variables. Currently only supported on
- * `FLOAT` and `COLOR` variables.
+ * Scopes allow a variable to be shown or hidden in the variable picker for various fields. This
+ * declutters the Figma UI if you have a large number of variables. Variable scopes are currently
+ * supported on `FLOAT`, `STRING`, and `COLOR` variables.
  *
- * `ALL_SCOPES` is a special scope that means that the variable will be shown in the picker UI for
- * all current and any future fields. If `ALL_SCOPES` is set, no additional scopes can be set.
+ * `ALL_SCOPES` is a special scope that means that the variable will be shown in the variable picker
+ * for all variable fields. If `ALL_SCOPES` is set, no additional scopes can be set.
  *
- * Likewise, `ALL_FILLS` is a special scope that means that the variable will be shown in the picker
- * UI for all current and any future color fill fields. If `ALL_FILLS` is set, no additional fill
- * scopes can be set.
+ * `ALL_FILLS` is a special scope that means that the variable will be shown in the variable picker
+ * for all fill fields. If `ALL_FILLS` is set, no additional fill scopes can be set.
  *
  * Valid scopes for `FLOAT` variables:
  *
@@ -3368,6 +3367,19 @@ export type PaymentInformation = {
  * - `STROKE_FLOAT`
  * - `EFFECT_FLOAT`
  * - `OPACITY`
+ * - `FONT_WEIGHT`
+ * - `FONT_SIZE`
+ * - `LINE_HEIGHT`
+ * - `LETTER_SPACING`
+ * - `PARAGRAPH_SPACING`
+ * - `PARAGRAPH_INDENT`
+ *
+ * Valid scopes for `STRING` variables:
+ *
+ * - `ALL_SCOPES`
+ * - `TEXT_CONTENT`
+ * - `FONT_FAMILY`
+ * - `FONT_STYLE`
  *
  * Valid scopes for `COLOR` variables:
  *
@@ -3394,6 +3406,14 @@ export type VariableScope =
   | 'EFFECT_FLOAT'
   | 'EFFECT_COLOR'
   | 'OPACITY'
+  | 'FONT_FAMILY'
+  | 'FONT_STYLE'
+  | 'FONT_WEIGHT'
+  | 'FONT_SIZE'
+  | 'LINE_HEIGHT'
+  | 'LETTER_SPACING'
+  | 'PARAGRAPH_SPACING'
+  | 'PARAGRAPH_INDENT'
 
 /**
  * An object containing platform-specific code syntax definitions for a variable. All platforms are
