@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.14.0
+  version: 0.15.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -2943,6 +2943,10 @@ components:
             type style. If the array is shorter than the total number of
             characters, the characters beyond the array's length also use the
             default style.
+        layoutVersion:
+          type: number
+          description: Internal property, preserved for backward compatibility. Avoid
+            using this value.
         styleOverrideTable:
           type: object
           additionalProperties:
@@ -4364,19 +4368,35 @@ components:
     EasingType:
       type: string
       description: |-
-        This type is a string enum with the following possible values
+        This type is a string enum with the following possible values:
 
         - `EASE_IN`: Ease in with an animation curve similar to CSS ease-in.
         - `EASE_OUT`: Ease out with an animation curve similar to CSS ease-out.
         - `EASE_IN_AND_OUT`: Ease in and then out with an animation curve similar to CSS ease-in-out.
         - `LINEAR`: No easing, similar to CSS linear.
-        - `GENTLE_SPRING`: Gentle spring animation similar to react-spring.
+        - `EASE_IN_BACK`: Ease in with an animation curve that moves past the initial keyframe's value and then accelerates as it reaches the end.
+        - `EASE_OUT_BACK`: Ease out with an animation curve that starts fast, then slows and goes past the ending keyframe's value.
+        - `EASE_IN_AND_OUT_BACK`: Ease in and then out with an animation curve that overshoots the initial keyframe's value, then accelerates quickly before it slows and overshoots the ending keyframes value.
+        - `CUSTOM_CUBIC_BEZIER`: User-defined cubic bezier curve.
+        - `GENTLE`: Gentle animation similar to react-spring.
+        - `QUICK`: Quick spring animation, great for toasts and notifications.
+        - `BOUNCY`: Bouncy spring, for delightful animations like a heart bounce.
+        - `SLOW`: Slow spring, useful as a steady, natural way to scale up fullscreen content.
+        - `CUSTOM_SPRING`: User-defined spring animation.
       enum:
         - EASE_IN
         - EASE_OUT
         - EASE_IN_AND_OUT
         - LINEAR
-        - GENTLE_SPRING
+        - EASE_IN_BACK
+        - EASE_OUT_BACK
+        - EASE_IN_AND_OUT_BACK
+        - CUSTOM_CUBIC_BEZIER
+        - GENTLE
+        - QUICK
+        - BOUNCY
+        - SLOW
+        - CUSTOM_SPRING
     StrokeWeights:
       type: object
       description: Individual stroke weights
