@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.15.0
+  version: 0.16.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -3008,13 +3008,19 @@ components:
       properties:
         devStatus:
           type: object
-          description: Whether the node is marked ready for development.
+          description: Represents whether or not a node has a particular handoff (or dev)
+            status applied to it.
           properties:
             type:
               type: string
               enum:
                 - NONE
                 - READY_FOR_DEV
+                - COMPLETED
+            description:
+              type: string
+              description: An optional field where the designer can add more information about
+                the design and what has changed.
           required:
             - type
     FrameTraits:
