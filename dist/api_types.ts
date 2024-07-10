@@ -665,9 +665,17 @@ export type TransitionSourceTrait = {
 
 export type DevStatusTrait = {
   /**
-   * Whether the node is marked ready for development.
+   * Represents whether or not a node has a particular handoff (or dev) status applied to it.
    */
-  devStatus?: { type: 'NONE' | 'READY_FOR_DEV' }
+  devStatus?: {
+    type: 'NONE' | 'READY_FOR_DEV' | 'COMPLETED'
+
+    /**
+     * An optional field where the designer can add more information about the design and what has
+     * changed.
+     */
+    description?: string
+  }
 }
 
 export type FrameTraits = IsLayerTrait &
