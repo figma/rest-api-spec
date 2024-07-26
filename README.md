@@ -26,7 +26,7 @@ npm install --save-dev @figma/rest-api-spec
 Then import the types that you need:
 
 ```ts
-import { GetFileResponse } from '@figma/rest-api-spec'
+import { type GetFileResponse } from '@figma/rest-api-spec'
 
 // Many popular HTTP clients let you annotate response types
 const result = await axios.get<GetFileResponse>(url);
