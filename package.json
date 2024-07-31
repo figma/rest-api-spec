@@ -3,6 +3,17 @@
   "version": "0.16.0",
   "description": "Typings for the Figma REST API",
   "main": "dist/api_types.ts",
+  "exports": {
+    ".": {
+      "default": "./dist/api_types.ts"
+    },
+    "./openapi.json": {
+      "default": "./openapi/openapi.json"
+    },
+    "./openapi.yaml": {
+      "default": "./openapi/openapi.yaml"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/figma/rest-api-spec.git"
