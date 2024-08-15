@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.16.0
+  version: 0.17.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -4649,6 +4649,26 @@ components:
               $ref: "#/components/schemas/VariableAlias"
             paragraphIndent:
               $ref: "#/components/schemas/VariableAlias"
+        isOverrideOverTextStyle:
+          type: boolean
+          description: " Whether or not this style has overrides over a text style. The
+            possible fields to override are semanticWeight, semanticItalic,
+            hyperlink, and textDecoration. If this is true, then those fields
+            are overrides if present."
+        semanticWeight:
+          type: string
+          description: Indicates how the font weight was overridden when there is a text
+            style override.
+          enum:
+            - BOLD
+            - NORMAL
+        semanticItalic:
+          type: string
+          description: Indicates how the font style was overridden when there is a text
+            style override.
+          enum:
+            - ITALIC
+            - NORMAL
     ComponentPropertyType:
       type: string
       description: Component property type.
@@ -5014,7 +5034,9 @@ components:
           type: string
           description: The content of the comment
         order_id:
-          type: string
+          type:
+            - string
+            - "null"
           description: Only set for top level comments. The number displayed with the
             comment in the UI
         reactions:
@@ -5030,6 +5052,7 @@ components:
         - created_at
         - message
         - reactions
+        - order_id
     Reaction:
       type: object
       description: A reaction left by a user.

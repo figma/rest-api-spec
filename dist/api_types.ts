@@ -2022,6 +2022,23 @@ export type TypeStyle = {
 
     paragraphIndent?: VariableAlias
   }
+
+  /**
+   * Whether or not this style has overrides over a text style. The possible fields to override are
+   * semanticWeight, semanticItalic, hyperlink, and textDecoration. If this is true, then those fields
+   * are overrides if present.
+   */
+  isOverrideOverTextStyle?: boolean
+
+  /**
+   * Indicates how the font weight was overridden when there is a text style override.
+   */
+  semanticWeight?: 'BOLD' | 'NORMAL'
+
+  /**
+   * Indicates how the font style was overridden when there is a text style override.
+   */
+  semanticItalic?: 'ITALIC' | 'NORMAL'
 }
 
 /**
@@ -2392,7 +2409,7 @@ export type Comment = {
   /**
    * Only set for top level comments. The number displayed with the comment in the UI
    */
-  order_id?: string
+  order_id: string | null
 
   /**
    * An array of reactions to the comment
