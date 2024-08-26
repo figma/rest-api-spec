@@ -2995,15 +2995,18 @@ components:
         transitionNodeID:
           type: string
           description: Node ID of node to transition to in prototyping. Deprecated in favor of `interactions`.
+          deprecated: true
         transitionDuration:
           type: number
           description: The duration of the prototyping transition on this node (in
             milliseconds). This will override the default transition duration on
             the prototype, for this node. Deprecated in favor of `interactions`.
+          deprecated: true
         transitionEasing:
           $ref: "#/components/schemas/EasingType"
-          description: The easing curve used in the prototyping transition on this node. Deprecated
-            in favor of `interactions`.
+          description: The easing curve used in the prototyping transition on this node. 
+            Deprecated in favor of `interactions`.
+          deprecated: true
         interactions:
           type: array
           items:
