@@ -2994,15 +2994,16 @@ components:
       properties:
         transitionNodeID:
           type: string
-          description: Node ID of node to transition to in prototyping
+          description: Node ID of node to transition to in prototyping. Deprecated in favor of `interactions`.
         transitionDuration:
           type: number
           description: The duration of the prototyping transition on this node (in
             milliseconds). This will override the default transition duration on
-            the prototype, for this node.
+            the prototype, for this node. Deprecated in favor of `interactions`.
         transitionEasing:
           $ref: "#/components/schemas/EasingType"
-          description: The easing curve used in the prototyping transition on this node.
+          description: The easing curve used in the prototyping transition on this node. Deprecated
+            in favor of `interactions`.
         interactions:
           type: array
           items:
@@ -6220,6 +6221,9 @@ components:
           - type
       - $ref: "#/components/schemas/OpenURLAction"
       - $ref: "#/components/schemas/UpdateMediaRuntimeAction"
+      - $ref: "#/components/schemas/SetVariableAction"
+      - $ref: "#/components/schemas/SetVariableModeAction"
+      - $ref: "#/components/schemas/ConditionalAction"
       - $ref: "#/components/schemas/NodeAction"
     OpenURLAction:
       type: object
@@ -6391,6 +6395,141 @@ components:
         - OVERLAY
         - SCROLL_TO
         - CHANGE_TO
+    SetVariableAction:
+      type: object
+      description: An action that sets a variable to a specific value.
+      properties:
+        type:
+          type: string
+          enum:
+            - SET_VARIABLE
+        variableId:
+          type: 
+            - string
+            - "null"
+        variableValue:
+          $ref: "#/components/schemas/VariableData"
+      required:
+        - type
+        - variableId
+    SetVariableModeAction:
+      type: object
+      description: An action that sets a variable to a specific mode.
+      properties:
+        type:
+          type: string
+          enum:
+            - SET_VARIABLE_MODE
+        variableCollectionId: 
+          type:
+            - string
+            - "null"
+        variableModeId:
+          type:
+            - string
+            - "null"
+      required:
+        - type
+        - variableId
+        - variableMode
+    ConditionalAction:
+      type: object
+      description: This action checks if a condition is met before performing certain actions by using an if/else conditional statement.
+      properties:
+        type:
+          type: string
+          enum:
+            - CONDITIONAL
+        conditionalBlocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConditionalBlock"
+      required:
+        - type
+        - conditionalBlocks
+    VariableData:
+      type: object
+      description: A value to set a variable to during prototyping.
+      properties:
+        type:
+            $ref: "#/components/schemas/VariableDataType"
+        resolvedType:
+            $ref: "#/components/schemas/VariableResolvedDataType"
+        value:
+          # TODO (jkatz): should this just be a VariableValue, and we add Expression to that type?
+          oneOf:
+            - type: boolean
+            - type: number
+            - type: string
+            - $ref: "#/components/schemas/RGB"
+            - $ref: "#/components/schemas/RGBA"
+            - $ref: "#/components/schemas/VariableAlias"
+            - $ref: "#/components/schemas/Expression"
+    VariableDataType:
+      type: string
+      description: Defines the types of data a VariableData object can hold
+      enum:
+        - BOOLEAN
+        - FLOAT
+        - STRING
+        - COLOR
+        - VARIABLE_ALIAS
+        - EXPRESSION
+    VariableResolvedDataType:
+      type: string
+      description: Defines the types of data a VariableData object can eventually equal
+      enum:
+        - BOOLEAN
+        - FLOAT
+        - STRING
+        - COLOR
+    Expression:
+      type: object
+      description: Defines the [Expression](https://help.figma.com/hc/en-us/articles/15253194385943) object, 
+        which contains a list of `VariableData` objects strung together by operators (`ExpressionFunction`). 
+        This is essentially just a mathematical statement.
+      properties:
+        expressionFunction:
+          $ref: "#/components/schemas/ExpressionFunction"
+        expressionArguments:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariableData"
+      required:
+        - expressionFunction
+        - expressionArguments
+    ExpressionFunction:
+      type: string
+      description: Defines the list of operators available to use in an Expression.
+      enum:
+        - 'ADDITION'
+        - 'SUBTRACTION'
+        - 'MULTIPLICATION'
+        - 'DIVISION'
+        - 'EQUALS'
+        - 'NOT_EQUAL'
+        - 'LESS_THAN'
+        - 'LESS_THAN_OR_EQUAL'
+        - 'GREATER_THAN'
+        - 'GREATER_THAN_OR_EQUAL'
+        - 'AND'
+        - 'OR'
+        - 'VAR_MODE_LOOKUP'
+        - 'NEGATE'
+        - 'NOT'
+    ConditionalBlock:
+      type: object
+      description: Either the if or else conditional blocks. The if block contains a condition to check. 
+        If that condition is met then it will run those list of actions, else it will run the actions in the else block.
+      properties:
+        condition:
+          $ref: "#/components/schemas/VariableData"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Action"
+      required:
+        - actions
     VariableScope:
       type: string
       enum:
