@@ -3003,6 +3003,12 @@ components:
         transitionEasing:
           $ref: "#/components/schemas/EasingType"
           description: The easing curve used in the prototyping transition on this node.
+        interactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Interaction"
+          description: An array of the interactions on this node, each containing a trigger
+            and one or more actions.
     DevStatusTrait:
       type: object
       properties:
@@ -6082,6 +6088,309 @@ components:
         - resource_id
         - resource_type
         - payment_status
+    Interaction:
+      type: object
+      description: An interaction in the Figma viewer, containing a trigger and one or more actions.
+      properties:
+        trigger:
+          oneOf:
+            - $ref: "#/components/schemas/Trigger"
+            - type: "null"
+          description: The user event that initiates the interaction.
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Action"
+          description: The actions that are performed when the trigger is activated.
+      required:
+        - trigger
+    Trigger:
+      type: object
+      description: |-
+        The `"ON_HOVER"` and `"ON_PRESS"` trigger types revert the navigation when the trigger is finished. 
+        On the other hand, `"MOUSE_ENTER"`, `"MOUSE_LEAVE"`, `"MOUSE_UP"` and `"MOUSE_DOWN"` are permanent, one-way navigation.
+
+        The `delay` parameter requires the trigger to be held for a certain duration of time before the action occurs.
+
+        Both `timeout` and `delay` are stored in milliseconds.
+
+        The `"ON_MEDIA_HIT"` and `"ON_MEDIA_END"` trigger types can only trigger from a video. 
+        They fire when a video reaches a certain time or ends. The `timestamp` parameter is stored in seconds.
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - ON_CLICK
+                - ON_HOVER
+                - ON_PRESS
+                - ON_DRAG
+          required:
+            - type
+        - $ref: "#/components/schemas/AfterTimeoutTrigger"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - MOUSE_ENTER
+                - MOUSE_LEAVE
+                - MOUSE_UP
+                - MOUSE_DOWN
+            delay:
+              type: number
+            deprecatedVersion:
+              description: |-
+                Whether this is a [deprecated version](https://help.figma.com/hc/en-us/articles/360040035834-Prototype-triggers#h_01HHN04REHJNP168R26P1CMP0A) of the trigger that was left unchanged for backwards compatibility.
+                If not present, the trigger is the latest version.
+              type: boolean
+          required:
+            - type
+            - delay
+        - $ref: "#/components/schemas/OnKeyDownTrigger"
+        - $ref: "#/components/schemas/OnMediaHitTrigger"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - ON_MEDIA_END
+          required:
+            - type
+    AfterTimeoutTrigger:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - AFTER_TIMEOUT
+        timeout:
+          type: number
+      required:
+        - type
+        - timeout
+    OnKeyDownTrigger:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - ON_KEY_DOWN
+        device:
+          type: string
+          enum:
+            - KEYBOARD
+            - XBOX_ONE
+            - PS4
+            - SWITCH_PRO
+            - UNKNOWN_CONTROLLER
+        keyCodes:
+          type: array
+          items:
+            type: number
+      required:
+        - type
+        - device
+        - keyCodes
+    OnMediaHitTrigger:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - ON_MEDIA_HIT
+        mediaHitTime:
+          type: number
+      required:
+        - type
+        - mediaHitTime
+    Action:
+      type: object
+      description: An action that is performed when a trigger is activated.
+      oneOf:
+      - type: object
+        properties:
+          type:
+            type: string
+            enum:
+              - BACK
+              - CLOSE
+        required:
+          - type
+      - $ref: "#/components/schemas/OpenURLAction"
+      - $ref: "#/components/schemas/UpdateMediaRuntimeAction"
+      - $ref: "#/components/schemas/NodeAction"
+    OpenURLAction:
+      type: object
+      description: An action that opens a URL.
+      properties:
+        type:
+          type: string
+          enum:
+            - URL
+        url:
+          type: string
+      required:
+        - type
+        - url
+    UpdateMediaRuntimeAction:
+      type: object
+      description: An action that affects a video node in the Figma viewer, e.g. to play, pause, or skip.
+      oneOf:
+      - type: object
+        description: |-
+          An action that updates the runtime of a media node by playing, pausing, toggling play/pause, 
+          muting, unmuting, or toggling mute/unmute.
+          
+          The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will 
+          update the media node that contains the action.
+          
+          The `mediaAction` is the action to perform on the media node.
+        properties:
+          type:
+            type: string
+            enum:
+              - UPDATE_MEDIA_RUNTIME
+          destinationId:
+            type: 
+              - string
+              - "null"
+          mediaAction:
+            type: string
+            enum:
+              - PLAY
+              - PAUSE
+              - TOGGLE_PLAY_PAUSE
+              - MUTE
+              - UNMUTE
+              - TOGGLE_MUTE_UNMUTE
+        required:
+          - type
+          - destinationId
+          - mediaAction
+      - type: object
+        description: |-
+          An action that updates the runtime of a media node by skipping forward or backward.
+          
+          The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will 
+          update the media node that contains the action.
+          
+          The `mediaAction` is the action to perform on the media node.
+          
+          The `amountToSkip` is the amount of time to skip in seconds.
+        properties:
+          type:
+            type: string
+            enum:
+              - UPDATE_MEDIA_RUNTIME
+          destinationId:
+            type: 
+              - string
+              - "null"
+          mediaAction:
+            type: string
+            enum:
+              - SKIP_FORWARD
+              - SKIP_BACKWARD
+            amountToSkip:
+              type: number
+        required:
+          - type
+          - mediaAction
+          - amountToSkip
+      - type: object
+        description: |-
+          An action that updates the runtime of a media node by skipping to a specific time.
+          
+          The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will 
+          update the media node that contains the action.
+          
+          The `mediaAction` is the action to perform on the media node.
+          
+          The `newTimestamp` is the new time to skip to in seconds.
+        properties:
+          type:
+            type: string
+            enum:
+              - UPDATE_MEDIA_RUNTIME
+          destinationId:
+            type: 
+              - string
+              - "null"
+          mediaAction:
+            type: string
+            enum:
+              - SKIP_TO
+            newTimestamp:
+              type: number
+        required:
+          - type
+          - mediaAction
+          - newTimestamp
+    NodeAction:
+      type: object
+      description: An action that navigates to a specific node in the Figma viewer.
+      properties:
+        type:
+          type: string
+          enum:
+            - NODE
+        destinationId:
+          type:
+            - string
+            - "null"
+        navigation:
+          $ref: "#/components/schemas/Navigation"
+        transition:
+          oneOf:
+            $ref: "#/components/schemas/Transition"
+            type: "null"
+        preserveScrollPosition:
+          type: boolean
+          description: Whether the scroll offsets of any scrollable elements in the current screen 
+            or overlay are preserved when navigating to the destination. This is applicable only 
+            if the layout of both the current frame and its destination are the same.
+        overlayRelativePosition:
+          $ref: "#/components/schemas/Vector"
+          description: Applicable only when `navigation` is `"OVERLAY"` and the destination is a 
+            frame with `overlayPosition` equal to `"MANUAL"`. This value represents the offset by 
+            which the overlay is opened relative to this node.
+        resetVideoPosition:
+          type: boolean
+          description:  When true, all videos within the destination frame will reset their 
+            memorized playback position to 00:00 before starting to play.
+        resetScrollPosition:
+          type: boolean
+          description: Whether the scroll offsets of any scrollable elements in the current screen 
+            or overlay are reset when navigating to the destination. This is applicable only if the 
+            layout of both the current frame and its destination are the same.
+        resetInteractiveComponents:
+          type: boolean
+          description: Whether the state of any interactive components in the current screen or 
+            overlay are reset when navigating to the destination. This is applicable if there are 
+            interactive components in the destination frame.
+        required:
+          - type
+          - destinationId
+          - navigation
+          - transition
+    Navigation:
+      type: string
+      description: |-
+        The method of navigation. The possible values are:
+        - `"NAVIGATE"`: Replaces the current screen with the destination, also closing all overlays.
+        - `"OVERLAY"`: Opens the destination as an overlay on the current screen.
+        - `"SWAP"`: On an overlay, replaces the current (topmost) overlay with the destination. On a top-level frame, 
+          behaves the same as `"NAVIGATE"` except that no entry is added to the navigation history.
+        - `"SCROLL_TO"`: Scrolls to the destination on the current screen.
+        - `"CHANGE_TO"`: Changes the closest ancestor instance of source node to the specified variant.
+      enum:
+        - NAVIGATE
+        - SWAP
+        - OVERLAY
+        - SCROLL_TO
+        - CHANGE_TO
     VariableScope:
       type: string
       enum:
