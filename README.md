@@ -12,12 +12,15 @@ The OpenAPI (v3.1.0) specification is located in the `openapi/` directory. This 
 
 ### OpenAPI Spec file
 
-The OpenAPI specification is available as a YAML and JSON file in the `openapi/` directory. 
+The OpenAPI specification is available as a YAML and JSON file in the `openapi/` directory.
+
 To use the JSON specification in Node.js or TypeScript apps, install the package:
 
 ```sh
 npm install @figma/rest-api-spec
 ```
+
+#### In ES Modules
 
 In EcmaScript modules, import the JSON file via `createRequire` as shown, as directly importing JSON files in Node is still considered experimental:
 
@@ -25,18 +28,29 @@ In EcmaScript modules, import the JSON file via `createRequire` as shown, as dir
 import { createRequire } from "module";
 
 const require = createRequire(import.meta.url);
-const OpenAPISpec = require("@figma/rest-api-spec/openapi.json");
+const OpenAPISpec = require("@figma/rest-api-spec/openapi");
 
 // You may now use `OpenAPISpec` as a JS object.
 ```
 
+#### In CommonJS
+
 In CommonJS files, you can directly require the JSON file:
 
-
 ```cjs
-const OpenAPISpec = require("@figma/rest-api-spec/openapi.json");
+const OpenAPISpec = require("@figma/rest-api-spec/openapi");
 
 // You may now use `OpenAPISpec` as a JS object.
+```
+
+#### With import attributes
+
+If your JavaScript runtime or bundler supports import attributes, you may open the OpenAPI spec directly as a JS object:
+
+```js
+import OpenAPISpec from "@figma/rest-api-spec/openapi" with { type: "json" };
+
+console.log(typeof OpenAPISpec); // object
 ```
 
 

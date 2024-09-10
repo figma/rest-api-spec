@@ -7,11 +7,8 @@
     ".": {
       "default": "./dist/api_types.ts"
     },
-    "./openapi.json": {
+    "./openapi": {
       "default": "./openapi/openapi.json"
-    },
-    "./openapi.yaml": {
-      "default": "./openapi/openapi.yaml"
     }
   },
   "repository": {
