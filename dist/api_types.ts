@@ -661,6 +661,8 @@ export type TransitionSourceTrait = {
    * The easing curve used in the prototyping transition on this node.
    */
   transitionEasing?: EasingType
+
+  interactions?: Interaction[]
 }
 
 export type DevStatusTrait = {
@@ -2282,6 +2284,372 @@ export type VariableAlias = {
    * endpoint.
    */
   id: string
+}
+
+/**
+ * An interaction in the Figma viewer, containing a trigger and one or more actions.
+ */
+export type Interaction = {
+  /**
+   * The user event that initiates the interaction.
+   */
+  trigger: Trigger | null
+
+  /**
+   * The actions that are performed when the trigger is activated.
+   */
+  actions?: Action[]
+}
+
+/**
+ * The `"ON_HOVER"` and `"ON_PRESS"` trigger types revert the navigation when the trigger is
+ * finished (the result is temporary). `"MOUSE_ENTER"`, `"MOUSE_LEAVE"`, `"MOUSE_UP"` and
+ * `"MOUSE_DOWN"` are permanent, one-way navigation. The `delay` parameter requires the trigger to
+ * be held for a certain duration of time before the action occurs. Both `timeout` and `delay`
+ * values are in milliseconds. The `"ON_MEDIA_HIT"` and `"ON_MEDIA_END"` trigger types can only
+ * trigger from a video. They fire when a video reaches a certain time or ends. The `timestamp`
+ * value is in seconds.
+ */
+export type Trigger =
+  | { type: 'ON_CLICK' | 'ON_HOVER' | 'ON_PRESS' | 'ON_DRAG' }
+  | AfterTimeoutTrigger
+  | {
+      type: 'MOUSE_ENTER' | 'MOUSE_LEAVE' | 'MOUSE_UP' | 'MOUSE_DOWN'
+
+      delay: number
+
+      /**
+       * Whether this is a [deprecated
+       * version](https://help.figma.com/hc/en-us/articles/360040035834-Prototype-triggers#h_01HHN04REHJNP168R26P1CMP0A)
+       * of the trigger that was left unchanged for backwards compatibility. If not present, the trigger
+       * is the latest version.
+       */
+      deprecatedVersion?: boolean
+    }
+  | OnKeyDownTrigger
+  | OnMediaHitTrigger
+  | { type: 'ON_MEDIA_END' }
+
+export type AfterTimeoutTrigger = {
+  type: 'AFTER_TIMEOUT'
+
+  timeout: number
+}
+
+export type OnKeyDownTrigger = {
+  type: 'ON_KEY_DOWN'
+
+  device: 'KEYBOARD' | 'XBOX_ONE' | 'PS4' | 'SWITCH_PRO' | 'UNKNOWN_CONTROLLER'
+
+  keyCodes: number[]
+}
+
+export type OnMediaHitTrigger = {
+  type: 'ON_MEDIA_HIT'
+
+  mediaHitTime: number
+}
+
+/**
+ * An action that is performed when a trigger is activated.
+ */
+export type Action =
+  | { type: 'BACK' | 'CLOSE' }
+  | OpenURLAction
+  | UpdateMediaRuntimeAction
+  | SetVariableAction
+  | SetVariableModeAction
+  | ConditionalAction
+  | NodeAction
+
+/**
+ * An action that opens a URL.
+ */
+export type OpenURLAction = {
+  type: 'URL'
+
+  url: string
+}
+
+/**
+ * An action that affects a video node in the Figma viewer. For example, to play, pause, or skip.
+ */
+export type UpdateMediaRuntimeAction =
+  | {
+      type: 'UPDATE_MEDIA_RUNTIME'
+
+      destinationId: string | null
+
+      mediaAction: 'PLAY' | 'PAUSE' | 'TOGGLE_PLAY_PAUSE' | 'MUTE' | 'UNMUTE' | 'TOGGLE_MUTE_UNMUTE'
+    }
+  | {
+      type: 'UPDATE_MEDIA_RUNTIME'
+
+      destinationId?: string | null
+
+      mediaAction: 'SKIP_FORWARD' | 'SKIP_BACKWARD'
+
+      amountToSkip: number
+    }
+  | {
+      type: 'UPDATE_MEDIA_RUNTIME'
+
+      destinationId?: string | null
+
+      mediaAction: 'SKIP_TO'
+
+      newTimestamp: number
+    }
+
+/**
+ * An action that navigates to a specific node in the Figma viewer.
+ */
+export type NodeAction = {
+  type: 'NODE'
+
+  destinationId: string | null
+
+  navigation: Navigation
+
+  transition: Transition | null
+
+  /**
+   * Whether the scroll offsets of any scrollable elements in the current screen or overlay are
+   * preserved when navigating to the destination. This is applicable only if the layout of both the
+   * current frame and its destination are the same.
+   */
+  preserveScrollPosition?: boolean
+
+  /**
+   * Applicable only when `navigation` is `"OVERLAY"` and the destination is a frame with
+   * `overlayPosition` equal to `"MANUAL"`. This value represents the offset by which the overlay is
+   * opened relative to this node.
+   */
+  overlayRelativePosition?: Vector
+
+  /**
+   * When true, all videos within the destination frame will reset their memorized playback position
+   * to 00:00 before starting to play.
+   */
+  resetVideoPosition?: boolean
+
+  /**
+   * Whether the scroll offsets of any scrollable elements in the current screen or overlay reset when
+   * navigating to the destination. This is applicable only if the layout of both the current frame
+   * and its destination are the same.
+   */
+  resetScrollPosition?: boolean
+
+  /**
+   * Whether the state of any interactive components in the current screen or overlay reset when
+   * navigating to the destination. This is applicable if there are interactive components in the
+   * destination frame.
+   */
+  resetInteractiveComponents?: boolean
+}
+
+/**
+ * The method of navigation. The possible values are:
+ *
+ * - `"NAVIGATE"`: Replaces the current screen with the destination, also closing all overlays.
+ * - `"OVERLAY"`: Opens the destination as an overlay on the current screen.
+ * - `"SWAP"`: On an overlay, replaces the current (topmost) overlay with the destination. On a
+ *   top-level frame, behaves the same as `"NAVIGATE"` except that no entry is added to the
+ *   navigation history.
+ * - `"SCROLL_TO"`: Scrolls to the destination on the current screen.
+ * - `"CHANGE_TO"`: Changes the closest ancestor instance of source node to the specified variant.
+ */
+export type Navigation = 'NAVIGATE' | 'SWAP' | 'OVERLAY' | 'SCROLL_TO' | 'CHANGE_TO'
+
+export type Transition = SimpleTransition | DirectionalTransition
+
+/**
+ * Describes an animation used when navigating in a prototype.
+ */
+export type SimpleTransition = {
+  type: 'DISSOLVE' | 'SMART_ANIMATE' | 'SCROLL_ANIMATE'
+
+  /**
+   * The duration of the transition in milliseconds.
+   */
+  duration: number
+
+  /**
+   * The easing curve of the transition.
+   */
+  easing: Easing
+}
+
+/**
+ * Describes an animation used when navigating in a prototype.
+ */
+export type DirectionalTransition = {
+  type: 'MOVE_IN' | 'MOVE_OUT' | 'PUSH' | 'SLIDE_IN' | 'SLIDE_OUT'
+
+  direction: 'LEFT' | 'RIGHT' | 'TOP' | 'BOTTOM'
+
+  /**
+   * The duration of the transition in milliseconds.
+   */
+  duration: number
+
+  /**
+   * The easing curve of the transition.
+   */
+  easing: EasingType
+
+  /**
+   * When the transition `type` is `"SMART_ANIMATE"` or when `matchLayers` is `true`, then the
+   * transition will be performed using smart animate, which attempts to match corresponding layers an
+   * interpolate other properties during the animation.
+   */
+  matchLayers?: boolean
+}
+
+/**
+ * Describes an easing curve.
+ */
+export type Easing = {
+  /**
+   * The type of easing curve.
+   */
+  type: EasingType
+
+  /**
+   * A cubic bezier curve that defines the easing.
+   */
+  easingFunctionCubicBezier?: {
+    /**
+     * The x component of the first control point.
+     */
+    x1: number
+
+    /**
+     * The y component of the first control point.
+     */
+    y1: number
+
+    /**
+     * The x component of the second control point.
+     */
+    x2: number
+
+    /**
+     * The y component of the second control point.
+     */
+    y2: number
+  }
+
+  /**
+   * A spring function that defines the easing.
+   */
+  easingFunctionSpring?: {
+    mass: number
+
+    stiffness: number
+
+    damping: number
+  }
+}
+
+/**
+ * Sets a variable to a specific value.
+ */
+export type SetVariableAction = {
+  type: 'SET_VARIABLE'
+
+  variableId: string | null
+
+  variableValue?: VariableData
+}
+
+/**
+ * Sets a variable to a specific mode.
+ */
+export type SetVariableModeAction = {
+  type: 'SET_VARIABLE_MODE'
+
+  variableCollectionId?: string | null
+
+  variableModeId?: string | null
+}
+
+/**
+ * Checks if a condition is met before performing certain actions by using an if/else conditional
+ * statement.
+ */
+export type ConditionalAction = {
+  type: 'CONDITIONAL'
+
+  conditionalBlocks: ConditionalBlock[]
+}
+
+/**
+ * A value to set a variable to during prototyping.
+ */
+export type VariableData = {
+  type?: VariableDataType
+
+  resolvedType?: VariableResolvedDataType
+
+  value?: boolean | number | string | RGB | RGBA | VariableAlias | Expression
+}
+
+/**
+ * Defines the types of data a VariableData object can hold
+ */
+export type VariableDataType =
+  | 'BOOLEAN'
+  | 'FLOAT'
+  | 'STRING'
+  | 'COLOR'
+  | 'VARIABLE_ALIAS'
+  | 'EXPRESSION'
+
+/**
+ * Defines the types of data a VariableData object can eventually equal
+ */
+export type VariableResolvedDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR'
+
+/**
+ * Defines the [Expression](https://help.figma.com/hc/en-us/articles/15253194385943) object, which
+ * contains a list of `VariableData` objects strung together by operators (`ExpressionFunction`).
+ */
+export type Expression = {
+  expressionFunction: ExpressionFunction
+
+  expressionArguments: VariableData[]
+}
+
+/**
+ * Defines the list of operators available to use in an Expression.
+ */
+export type ExpressionFunction =
+  | 'ADDITION'
+  | 'SUBTRACTION'
+  | 'MULTIPLICATION'
+  | 'DIVISION'
+  | 'EQUALS'
+  | 'NOT_EQUAL'
+  | 'LESS_THAN'
+  | 'LESS_THAN_OR_EQUAL'
+  | 'GREATER_THAN'
+  | 'GREATER_THAN_OR_EQUAL'
+  | 'AND'
+  | 'OR'
+  | 'VAR_MODE_LOOKUP'
+  | 'NEGATE'
+  | 'NOT'
+
+/**
+ * Either the if or else conditional blocks. The if block contains a condition to check. If that
+ * condition is met then it will run those list of actions, else it will run the actions in the else
+ * block.
+ */
+export type ConditionalBlock = {
+  condition?: VariableData
+
+  actions: Action[]
 }
 
 /**
