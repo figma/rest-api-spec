@@ -2496,7 +2496,7 @@ export type DirectionalTransition = {
   /**
    * The easing curve of the transition.
    */
-  easing: EasingType
+  easing: Easing
 
   /**
    * When the transition `type` is `"SMART_ANIMATE"` or when `matchLayers` is `true`, then the
