@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.18.0
+  version: 0.19.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -5279,7 +5279,7 @@ components:
           type: number
           description: The duration of the transition in milliseconds.
         easing:
-          $ref: "#/components/schemas/EasingType"
+          $ref: "#/components/schemas/Easing"
           description: The easing curve of the transition.
         matchLayers:
           type: boolean
