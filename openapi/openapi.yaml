@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.19.0
+  version: 0.20.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -3029,6 +3029,9 @@ components:
                 the design and what has changed.
           required:
             - type
+    AnnotationsTrait:
+      type: object
+      properties: {}
     FrameTraits:
       allOf:
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3044,6 +3047,7 @@ components:
         - $ref: "#/components/schemas/TransitionSourceTrait"
         - $ref: "#/components/schemas/IndividualStrokesTrait"
         - $ref: "#/components/schemas/DevStatusTrait"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     DefaultShapeTraits:
       allOf:
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3063,6 +3067,7 @@ components:
         - $ref: "#/components/schemas/DefaultShapeTraits"
         - $ref: "#/components/schemas/CornerTrait"
         - $ref: "#/components/schemas/IndividualStrokesTrait"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     Node:
       oneOf:
         - $ref: "#/components/schemas/BooleanOperationNode"
@@ -3168,6 +3173,10 @@ components:
             prototypeDevice:
               $ref: "#/components/schemas/PrototypeDevice"
               description: The device used to view a prototype.
+            measurements:
+              type: array
+              items:
+                $ref: "#/components/schemas/Measurement"
           required:
             - type
             - children
@@ -3345,6 +3354,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     StarNode:
       allOf:
         - type: object
@@ -3357,6 +3367,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     LineNode:
       allOf:
         - type: object
@@ -3369,6 +3380,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/DefaultShapeTraits"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     EllipseNode:
       allOf:
         - type: object
@@ -3384,6 +3396,7 @@ components:
             - type
             - arcData
         - $ref: "#/components/schemas/DefaultShapeTraits"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     RegularPolygonNode:
       allOf:
         - type: object
@@ -3397,6 +3410,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/CornerRadiusShapeTraits"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     RectangleNode:
       allOf:
         - type: object
@@ -3423,6 +3437,7 @@ components:
             - type
         - $ref: "#/components/schemas/DefaultShapeTraits"
         - $ref: "#/components/schemas/TypePropertiesTrait"
+        - $ref: "#/components/schemas/AnnotationsTrait"
     TableNode:
       allOf:
         - type: object
@@ -5473,6 +5488,70 @@ components:
             $ref: "#/components/schemas/Action"
       required:
         - actions
+    Measurement:
+      type: object
+      description: A pinned distance between two nodes in Dev Mode
+      properties:
+        id:
+          type: string
+        start:
+          $ref: "#/components/schemas/MeasurementStartEnd"
+        end:
+          $ref: "#/components/schemas/MeasurementStartEnd"
+        offset:
+          oneOf:
+            - $ref: "#/components/schemas/MeasurementOffsetInner"
+            - $ref: "#/components/schemas/MeasurementOffsetOuter"
+        freeText:
+          type: string
+          description: When manually overridden, the displayed value of the measurement
+      required:
+        - id
+        - start
+        - end
+        - offset
+    MeasurementStartEnd:
+      type: object
+      description: The node and side a measurement is pinned to
+      properties:
+        nodeId:
+          type: string
+        side:
+          type: string
+          enum:
+            - TOP
+            - RIGHT
+            - BOTTOM
+            - LEFT
+      required:
+        - nodeId
+        - side
+    MeasurementOffsetInner:
+      type: object
+      description: Measurement offset relative to the inside of the start node
+      properties:
+        type:
+          type: string
+          enum:
+            - INNER
+        relative:
+          type: number
+      required:
+        - type
+        - relative
+    MeasurementOffsetOuter:
+      type: object
+      description: Measurement offset relative to the outside of the start node
+      properties:
+        type:
+          type: string
+          enum:
+            - OUTER
+        fixed:
+          type: number
+      required:
+        - type
+        - fixed
     FrameOffset:
       type: object
       description: Position of a comment relative to the frame to which it is attached.
@@ -6825,6 +6904,12 @@ components:
             $ref: "#/components/schemas/VariableScope"
         codeSyntax:
           $ref: "#/components/schemas/VariableCodeSyntax"
+        deletedButReferenced:
+          type: boolean
+          description: Indicates that the variable was deleted in the editor, but the
+            document may still contain references to the variable. References to
+            the variable may exist through bound values or variable aliases.
+          default: false
       required:
         - id
         - name
