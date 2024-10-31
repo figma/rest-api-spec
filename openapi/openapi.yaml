@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.20.0
+  version: 0.21.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -2090,6 +2090,330 @@ paths:
           $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
         "404":
           $ref: "#/components/responses/NotFoundErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/component/actions:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics component action data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics component actions data broken
+        down by the requested dimension.
+      operationId: getLibraryAnalyticsComponentActions
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - component
+              - team
+        - name: start_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the earliest week to include.
+            Dates are rounded back to the nearest start of a week. Defaults to
+            one year prior.
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the latest week to include.
+            Dates are rounded forward to the nearest end of a week. Defaults to
+            the latest computed week.
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsComponentActionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/component/usages:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics component usage data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics component usage data broken
+        down by the requested dimension.
+      operationId: getLibraryAnalyticsComponentUsages
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - component
+              - file
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsComponentUsagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/style/actions:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics style action data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics style actions data broken down
+        by the requested dimension.
+      operationId: getLibraryAnalyticsStyleActions
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - style
+              - team
+        - name: start_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the earliest week to include.
+            Dates are rounded back to the nearest start of a week. Defaults to
+            one year prior.
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the latest week to include.
+            Dates are rounded forward to the nearest end of a week. Defaults to
+            the latest computed week.
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsStyleActionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/style/usages:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics style usage data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics style usage data broken down by
+        the requested dimension.
+      operationId: getLibraryAnalyticsStyleUsages
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - style
+              - file
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsStyleUsagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/variable/actions:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics variable action data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics variable actions data broken
+        down by the requested dimension.
+      operationId: getLibraryAnalyticsVariableActions
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - variable
+              - team
+        - name: start_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the earliest week to include.
+            Dates are rounded back to the nearest start of a week. Defaults to
+            one year prior.
+          in: query
+          schema:
+            type: string
+        - name: end_date
+          description: ISO 8601 date string (YYYY-MM-DD) of the latest week to include.
+            Dates are rounded forward to the nearest end of a week. Defaults to
+            the latest computed week.
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsVariableActionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/analytics/libraries/{file_key}/variable/usages:
+    get:
+      tags:
+        - Library Analytics
+      summary: Get library analytics variable usage data.
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - library_analytics:read
+      description: Returns a list of library analytics variable usage data broken down
+        by the requested dimension.
+      operationId: getLibraryAnalyticsVariableUsages
+      parameters:
+        - name: file_key
+          in: path
+          description: File key of the library to fetch analytics data for.
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          description: Cursor indicating what page of data to fetch. Obtained from prior
+            API call.
+          in: query
+          schema:
+            type: string
+        - name: group_by
+          description: A dimension to group returned analytics data by.
+          required: true
+          in: query
+          schema:
+            type: string
+            enum:
+              - variable
+              - file
+      responses:
+        "200":
+          $ref: "#/components/responses/GetLibraryAnalyticsVariableUsagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
         "429":
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
         "500":
@@ -7307,6 +7631,337 @@ components:
         - url
         - file_key
         - node_id
+    LibraryAnalyticsComponentActionsByAsset:
+      type: object
+      description: Library analytics component actions data broken down by asset.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        component_key:
+          type: string
+          description: Unique, stable id of the component.
+        component_name:
+          type: string
+          description: Name of the component.
+        component_set_key:
+          type: string
+          description: Unique, stable id of the component set that this component belongs
+            to.
+        component_set_name:
+          type: string
+          description: Name of the component set that this component belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - component_key
+        - component_name
+        - detachments
+        - insertions
+    LibraryAnalyticsComponentActionsByTeam:
+      type: object
+      description: Library analytics action data broken down by team.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        team_name:
+          type: string
+          description: The name of the team using the library.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the team belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - team_name
+        - detachments
+        - insertions
+    LibraryAnalyticsComponentUsagesByAsset:
+      type: object
+      description: Library analytics component usage data broken down by component.
+      properties:
+        component_key:
+          type: string
+          description: Unique, stable id of the component.
+        component_name:
+          type: string
+          description: Name of the component.
+        component_set_key:
+          type: string
+          description: Unique, stable id of the component set that this component belongs
+            to.
+        component_set_name:
+          type: string
+          description: Name of the component set that this component belongs to.
+        usages:
+          type: number
+          description: The number of instances of the component within the organization.
+        teams_using:
+          type: number
+          description: The number of teams using the component within the organization.
+        files_using:
+          type: number
+          description: The number of files using the component within the organization.
+      required:
+        - component_key
+        - component_name
+        - usages
+        - teams_using
+        - files_using
+    LibraryAnalyticsComponentUsagesByFile:
+      type: object
+      description: Library analytics component usage data broken down by file.
+      properties:
+        file_name:
+          type: string
+          description: The name of the file using the library.
+        team_name:
+          type: string
+          description: The name of the team the file belongs to.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the file belongs to.
+        usages:
+          type: number
+          description: The number of component instances from the library used within the
+            file.
+      required:
+        - file_name
+        - team_name
+        - usages
+    LibraryAnalyticsStyleActionsByAsset:
+      type: object
+      description: Library analytics style actions data broken down by asset.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        style_key:
+          type: string
+          description: Unique, stable id of the style.
+        style_name:
+          type: string
+          description: The name of the style.
+        style_type:
+          type: string
+          description: The type of the style.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - style_key
+        - style_name
+        - style_type
+        - detachments
+        - insertions
+    LibraryAnalyticsStyleActionsByTeam:
+      type: object
+      description: Library analytics style action data broken down by team.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        team_name:
+          type: string
+          description: The name of the team using the library.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the team belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - team_name
+        - detachments
+        - insertions
+    LibraryAnalyticsStyleUsagesByAsset:
+      type: object
+      description: Library analytics style usage data broken down by component.
+      properties:
+        style_key:
+          type: string
+          description: Unique, stable id of the style.
+        style_name:
+          type: string
+          description: The name of the style.
+        style_type:
+          type: string
+          description: The type of the style.
+        usages:
+          type: number
+          description: The number of usages of the style within the organization.
+        teams_using:
+          type: number
+          description: The number of teams using the style within the organization.
+        files_using:
+          type: number
+          description: The number of files using the style within the organization.
+      required:
+        - style_key
+        - style_name
+        - style_type
+        - usages
+        - teams_using
+        - files_using
+    LibraryAnalyticsStyleUsagesByFile:
+      type: object
+      description: Library analytics style usage data broken down by file.
+      properties:
+        file_name:
+          type: string
+          description: The name of the file using the library.
+        team_name:
+          type: string
+          description: The name of the team the file belongs to.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the file belongs to.
+        usages:
+          type: number
+          description: The number of times styles from this library are used within the
+            file.
+      required:
+        - file_name
+        - team_name
+        - usages
+    LibraryAnalyticsVariableActionsByAsset:
+      type: object
+      description: Library analytics variable actions data broken down by asset.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        variable_key:
+          type: string
+          description: Unique, stable id of the variable.
+        variable_name:
+          type: string
+          description: The name of the variable.
+        variable_type:
+          type: string
+          description: The type of the variable.
+        collection_key:
+          type: string
+          description: Unique, stable id of the collection the variable belongs to.
+        collection_name:
+          type: string
+          description: The name of the collection the variable belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - variable_key
+        - variable_name
+        - variable_type
+        - collection_key
+        - collection_name
+        - detachments
+        - insertions
+    LibraryAnalyticsVariableActionsByTeam:
+      type: object
+      description: Library analytics variable action data broken down by team.
+      properties:
+        week:
+          type: string
+          description: The date in ISO 8601 format. e.g. 2023-12-13
+        team_name:
+          type: string
+          description: The name of the team using the library.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the team belongs to.
+        detachments:
+          type: number
+          description: The number of detach events for this period.
+        insertions:
+          type: number
+          description: The number of insertion events for this period.
+      required:
+        - week
+        - team_name
+        - detachments
+        - insertions
+    LibraryAnalyticsVariableUsagesByAsset:
+      type: object
+      description: Library analytics variable usage data broken down by component.
+      properties:
+        variable_key:
+          type: string
+          description: Unique, stable id of the variable.
+        variable_name:
+          type: string
+          description: The name of the variable.
+        variable_type:
+          type: string
+          description: The type of the variable.
+        collection_key:
+          type: string
+          description: Unique, stable id of the collection the variable belongs to.
+        collection_name:
+          type: string
+          description: The name of the collection the variable belongs to.
+        usages:
+          type: number
+          description: The number of usages of the variable within the organization.
+        teams_using:
+          type: number
+          description: The number of teams using the variable within the organization.
+        files_using:
+          type: number
+          description: The number of files using the variable within the organization.
+      required:
+        - variable_key
+        - variable_name
+        - variable_type
+        - collection_key
+        - collection_name
+        - usages
+        - teams_using
+        - files_using
+    LibraryAnalyticsVariableUsagesByFile:
+      type: object
+      description: Library analytics variable usage data broken down by file.
+      properties:
+        file_name:
+          type: string
+          description: The name of the file using the library.
+        team_name:
+          type: string
+          description: The name of the team the file belongs to.
+        workspace_name:
+          type: string
+          description: The name of the workspace that the file belongs to.
+        usages:
+          type: number
+          description: The number of times variables from this library are used within the
+            file.
+      required:
+        - file_name
+        - team_name
+        - usages
     LibraryAnalyticsActionsByComponent:
       type: object
       description: Library analytics actions data broken down by component.
@@ -8417,6 +9072,165 @@ components:
     DeleteDevResourceResponse:
       description: Response from the DELETE
         /v1/files/{file_key}/dev_resources/{dev_resource_id} endpoint.
+    GetLibraryAnalyticsComponentActionsResponse:
+      description: Response from the GET
+        /v1/analytics/libraries/{file_key}/component/actions.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsComponentActionsByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsComponentActionsByTeam"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsComponentUsagesResponse:
+      description: Response from the PUT
+        /v1/analytics/libraries/{file_key}/component/usages.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsComponentUsagesByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsComponentUsagesByFile"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsStyleActionsResponse:
+      description: Response from the GET /v1/analytics/libraries/{file_key}/style/actions.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsStyleActionsByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsStyleActionsByTeam"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsStyleUsagesResponse:
+      description: Response from the PUT /v1/analytics/libraries/{file_key}/style/usages.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsStyleUsagesByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsStyleUsagesByFile"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsVariableActionsResponse:
+      description: Response from the GET
+        /v1/analytics/libraries/{file_key}/variable/actions.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsVariableActionsByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsVariableActionsByTeam"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
+    GetLibraryAnalyticsVariableUsagesResponse:
+      description: Response from the PUT /v1/analytics/libraries/{file_key}/variable/usages.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                description: An array of analytics data.
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsVariableUsagesByAsset"
+                  - type: array
+                    items:
+                      $ref: "#/components/schemas/LibraryAnalyticsVariableUsagesByFile"
+              next_page:
+                type: boolean
+                description: Whether there is a next page of data that can be fetched.
+              cursor:
+                type: string
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
+            required:
+              - rows
+              - next_page
     GetLibraryAnalyticsActionsResponse:
       description: Response from the GET /v1/analytics/libraries/{file_key}/actions.
       content:
@@ -8438,7 +9252,8 @@ components:
                 description: Whether there is a next page of data that can be fetched.
               cursor:
                 type: string
-                description: The cursor to use to fetch the next page of data.
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
             required:
               - rows
               - next_page
@@ -8464,7 +9279,8 @@ components:
                 description: Whether there is a next page of data that can be fetched.
               cursor:
                 type: string
-                description: The cursor to use to fetch the next page of data.
+                description: The cursor to use to fetch the next page of data. Not present if
+                  next_page is false.
             required:
               - next_page
     BadRequestErrorResponseWithErrMessage:

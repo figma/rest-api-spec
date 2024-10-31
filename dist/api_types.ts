@@ -4418,6 +4418,411 @@ export type DevResource = {
 }
 
 /**
+ * Library analytics component actions data broken down by asset.
+ */
+export type LibraryAnalyticsComponentActionsByAsset = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * Unique, stable id of the component.
+   */
+  component_key: string
+
+  /**
+   * Name of the component.
+   */
+  component_name: string
+
+  /**
+   * Unique, stable id of the component set that this component belongs to.
+   */
+  component_set_key?: string
+
+  /**
+   * Name of the component set that this component belongs to.
+   */
+  component_set_name?: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics action data broken down by team.
+ */
+export type LibraryAnalyticsComponentActionsByTeam = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * The name of the team using the library.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the team belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics component usage data broken down by component.
+ */
+export type LibraryAnalyticsComponentUsagesByAsset = {
+  /**
+   * Unique, stable id of the component.
+   */
+  component_key: string
+
+  /**
+   * Name of the component.
+   */
+  component_name: string
+
+  /**
+   * Unique, stable id of the component set that this component belongs to.
+   */
+  component_set_key?: string
+
+  /**
+   * Name of the component set that this component belongs to.
+   */
+  component_set_name?: string
+
+  /**
+   * The number of instances of the component within the organization.
+   */
+  usages: number
+
+  /**
+   * The number of teams using the component within the organization.
+   */
+  teams_using: number
+
+  /**
+   * The number of files using the component within the organization.
+   */
+  files_using: number
+}
+
+/**
+ * Library analytics component usage data broken down by file.
+ */
+export type LibraryAnalyticsComponentUsagesByFile = {
+  /**
+   * The name of the file using the library.
+   */
+  file_name: string
+
+  /**
+   * The name of the team the file belongs to.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the file belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of component instances from the library used within the file.
+   */
+  usages: number
+}
+
+/**
+ * Library analytics style actions data broken down by asset.
+ */
+export type LibraryAnalyticsStyleActionsByAsset = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * Unique, stable id of the style.
+   */
+  style_key: string
+
+  /**
+   * The name of the style.
+   */
+  style_name: string
+
+  /**
+   * The type of the style.
+   */
+  style_type: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics style action data broken down by team.
+ */
+export type LibraryAnalyticsStyleActionsByTeam = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * The name of the team using the library.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the team belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics style usage data broken down by component.
+ */
+export type LibraryAnalyticsStyleUsagesByAsset = {
+  /**
+   * Unique, stable id of the style.
+   */
+  style_key: string
+
+  /**
+   * The name of the style.
+   */
+  style_name: string
+
+  /**
+   * The type of the style.
+   */
+  style_type: string
+
+  /**
+   * The number of usages of the style within the organization.
+   */
+  usages: number
+
+  /**
+   * The number of teams using the style within the organization.
+   */
+  teams_using: number
+
+  /**
+   * The number of files using the style within the organization.
+   */
+  files_using: number
+}
+
+/**
+ * Library analytics style usage data broken down by file.
+ */
+export type LibraryAnalyticsStyleUsagesByFile = {
+  /**
+   * The name of the file using the library.
+   */
+  file_name: string
+
+  /**
+   * The name of the team the file belongs to.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the file belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of times styles from this library are used within the file.
+   */
+  usages: number
+}
+
+/**
+ * Library analytics variable actions data broken down by asset.
+ */
+export type LibraryAnalyticsVariableActionsByAsset = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * Unique, stable id of the variable.
+   */
+  variable_key: string
+
+  /**
+   * The name of the variable.
+   */
+  variable_name: string
+
+  /**
+   * The type of the variable.
+   */
+  variable_type: string
+
+  /**
+   * Unique, stable id of the collection the variable belongs to.
+   */
+  collection_key: string
+
+  /**
+   * The name of the collection the variable belongs to.
+   */
+  collection_name: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics variable action data broken down by team.
+ */
+export type LibraryAnalyticsVariableActionsByTeam = {
+  /**
+   * The date in ISO 8601 format. e.g. 2023-12-13
+   */
+  week: string
+
+  /**
+   * The name of the team using the library.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the team belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of detach events for this period.
+   */
+  detachments: number
+
+  /**
+   * The number of insertion events for this period.
+   */
+  insertions: number
+}
+
+/**
+ * Library analytics variable usage data broken down by component.
+ */
+export type LibraryAnalyticsVariableUsagesByAsset = {
+  /**
+   * Unique, stable id of the variable.
+   */
+  variable_key: string
+
+  /**
+   * The name of the variable.
+   */
+  variable_name: string
+
+  /**
+   * The type of the variable.
+   */
+  variable_type: string
+
+  /**
+   * Unique, stable id of the collection the variable belongs to.
+   */
+  collection_key: string
+
+  /**
+   * The name of the collection the variable belongs to.
+   */
+  collection_name: string
+
+  /**
+   * The number of usages of the variable within the organization.
+   */
+  usages: number
+
+  /**
+   * The number of teams using the variable within the organization.
+   */
+  teams_using: number
+
+  /**
+   * The number of files using the variable within the organization.
+   */
+  files_using: number
+}
+
+/**
+ * Library analytics variable usage data broken down by file.
+ */
+export type LibraryAnalyticsVariableUsagesByFile = {
+  /**
+   * The name of the file using the library.
+   */
+  file_name: string
+
+  /**
+   * The name of the team the file belongs to.
+   */
+  team_name: string
+
+  /**
+   * The name of the workspace that the file belongs to.
+   */
+  workspace_name?: string
+
+  /**
+   * The number of times variables from this library are used within the file.
+   */
+  usages: number
+}
+
+/**
  * Library analytics actions data broken down by component.
  */
 export type LibraryAnalyticsActionsByComponent = {
@@ -5327,6 +5732,126 @@ export type PutDevResourcesResponse = {
 export type DeleteDevResourceResponse = void
 
 /**
+ * Response from the GET /v1/analytics/libraries/{file_key}/component/actions.
+ */
+export type GetLibraryAnalyticsComponentActionsResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsComponentActionsByAsset[] | LibraryAnalyticsComponentActionsByTeam[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the PUT /v1/analytics/libraries/{file_key}/component/usages.
+ */
+export type GetLibraryAnalyticsComponentUsagesResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsComponentUsagesByAsset[] | LibraryAnalyticsComponentUsagesByFile[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the GET /v1/analytics/libraries/{file_key}/style/actions.
+ */
+export type GetLibraryAnalyticsStyleActionsResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsStyleActionsByAsset[] | LibraryAnalyticsStyleActionsByTeam[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the PUT /v1/analytics/libraries/{file_key}/style/usages.
+ */
+export type GetLibraryAnalyticsStyleUsagesResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsStyleUsagesByAsset[] | LibraryAnalyticsStyleUsagesByFile[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the GET /v1/analytics/libraries/{file_key}/variable/actions.
+ */
+export type GetLibraryAnalyticsVariableActionsResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsVariableActionsByAsset[] | LibraryAnalyticsVariableActionsByTeam[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
+ * Response from the PUT /v1/analytics/libraries/{file_key}/variable/usages.
+ */
+export type GetLibraryAnalyticsVariableUsagesResponse = {
+  /**
+   * An array of analytics data.
+   */
+  rows: LibraryAnalyticsVariableUsagesByAsset[] | LibraryAnalyticsVariableUsagesByFile[]
+
+  /**
+   * Whether there is a next page of data that can be fetched.
+   */
+  next_page: boolean
+
+  /**
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
+   */
+  cursor?: string
+}
+
+/**
  * Response from the GET /v1/analytics/libraries/{file_key}/actions.
  */
 export type GetLibraryAnalyticsActionsResponse = {
@@ -5341,7 +5866,7 @@ export type GetLibraryAnalyticsActionsResponse = {
   next_page: boolean
 
   /**
-   * The cursor to use to fetch the next page of data.
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
    */
   cursor?: string
 }
@@ -5366,7 +5891,7 @@ export type GetLibraryAnalyticsUsagesResponse = {
   next_page: boolean
 
   /**
-   * The cursor to use to fetch the next page of data.
+   * The cursor to use to fetch the next page of data. Not present if next_page is false.
    */
   cursor?: string
 }
@@ -6345,6 +6870,180 @@ export type DeleteDevResourcePathParams = {
    * The id of the dev resource to delete.
    */
   dev_resource_id: string
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/component/actions
+ */
+export type GetLibraryAnalyticsComponentActionsPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/component/actions
+ */
+export type GetLibraryAnalyticsComponentActionsQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'component' | 'team'
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the earliest week to include. Dates are rounded back to the
+   * nearest start of a week. Defaults to one year prior.
+   */
+  start_date?: string
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the latest week to include. Dates are rounded forward to the
+   * nearest end of a week. Defaults to the latest computed week.
+   */
+  end_date?: string
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/component/usages
+ */
+export type GetLibraryAnalyticsComponentUsagesPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/component/usages
+ */
+export type GetLibraryAnalyticsComponentUsagesQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'component' | 'file'
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/style/actions
+ */
+export type GetLibraryAnalyticsStyleActionsPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/style/actions
+ */
+export type GetLibraryAnalyticsStyleActionsQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'style' | 'team'
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the earliest week to include. Dates are rounded back to the
+   * nearest start of a week. Defaults to one year prior.
+   */
+  start_date?: string
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the latest week to include. Dates are rounded forward to the
+   * nearest end of a week. Defaults to the latest computed week.
+   */
+  end_date?: string
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/style/usages
+ */
+export type GetLibraryAnalyticsStyleUsagesPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/style/usages
+ */
+export type GetLibraryAnalyticsStyleUsagesQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'style' | 'file'
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/variable/actions
+ */
+export type GetLibraryAnalyticsVariableActionsPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/variable/actions
+ */
+export type GetLibraryAnalyticsVariableActionsQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'variable' | 'team'
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the earliest week to include. Dates are rounded back to the
+   * nearest start of a week. Defaults to one year prior.
+   */
+  start_date?: string
+  /**
+   * ISO 8601 date string (YYYY-MM-DD) of the latest week to include. Dates are rounded forward to the
+   * nearest end of a week. Defaults to the latest computed week.
+   */
+  end_date?: string
+}
+
+/**
+ * Path parameters for GET /v1/analytics/libraries/{file_key}/variable/usages
+ */
+export type GetLibraryAnalyticsVariableUsagesPathParams = {
+  /**
+   * File key of the library to fetch analytics data for.
+   */
+  file_key: string
+}
+
+/**
+ * Query parameters for GET /v1/analytics/libraries/{file_key}/variable/usages
+ */
+export type GetLibraryAnalyticsVariableUsagesQueryParams = {
+  /**
+   * Cursor indicating what page of data to fetch. Obtained from prior API call.
+   */
+  cursor?: string
+  /**
+   * A dimension to group returned analytics data by.
+   */
+  group_by: 'variable' | 'file'
 }
 
 /**
