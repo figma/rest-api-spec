@@ -5055,6 +5055,11 @@ export type GetFileResponse = {
   styles: { [key: string]: Style }
 
   /**
+   * The share permission level of the file link.
+   */
+  linkAccess?: string
+
+  /**
    * The key of the main file for this file. If present, this file is a component or component set.
    */
   mainFileKey?: string

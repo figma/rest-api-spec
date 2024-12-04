@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.21.0
+  version: 0.22.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -8166,6 +8166,9 @@ components:
                 additionalProperties:
                   $ref: "#/components/schemas/Style"
                 description: A mapping from style IDs to style metadata.
+              linkAccess:
+                type: string
+                description: The share permission level of the file link.
               mainFileKey:
                 type: string
                 description: The key of the main file for this file. If present, this file is a
