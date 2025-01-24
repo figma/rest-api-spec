@@ -1905,6 +1905,11 @@ export type TypeStyle = {
   fontPostScriptName?: string | null
 
   /**
+   * Describes visual weight or emphasis, such as Bold or Italic.
+   */
+  fontStyle?: string
+
+  /**
    * Space between paragraphs in px, 0 if not present.
    */
   paragraphSpacing?: number

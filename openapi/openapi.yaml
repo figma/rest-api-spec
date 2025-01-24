@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.22.0
+  version: 0.23.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -1030,7 +1030,7 @@ paths:
         - PersonalAccessToken: []
         - OAuth2:
             - files:read
-      description: Get metadata on a component set by key.
+      description: Get metadata on a published component set by key.
       operationId: getComponentSet
       parameters:
         - name: key
@@ -2559,8 +2559,8 @@ components:
       flows:
         authorizationCode:
           authorizationUrl: https://www.figma.com/oauth
-          tokenUrl: https://www.figma.com/api/oauth/token
-          refreshUrl: https://www.figma.com/api/oauth/refresh
+          tokenUrl: https://api.figma.com/v1/oauth/token
+          refreshUrl: https://api.figma.com/v1/oauth/refresh
           scopes:
             files:read: Read files, projects, users, versions, comments, components &
               styles, and webhooks.
@@ -2578,8 +2578,8 @@ components:
       flows:
         authorizationCode:
           authorizationUrl: https://www.figma.com/oauth
-          tokenUrl: https://www.figma.com/api/oauth/token
-          refreshUrl: https://www.figma.com/api/oauth/refresh
+          tokenUrl: https://api.figma.com/v1/oauth/token
+          refreshUrl: https://api.figma.com/v1/oauth/refresh
           scopes:
             org:activity_log_read: Read activity logs in the organization.
   schemas:
@@ -4855,6 +4855,9 @@ components:
             - string
             - "null"
           description: PostScript font name.
+        fontStyle:
+          type: string
+          description: Describes visual weight or emphasis, such as Bold or Italic.
         paragraphSpacing:
           type: number
           description: Space between paragraphs in px, 0 if not present.
