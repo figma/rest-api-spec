@@ -6520,7 +6520,7 @@ export type GetActivityLogsQueryParams = {
   events?: string
   /**
    * Unix timestamp of the least recent event to include. This param defaults to one year ago if
-   * unspecified. Events prior to one year ago are not available.
+   * unspecified.
    */
   start_time?: number
   /**
