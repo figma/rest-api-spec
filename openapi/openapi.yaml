@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.24.0
+  version: 0.25.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -1603,8 +1603,7 @@ paths:
             type: string
         - name: start_time
           description: Unix timestamp of the least recent event to include. This param
-            defaults to one year ago if unspecified. Events prior to one year
-            ago are not available.
+            defaults to one year ago if unspecified.
           in: query
           schema:
             type: number
