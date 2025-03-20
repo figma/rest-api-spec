@@ -2929,12 +2929,32 @@ export type FrameInfo = {
    *
    * @deprecated
    */
-  containingStateGroup?: object | null
+  containingStateGroup?: {
+    /**
+     * The ID of the state group node.
+     */
+    nodeId?: string
+
+    /**
+     * The name of the state group node.
+     */
+    name?: string
+  } | null
 
   /**
    * The component set node that contains the frame node.
    */
-  containingComponentSet?: object | null
+  containingComponentSet?: {
+    /**
+     * The ID of the component set node.
+     */
+    nodeId?: string
+
+    /**
+     * The name of the component set node.
+     */
+    name?: string
+  } | null
 }
 
 /**

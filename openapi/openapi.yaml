@@ -5947,29 +5947,29 @@ components:
           description: The name of the page containing the frame node.
         containingStateGroup:
           deprecated: true
-          type:
-            - object
-            - "null"
           description: Deprecated - Use containingComponentSet instead.
-          properties:
-            nodeId:
-              type: string
-              description: The ID of the state group node.
-            name:
-              type: string
-              description: The name of the state group node.
+          oneOf:
+            - type: object
+              properties:
+                nodeId:
+                  type: string
+                  description: The ID of the state group node.
+                name:
+                  type: string
+                  description: The name of the state group node.
+            - type: "null"
         containingComponentSet:
-          type:
-            - object
-            - "null"
           description: The component set node that contains the frame node.
-          properties:
-            nodeId:
-              type: string
-              description: The ID of the component set node.
-            name:
-              type: string
-              description: The name of the component set node.
+          oneOf:
+            - type: object
+              properties:
+                nodeId:
+                  type: string
+                  description: The ID of the component set node.
+                name:
+                  type: string
+                  description: The name of the component set node.
+            - type: "null"
       required:
         - pageId
         - pageName
