@@ -2923,6 +2923,38 @@ export type FrameInfo = {
    * The name of the page containing the frame node.
    */
   pageName: string
+
+  /**
+   * Deprecated - Use containingComponentSet instead.
+   *
+   * @deprecated
+   */
+  containingStateGroup?: {
+    /**
+     * The ID of the state group node.
+     */
+    nodeId?: string
+
+    /**
+     * The name of the state group node.
+     */
+    name?: string
+  } | null
+
+  /**
+   * The component set node that contains the frame node.
+   */
+  containingComponentSet?: {
+    /**
+     * The ID of the component set node.
+     */
+    nodeId?: string
+
+    /**
+     * The name of the component set node.
+     */
+    name?: string
+  } | null
 }
 
 /**

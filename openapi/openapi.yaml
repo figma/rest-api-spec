@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.25.0
+  version: 0.26.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -5945,6 +5945,31 @@ components:
         pageName:
           type: string
           description: The name of the page containing the frame node.
+        containingStateGroup:
+          deprecated: true
+          description: Deprecated - Use containingComponentSet instead.
+          oneOf:
+            - type: object
+              properties:
+                nodeId:
+                  type: string
+                  description: The ID of the state group node.
+                name:
+                  type: string
+                  description: The name of the state group node.
+            - type: "null"
+        containingComponentSet:
+          description: The component set node that contains the frame node.
+          oneOf:
+            - type: object
+              properties:
+                nodeId:
+                  type: string
+                  description: The ID of the component set node.
+                name:
+                  type: string
+                  description: The name of the component set node.
+            - type: "null"
       required:
         - pageId
         - pageName
