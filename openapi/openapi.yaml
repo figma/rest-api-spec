@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.26.0
+  version: 0.27.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -2619,6 +2619,17 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/VariableAlias"
+            rectangleCornerRadii:
+              type: object
+              properties:
+                RECTANGLE_TOP_LEFT_CORNER_RADIUS:
+                  $ref: "#/components/schemas/VariableAlias"
+                RECTANGLE_TOP_RIGHT_CORNER_RADIUS:
+                  $ref: "#/components/schemas/VariableAlias"
+                RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS:
+                  $ref: "#/components/schemas/VariableAlias"
+                RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS:
+                  $ref: "#/components/schemas/VariableAlias"
         explicitVariableModes:
           type: object
           description: A mapping of variable collection ID to mode ID representing the
@@ -3366,6 +3377,12 @@ components:
             prototypeDevice:
               $ref: "#/components/schemas/PrototypeDevice"
               description: The device used to view a prototype.
+            prototypeBackgrounds:
+              type: array
+              description: The background color of the prototype (currently only supports a
+                single solid color paint).
+              items:
+                $ref: "#/components/schemas/RGBA"
             measurements:
               type: array
               items:
@@ -6963,6 +6980,7 @@ components:
         - LETTER_SPACING
         - PARAGRAPH_SPACING
         - PARAGRAPH_INDENT
+        - FONT_VARIATIONS
       description: |-
         Scopes allow a variable to be shown or hidden in the variable picker for various fields. This declutters the Figma UI if you have a large number of variables. Variable scopes are currently supported on `FLOAT`, `STRING`, and `COLOR` variables.
 
