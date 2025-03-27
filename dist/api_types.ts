@@ -143,6 +143,16 @@ export type IsLayerTrait = {
     effects?: VariableAlias[]
 
     layoutGrids?: VariableAlias[]
+
+    rectangleCornerRadii?: {
+      RECTANGLE_TOP_LEFT_CORNER_RADIUS?: VariableAlias
+
+      RECTANGLE_TOP_RIGHT_CORNER_RADIUS?: VariableAlias
+
+      RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS?: VariableAlias
+
+      RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS?: VariableAlias
+    }
   }
 
   /**
@@ -774,6 +784,11 @@ export type CanvasNode = {
    * The device used to view a prototype.
    */
   prototypeDevice: PrototypeDevice
+
+  /**
+   * The background color of the prototype (currently only supports a single solid color paint).
+   */
+  prototypeBackgrounds?: RGBA[]
 
   measurements?: Measurement[]
 } & IsLayerTrait &
@@ -3933,6 +3948,7 @@ export type VariableScope =
   | 'LETTER_SPACING'
   | 'PARAGRAPH_SPACING'
   | 'PARAGRAPH_INDENT'
+  | 'FONT_VARIATIONS'
 
 /**
  * An object containing platform-specific code syntax definitions for a variable. All platforms are
