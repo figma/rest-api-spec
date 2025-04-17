@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.27.0
+  version: 0.28.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -1668,7 +1668,7 @@ paths:
           description: The ID of the user to query payment information about. You can get
             the user ID by having the user OAuth2 to the Figma REST API.
           schema:
-            type: number
+            type: string
         - name: community_file_id
           in: query
           description: The ID of the Community file to query a user's payment information
@@ -1676,7 +1676,7 @@ paths:
             (look for the number after "file/" in the URL). Provide exactly one
             of "community_file_id", "plugin_id", or "widget_id".
           schema:
-            type: number
+            type: string
         - name: plugin_id
           in: query
           description: The ID of the plugin to query a user's payment information on. You
@@ -1685,7 +1685,7 @@ paths:
             URL). Provide exactly one of "community_file_id", "plugin_id", or
             "widget_id".
           schema:
-            type: number
+            type: string
         - name: widget_id
           in: query
           description: The ID of the widget to query a user's payment information on. You
@@ -1694,7 +1694,7 @@ paths:
             URL). Provide exactly one of "community_file_id", "plugin_id", or
             "widget_id".
           schema:
-            type: number
+            type: string
       responses:
         "200":
           $ref: "#/components/responses/GetPaymentsResponse"
