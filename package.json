@@ -1,6 +1,6 @@
 {
   "name": "@figma/rest-api-spec",
-  "version": "0.28.0",
+  "version": "0.29.0",
   "description": "Typings for the Figma REST API",
   "main": "dist/api_types.ts",
   "repository": {
