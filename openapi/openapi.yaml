@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.28.0
+  version: 0.29.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -94,6 +94,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_content:read
             - files:read
       description: |-
         Returns the document identified by `file_key` as a JSON object. The file key can be parsed from any Figma file url: `https://www.figma.com/file/{file_key}/{title}`.
@@ -178,6 +179,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_content:read
             - files:read
       description: |-
         Returns the nodes referenced to by `ids` as a JSON object. The nodes are retrieved from the Figma file referenced to by `file_key`.
@@ -260,6 +262,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_content:read
             - files:read
       description: |
         Renders images from a file.
@@ -383,6 +386,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_content:read
             - files:read
       description: |-
         Returns download links for all images present in image fills in a document. Image fills are how Figma represents any user supplied images. When you drag an image into Figma, we create a rectangle with a single fill that represents the image, and the user is able to transform the rectangle (and properties on the fill) as they wish.
@@ -419,6 +423,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - projects:read
             - files:read
       description: "You can use this endpoint to get a list of all the Projects within
         the specified team. This will only return projects visible to the
@@ -454,6 +459,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - projects:read
             - files:read
       description: Get a list of all the Files within the specified project.
       operationId: getProjectFiles
@@ -490,6 +496,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_versions:read
             - files:read
       description: This endpoint fetches the version history of a file, allowing you
         to see the progression of a file over time. You can then use this
@@ -545,6 +552,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_comments:read
             - files:read
       description: Gets a list of comments left on the file.
       operationId: getComments
@@ -677,6 +685,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - file_comments:read
             - files:read
       description: Gets a paginated list of reactions left on the comment.
       operationId: getCommentReactions
@@ -812,6 +821,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - current_user:read
             - files:read
       description: Returns the user information for the currently authenticated user.
       operationId: getMe
@@ -832,6 +842,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - team_library_content:read
             - files:read
       description: Get a paginated list of published components within a team library.
       operationId: getTeamComponents
@@ -883,6 +894,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_content:read
             - files:read
       description: Get a list of published components within a file library.
       operationId: getFileComponents
@@ -915,6 +927,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_assets:read
             - files:read
       description: Get metadata on a component by key.
       operationId: getComponent
@@ -946,6 +959,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - team_library_content:read
             - files:read
       description: Get a paginated list of published component sets within a team library.
       operationId: getTeamComponentSets
@@ -997,6 +1011,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_content:read
             - files:read
       description: Get a list of published component sets within a file library.
       operationId: getFileComponentSets
@@ -1029,6 +1044,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_assets:read
             - files:read
       description: Get metadata on a published component set by key.
       operationId: getComponentSet
@@ -1060,6 +1076,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - team_library_content:read
             - files:read
       description: Get a paginated list of published styles within a team library.
       operationId: getTeamStyles
@@ -1111,6 +1128,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_content:read
             - files:read
       description: Get a list of published styles within a file library.
       operationId: getFileStyles
@@ -1143,6 +1161,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - library_assets:read
             - files:read
       description: Get metadata on a style by key.
       operationId: getStyle
@@ -1410,6 +1429,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - webhooks:read
             - files:read
       description: Get a webhook by ID.
       operationId: getWebhook
@@ -1531,6 +1551,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - webhooks:read
             - files:read
       description: Returns all webhooks registered under the specified team.
       operationId: getTeamWebhooks
@@ -1560,6 +1581,7 @@ paths:
       security:
         - PersonalAccessToken: []
         - OAuth2:
+            - webhooks:read
             - files:read
       description: Returns all webhook requests sent within the last week. Useful for
         debugging.
@@ -2431,16 +2453,25 @@ components:
           tokenUrl: https://api.figma.com/v1/oauth/token
           refreshUrl: https://api.figma.com/v1/oauth/refresh
           scopes:
-            files:read: Read files, projects, users, versions, comments, components &
-              styles, and webhooks.
+            current_user:read: Read your name, email, and profile image.
+            file_comments:read: Read the comments for files.
+            file_comments:write: Post and delete comments and comment reactions in files.
+            file_content:read: Read the contents of files, such as nodes and the editor type.
+            file_dev_resources:read: Read dev resources in files.
+            file_dev_resources:write: Write to dev resources in files.
             file_variables:read: "Read variables in Figma file. Note: this is only available
               to members in Enterprise organizations."
             file_variables:write: "Write to variables in Figma file. Note: this is only
               available to members in Enterprise organizations."
-            file_comments:write: Post and delete comments and comment reactions in files.
-            file_dev_resources:read: Read dev resources in files.
-            file_dev_resources:write: Write to dev resources in files.
+            file_versions:read: Read the version history for files you can access.
+            files:read: Deprecated. Read files, projects, users, versions, comments,
+              components & styles, and webhooks.
             library_analytics:read: Read library analytics data.
+            library_assets:read: Read data of individual published components and styles.
+            library_content:read: Read published components and styles of files.
+            projects:read: List projects and files in projects.
+            team_library_content:read: Read published components and styles of teams.
+            webhooks:read: Read metadata of webhooks.
             webhooks:write: Create and manage webhooks.
     OrgOAuth2:
       type: oauth2
