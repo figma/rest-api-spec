@@ -648,6 +648,37 @@ export type TypePropertiesTrait = {
   lineIndentations: number[]
 }
 
+export type TextPathPropertiesTrait = {
+  /**
+   * The raw characters in the text path node.
+   */
+  characters: string
+
+  /**
+   * Style of text including font family and weight.
+   */
+  style: TextPathTypeStyle
+
+  /**
+   * The array corresponds to characters in the text box, where each element references the
+   * 'styleOverrideTable' to apply specific styles to each character. The array's length can be less
+   * than or equal to the number of characters due to the removal of trailing zeros. Elements with a
+   * value of 0 indicate characters that use the default type style. If the array is shorter than the
+   * total number of characters, the characters beyond the array's length also use the default style.
+   */
+  characterStyleOverrides: number[]
+
+  /**
+   * Internal property, preserved for backward compatibility. Avoid using this value.
+   */
+  layoutVersion?: number
+
+  /**
+   * Map from ID to TextPathTypeStyle for looking up style overrides.
+   */
+  styleOverrideTable: { [key: string]: TextPathTypeStyle }
+}
+
 export type HasTextSublayerTrait = {
   /**
    * Text contained within a text box.
@@ -745,6 +776,8 @@ export type Node =
   | TableNode
   | TableCellNode
   | TextNode
+  | TextPathNode
+  | TransformGroupNode
   | VectorNode
   | WashiTapeNode
   | WidgetNode
@@ -816,6 +849,8 @@ export type SubcanvasNode =
   | TableNode
   | TableCellNode
   | TextNode
+  | TextPathNode
+  | TransformGroupNode
   | VectorNode
   | WashiTapeNode
   | WidgetNode
@@ -944,6 +979,14 @@ export type TextNode = {
   TypePropertiesTrait &
   AnnotationsTrait
 
+export type TextPathNode = {
+  /**
+   * The type of this node, represented by the string literal "TEXT_PATH"
+   */
+  type: 'TEXT_PATH'
+} & DefaultShapeTraits &
+  TextPathPropertiesTrait
+
 export type TableNode = {
   /**
    * The type of this node, represented by the string literal "TABLE"
@@ -966,6 +1009,13 @@ export type TableCellNode = {
   MinimalFillsTrait &
   HasLayoutTrait &
   HasTextSublayerTrait
+
+export type TransformGroupNode = {
+  /**
+   * The type of this node, represented by the string literal "TRANSFORM_GROUP"
+   */
+  type: 'TRANSFORM_GROUP'
+} & FrameTraits
 
 export type SliceNode = {
   /**
@@ -1510,7 +1560,45 @@ export type ImagePaint = {
   gifRef?: string
 } & BasePaint
 
-export type Paint = SolidPaint | GradientPaint | ImagePaint
+export type PatternPaint = {
+  /**
+   * The string literal "PATTERN" representing the paint's type. Always check the `type` before
+   * reading other properties.
+   */
+  type: 'PATTERN'
+
+  /**
+   * The node id of the source node for the pattern
+   */
+  sourceNodeId: string
+
+  /**
+   * The tile type for the pattern
+   */
+  tileType: 'RECTANGULAR' | 'HORIZONTAL_HEXAGONAL' | 'VERTICAL_HEXAGONAL'
+
+  /**
+   * The scaling factor for the pattern
+   */
+  scalingFactor: number
+
+  /**
+   * The spacing for the pattern
+   */
+  spacing: Vector
+
+  /**
+   * The horizontal alignment for the pattern
+   */
+  horizontalAlignment: 'START' | 'CENTER' | 'END'
+
+  /**
+   * The vertical alignment for the pattern
+   */
+  verticalAlignment: 'START' | 'CENTER' | 'END'
+} & BasePaint
+
+export type Paint = SolidPaint | GradientPaint | ImagePaint | PatternPaint
 
 /**
  * Layout constraint relative to containing Frame
@@ -1711,10 +1799,12 @@ export type InnerShadowEffect = {
   type?: 'INNER_SHADOW'
 } & BaseShadowEffect
 
+export type BlurEffect = NormalBlurEffect | ProgressiveBlurEffect
+
 /**
- * A blur effect
+ * Base properties shared by all blur effects
  */
-export type BlurEffect = {
+export type BaseBlurEffect = {
   /**
    * A string literal representing the effect's type. Always check the type before reading other
    * properties.
@@ -1737,7 +1827,123 @@ export type BlurEffect = {
   boundVariables?: { radius?: VariableAlias }
 }
 
-export type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect
+export type NormalBlurEffect = {
+  /**
+   * The string literal 'NORMAL' representing the blur type. Always check the blurType before reading
+   * other properties.
+   */
+  blurType?: 'NORMAL'
+} & BaseBlurEffect
+
+export type ProgressiveBlurEffect = {
+  /**
+   * The string literal 'PROGRESSIVE' representing the blur type. Always check the blurType before
+   * reading other properties.
+   */
+  blurType: 'PROGRESSIVE'
+
+  /**
+   * The starting radius of the progressive blur
+   */
+  startRadius: number
+
+  /**
+   * The starting offset of the progressive blur
+   */
+  startOffset: Vector
+
+  /**
+   * The ending offset of the progressive blur
+   */
+  endOffset: Vector
+} & BaseBlurEffect
+
+/**
+ * A texture effect
+ */
+export type TextureEffect = {
+  /**
+   * The string literal 'TEXTURE' representing the effect's type. Always check the type before reading
+   * other properties.
+   */
+  type: 'TEXTURE'
+
+  /**
+   * The size of the texture effect
+   */
+  noiseSize: number
+
+  /**
+   * The radius of the texture effect
+   */
+  radius: number
+
+  /**
+   * Whether the texture is clipped to the shape
+   */
+  clipToShape: boolean
+}
+
+export type MonotoneNoiseEffect = {
+  /**
+   * The string literal 'MONOTONE' representing the noise type.
+   */
+  noiseType: 'MONOTONE'
+} & BaseNoiseEffect
+
+export type MultitoneNoiseEffect = {
+  /**
+   * The string literal 'MULTITONE' representing the noise type.
+   */
+  noiseType: 'MULTITONE'
+
+  /**
+   * The opacity of the noise effect
+   */
+  opacity: number
+} & BaseNoiseEffect
+
+export type DuotoneNoiseEffect = {
+  /**
+   * The string literal 'DUOTONE' representing the noise type.
+   */
+  noiseType: 'DUOTONE'
+
+  /**
+   * The secondary color of the noise effect
+   */
+  secondaryColor: RGBA
+} & BaseNoiseEffect
+
+/**
+ * A noise effect
+ */
+export type BaseNoiseEffect = {
+  /**
+   * The string literal 'NOISE' representing the effect's type. Always check the type before reading
+   * other properties.
+   */
+  type: 'NOISE'
+
+  /**
+   * Blend mode of the noise effect
+   */
+  blendMode: BlendMode
+
+  /**
+   * The size of the noise effect
+   */
+  noiseSize: number
+
+  /**
+   * The density of the noise effect
+   */
+  density: number
+}
+
+export type NoiseEffect = MonotoneNoiseEffect | MultitoneNoiseEffect | DuotoneNoiseEffect
+
+export type Effect = DropShadowEffect | InnerShadowEffect | BlurEffect | TextureEffect | NoiseEffect
 
 /**
  * A set of properties that can be applied to nodes and published. Styles for a property can be
@@ -1905,10 +2111,7 @@ export type Hyperlink = {
   nodeID?: string
 }
 
-/**
- * Metadata for character formatting.
- */
-export type TypeStyle = {
+export type BaseTypeStyle = {
   /**
    * Font family of text (standard name).
    */
@@ -1923,21 +2126,6 @@ export type TypeStyle = {
    * Describes visual weight or emphasis, such as Bold or Italic.
    */
   fontStyle?: string
-
-  /**
-   * Space between paragraphs in px, 0 if not present.
-   */
-  paragraphSpacing?: number
-
-  /**
-   * Paragraph indentation in px, 0 if not present.
-   */
-  paragraphIndent?: number
-
-  /**
-   * Space between list items in px, 0 if not present.
-   */
-  listSpacing?: number
 
   /**
    * Whether or not text is italicized.
@@ -1958,31 +2146,6 @@ export type TypeStyle = {
    * Text casing applied to the node, default is the original casing.
    */
   textCase?: 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
-
-  /**
-   * Text decoration applied to the node, default is none.
-   */
-  textDecoration?: 'NONE' | 'STRIKETHROUGH' | 'UNDERLINE'
-
-  /**
-   * Dimensions along which text will auto resize, default is that the text does not auto-resize.
-   * TRUNCATE means that the text will be shortened and trailing text will be replaced with "…" if the
-   * text contents is larger than the bounds. `TRUNCATE` as a return value is deprecated and will be
-   * removed in a future version. Read from `textTruncation` instead.
-   */
-  textAutoResize?: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
-
-  /**
-   * Whether this text node will truncate with an ellipsis when the text contents is larger than the
-   * text node.
-   */
-  textTruncation?: 'DISABLED' | 'ENDING'
-
-  /**
-   * When `textTruncation: "ENDING"` is set, `maxLines` determines how many lines a text node can grow
-   * to before it truncates.
-   */
-  maxLines?: number
 
   /**
    * Horizontal text alignment as string enum.
@@ -2017,6 +2180,58 @@ export type TypeStyle = {
   opentypeFlags?: { [key: string]: number }
 
   /**
+   * Indicates how the font weight was overridden when there is a text style override.
+   */
+  semanticWeight?: 'BOLD' | 'NORMAL'
+
+  /**
+   * Indicates how the font style was overridden when there is a text style override.
+   */
+  semanticItalic?: 'ITALIC' | 'NORMAL'
+}
+
+export type TypeStyle = {
+  /**
+   * Space between paragraphs in px, 0 if not present.
+   */
+  paragraphSpacing?: number
+
+  /**
+   * Paragraph indentation in px, 0 if not present.
+   */
+  paragraphIndent?: number
+
+  /**
+   * Space between list items in px, 0 if not present.
+   */
+  listSpacing?: number
+
+  /**
+   * Text decoration applied to the node, default is none.
+   */
+  textDecoration?: 'NONE' | 'STRIKETHROUGH' | 'UNDERLINE'
+
+  /**
+   * Dimensions along which text will auto resize, default is that the text does not auto-resize.
+   * TRUNCATE means that the text will be shortened and trailing text will be replaced with "…" if the
+   * text contents is larger than the bounds. `TRUNCATE` as a return value is deprecated and will be
+   * removed in a future version. Read from `textTruncation` instead.
+   */
+  textAutoResize?: 'NONE' | 'WIDTH_AND_HEIGHT' | 'HEIGHT' | 'TRUNCATE'
+
+  /**
+   * Whether this text node will truncate with an ellipsis when the text contents is larger than the
+   * text node.
+   */
+  textTruncation?: 'DISABLED' | 'ENDING'
+
+  /**
+   * When `textTruncation: "ENDING"` is set, `maxLines` determines how many lines a text node can grow
+   * to before it truncates.
+   */
+  maxLines?: number
+
+  /**
    * Line height in px.
    */
   lineHeightPx?: number
@@ -2039,6 +2254,13 @@ export type TypeStyle = {
   lineHeightUnit?: 'PIXELS' | 'FONT_SIZE_%' | 'INTRINSIC_%'
 
   /**
+   * Whether or not this style has overrides over a text style. The possible fields to override are
+   * semanticWeight, semanticItalic, hyperlink, and textDecoration. If this is true, then those fields
+   * are overrides if present.
+   */
+  isOverrideOverTextStyle?: boolean
+
+  /**
    * The variables bound to a particular field on this style
    */
   boundVariables?: {
@@ -2058,24 +2280,31 @@ export type TypeStyle = {
 
     paragraphIndent?: VariableAlias
   }
+} & BaseTypeStyle
 
+export type TextPathTypeStyle = {
   /**
    * Whether or not this style has overrides over a text style. The possible fields to override are
-   * semanticWeight, semanticItalic, hyperlink, and textDecoration. If this is true, then those fields
-   * are overrides if present.
+   * semanticWeight, semanticItalic, and hyperlink. If this is true, then those fields are overrides
+   * if present.
    */
   isOverrideOverTextStyle?: boolean
 
   /**
-   * Indicates how the font weight was overridden when there is a text style override.
+   * The variables bound to a particular field on this style
    */
-  semanticWeight?: 'BOLD' | 'NORMAL'
+  boundVariables?: {
+    fontFamily?: VariableAlias
 
-  /**
-   * Indicates how the font style was overridden when there is a text style override.
-   */
-  semanticItalic?: 'ITALIC' | 'NORMAL'
-}
+    fontSize?: VariableAlias
+
+    fontStyle?: VariableAlias
+
+    fontWeight?: VariableAlias
+
+    letterSpacing?: VariableAlias
+  }
+} & BaseTypeStyle
 
 /**
  * Component property type.
@@ -5131,6 +5360,67 @@ export type GetImageFillsResponse = {
 }
 
 /**
+ * Response from the GET /v1/files/{file_key}/meta endpoint.
+ */
+export type GetFileMetaResponse = {
+  /**
+   * The name of the file.
+   */
+  name: string
+
+  /**
+   * The name of the project containing the file.
+   */
+  folder_name?: string
+
+  /**
+   * The UTC ISO 8601 time at which the file content was last modified.
+   */
+  last_touched_at: string
+
+  /**
+   * The user who created the file.
+   */
+  creator: User
+
+  /**
+   * The user who last modified the file contents.
+   */
+  last_touched_by?: User
+
+  /**
+   * A URL to a thumbnail image of the file.
+   */
+  thumbnail_url?: string
+
+  /**
+   * The type of editor associated with this file.
+   */
+  editorType: 'figma' | 'figjam' | 'slides'
+
+  /**
+   * The role of the user making the API request in relation to the file.
+   */
+  role?: 'owner' | 'editor' | 'viewer'
+
+  /**
+   * Access policy for users who have the link to the file.
+   */
+  link_access?: 'view' | 'edit' | 'org_view' | 'org_edit' | 'inherit'
+
+  /**
+   * The URL of the file.
+   */
+  url?: string
+
+  /**
+   * The version number of the file. This number is incremented when a file is modified and can be
+   * used to check if the file has changed between requests.
+   */
+  version?: string
+}
+
+/**
  * Response from the GET /v1/teams/{team_id}/projects endpoint.
  */
 export type GetTeamProjectsResponse = {
@@ -6091,6 +6381,17 @@ export type GetImagesQueryParams = {
 export type GetImageFillsPathParams = {
   /**
    * File to get image URLs from. This can be a file key or branch key. Use `GET /v1/files/:key` with
+   * the `branch_data` query param to get the branch key.
+   */
+  file_key: string
+}
+
+/**
+ * Path parameters for GET /v1/files/{file_key}/meta
+ */
+export type GetFileMetaPathParams = {
+  /**
+   * File to get metadata for. This can be a file key or branch key. Use `GET /v1/files/:key` with
    * the `branch_data` query param to get the branch key.
    */
   file_key: string

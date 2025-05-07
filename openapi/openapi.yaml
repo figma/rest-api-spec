@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.29.0
+  version: 0.30.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -405,6 +405,40 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetImageFillsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrMessage"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v1/files/{file_key}/meta:
+    get:
+      tags:
+        - Files
+      summary: Get file metadata
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - file_metadata:read
+            - files:read
+      description: Get file metadata
+      operationId: getFileMeta
+      parameters:
+        - name: file_key
+          in: path
+          description: File to get metadata for. This can be a file key or branch key. Use
+            `GET /v1/files/:key` with the `branch_data` query param to get the
+            branch key.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetFileMetaResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrMessage"
         "403":
@@ -2459,6 +2493,7 @@ components:
             file_content:read: Read the contents of files, such as nodes and the editor type.
             file_dev_resources:read: Read dev resources in files.
             file_dev_resources:write: Write to dev resources in files.
+            file_metadata:read: Read metadata of files.
             file_variables:read: "Read variables in Figma file. Note: this is only available
               to members in Enterprise organizations."
             file_variables:write: "Write to variables in Figma file. Note: this is only
@@ -3216,6 +3251,41 @@ components:
         - styleOverrideTable
         - lineTypes
         - lineIndentations
+    TextPathPropertiesTrait:
+      type: object
+      properties:
+        characters:
+          type: string
+          description: The raw characters in the text path node.
+        style:
+          $ref: "#/components/schemas/TextPathTypeStyle"
+          description: Style of text including font family and weight.
+        characterStyleOverrides:
+          type: array
+          items:
+            type: number
+          description: The array corresponds to characters in the text box, where each
+            element references the 'styleOverrideTable' to apply specific styles
+            to each character. The array's length can be less than or equal to
+            the number of characters due to the removal of trailing zeros.
+            Elements with a value of 0 indicate characters that use the default
+            type style. If the array is shorter than the total number of
+            characters, the characters beyond the array's length also use the
+            default style.
+        layoutVersion:
+          type: number
+          description: Internal property, preserved for backward compatibility. Avoid
+            using this value.
+        styleOverrideTable:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/TextPathTypeStyle"
+          description: Map from ID to TextPathTypeStyle for looking up style overrides.
+      required:
+        - characters
+        - style
+        - characterStyleOverrides
+        - styleOverrideTable
     HasTextSublayerTrait:
       type: object
       properties:
@@ -3326,6 +3396,8 @@ components:
         - $ref: "#/components/schemas/TableNode"
         - $ref: "#/components/schemas/TableCellNode"
         - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/TextPathNode"
+        - $ref: "#/components/schemas/TransformGroupNode"
         - $ref: "#/components/schemas/VectorNode"
         - $ref: "#/components/schemas/WashiTapeNode"
         - $ref: "#/components/schemas/WidgetNode"
@@ -3355,6 +3427,8 @@ components:
           TABLE: "#/components/schemas/TableNode"
           TABLE_CELL: "#/components/schemas/TableCellNode"
           TEXT: "#/components/schemas/TextNode"
+          TEXT_PATH: "#/components/schemas/TextPathNode"
+          TRANSFORM_GROUP: "#/components/schemas/TransformGroupNode"
           VECTOR: "#/components/schemas/VectorNode"
           WASHI_TAPE: "#/components/schemas/WashiTapeNode"
           WIDGET: "#/components/schemas/WidgetNode"
@@ -3450,6 +3524,8 @@ components:
         - $ref: "#/components/schemas/TableNode"
         - $ref: "#/components/schemas/TableCellNode"
         - $ref: "#/components/schemas/TextNode"
+        - $ref: "#/components/schemas/TextPathNode"
+        - $ref: "#/components/schemas/TransformGroupNode"
         - $ref: "#/components/schemas/VectorNode"
         - $ref: "#/components/schemas/WashiTapeNode"
         - $ref: "#/components/schemas/WidgetNode"
@@ -3477,6 +3553,8 @@ components:
           TABLE: "#/components/schemas/TableNode"
           TABLE_CELL: "#/components/schemas/TableCellNode"
           TEXT: "#/components/schemas/TextNode"
+          TEXT_PATH: "#/components/schemas/TextPathNode"
+          TRANSFORM_GROUP: "#/components/schemas/TransformGroupNode"
           VECTOR: "#/components/schemas/VectorNode"
           WASHI_TAPE: "#/components/schemas/WashiTapeNode"
           WIDGET: "#/components/schemas/WidgetNode"
@@ -3679,6 +3757,20 @@ components:
         - $ref: "#/components/schemas/DefaultShapeTraits"
         - $ref: "#/components/schemas/TypePropertiesTrait"
         - $ref: "#/components/schemas/AnnotationsTrait"
+    TextPathNode:
+      allOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - TEXT_PATH
+              description: The type of this node, represented by the string literal
+                "TEXT_PATH"
+          required:
+            - type
+        - $ref: "#/components/schemas/DefaultShapeTraits"
+        - $ref: "#/components/schemas/TextPathPropertiesTrait"
     TableNode:
       allOf:
         - type: object
@@ -3713,6 +3805,19 @@ components:
         - $ref: "#/components/schemas/MinimalFillsTrait"
         - $ref: "#/components/schemas/HasLayoutTrait"
         - $ref: "#/components/schemas/HasTextSublayerTrait"
+    TransformGroupNode:
+      allOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - TRANSFORM_GROUP
+              description: The type of this node, represented by the string literal
+                "TRANSFORM_GROUP"
+          required:
+            - type
+        - $ref: "#/components/schemas/FrameTraits"
     SliceNode:
       allOf:
         - type: object
@@ -4353,11 +4458,62 @@ components:
             - scaleMode
             - imageRef
         - $ref: "#/components/schemas/BasePaint"
+    PatternPaint:
+      allOf:
+        - type: object
+          description: A pattern
+          properties:
+            type:
+              type: string
+              description: The string literal "PATTERN" representing the paint's type. Always
+                check the `type` before reading other properties.
+              enum:
+                - PATTERN
+            sourceNodeId:
+              type: string
+              description: The node id of the source node for the pattern
+            tileType:
+              type: string
+              description: The tile type for the pattern
+              enum:
+                - RECTANGULAR
+                - HORIZONTAL_HEXAGONAL
+                - VERTICAL_HEXAGONAL
+            scalingFactor:
+              type: number
+              description: The scaling factor for the pattern
+            spacing:
+              $ref: "#/components/schemas/Vector"
+              description: The spacing for the pattern
+            horizontalAlignment:
+              type: string
+              description: The horizontal alignment for the pattern
+              enum:
+                - START
+                - CENTER
+                - END
+            verticalAlignment:
+              type: string
+              description: The vertical alignment for the pattern
+              enum:
+                - START
+                - CENTER
+                - END
+          required:
+            - type
+            - sourceNodeId
+            - tileType
+            - scalingFactor
+            - spacing
+            - horizontalAlignment
+            - verticalAlignment
+        - $ref: "#/components/schemas/BasePaint"
     Paint:
       oneOf:
         - $ref: "#/components/schemas/SolidPaint"
         - $ref: "#/components/schemas/GradientPaint"
         - $ref: "#/components/schemas/ImagePaint"
+        - $ref: "#/components/schemas/PatternPaint"
     LayoutConstraint:
       type: object
       description: Layout constraint relative to containing Frame
@@ -4568,8 +4724,12 @@ components:
                 - INNER_SHADOW
         - $ref: "#/components/schemas/BaseShadowEffect"
     BlurEffect:
+      oneOf:
+        - $ref: "#/components/schemas/NormalBlurEffect"
+        - $ref: "#/components/schemas/ProgressiveBlurEffect"
+    BaseBlurEffect:
       type: object
-      description: A blur effect
+      description: Base properties shared by all blur effects
       properties:
         type:
           type: string
@@ -4595,11 +4755,151 @@ components:
         - type
         - visible
         - radius
+    NormalBlurEffect:
+      allOf:
+        - type: object
+          description: A normal blur effect
+          properties:
+            blurType:
+              type: string
+              description: The string literal 'NORMAL' representing the blur type. Always
+                check the blurType before reading other properties.
+              enum:
+                - NORMAL
+        - $ref: "#/components/schemas/BaseBlurEffect"
+    ProgressiveBlurEffect:
+      allOf:
+        - type: object
+          description: A progressive blur effect
+          properties:
+            blurType:
+              type: string
+              description: The string literal 'PROGRESSIVE' representing the blur type. Always
+                check the blurType before reading other properties.
+              enum:
+                - PROGRESSIVE
+            startRadius:
+              type: number
+              description: The starting radius of the progressive blur
+            startOffset:
+              $ref: "#/components/schemas/Vector"
+              description: The starting offset of the progressive blur
+            endOffset:
+              $ref: "#/components/schemas/Vector"
+              description: The ending offset of the progressive blur
+          required:
+            - blurType
+            - startRadius
+            - startOffset
+            - endOffset
+        - $ref: "#/components/schemas/BaseBlurEffect"
+    TextureEffect:
+      type: object
+      description: A texture effect
+      properties:
+        type:
+          type: string
+          description: The string literal 'TEXTURE' representing the effect's type. Always
+            check the type before reading other properties.
+          enum:
+            - TEXTURE
+        noiseSize:
+          type: number
+          description: The size of the texture effect
+        radius:
+          type: number
+          description: The radius of the texture effect
+        clipToShape:
+          type: boolean
+          description: Whether the texture is clipped to the shape
+      required:
+        - type
+        - noiseSize
+        - radius
+        - clipToShape
+    MonotoneNoiseEffect:
+      allOf:
+        - type: object
+          description: A monotone noise effect
+          properties:
+            noiseType:
+              type: string
+              description: The string literal 'MONOTONE' representing the noise type.
+              enum:
+                - MONOTONE
+          required:
+            - noiseType
+        - $ref: "#/components/schemas/BaseNoiseEffect"
+    MultitoneNoiseEffect:
+      allOf:
+        - type: object
+          description: A multitone noise effect
+          properties:
+            noiseType:
+              type: string
+              description: The string literal 'MULTITONE' representing the noise type.
+              enum:
+                - MULTITONE
+            opacity:
+              type: number
+              description: The opacity of the noise effect
+          required:
+            - noiseType
+            - opacity
+        - $ref: "#/components/schemas/BaseNoiseEffect"
+    DuotoneNoiseEffect:
+      allOf:
+        - type: object
+          description: A duotone noise effect
+          properties:
+            noiseType:
+              type: string
+              description: The string literal 'DUOTONE' representing the noise type.
+              enum:
+                - DUOTONE
+            secondaryColor:
+              $ref: "#/components/schemas/RGBA"
+              description: The secondary color of the noise effect
+          required:
+            - noiseType
+            - secondaryColor
+        - $ref: "#/components/schemas/BaseNoiseEffect"
+    BaseNoiseEffect:
+      type: object
+      description: A noise effect
+      properties:
+        type:
+          type: string
+          description: The string literal 'NOISE' representing the effect's type. Always
+            check the type before reading other properties.
+          enum:
+            - NOISE
+        blendMode:
+          $ref: "#/components/schemas/BlendMode"
+          description: Blend mode of the noise effect
+        noiseSize:
+          type: number
+          description: The size of the noise effect
+        density:
+          type: number
+          description: The density of the noise effect
+      required:
+        - type
+        - noiseSize
+        - density
+        - blendMode
+    NoiseEffect:
+      oneOf:
+        - $ref: "#/components/schemas/MonotoneNoiseEffect"
+        - $ref: "#/components/schemas/MultitoneNoiseEffect"
+        - $ref: "#/components/schemas/DuotoneNoiseEffect"
     Effect:
       oneOf:
         - $ref: "#/components/schemas/DropShadowEffect"
         - $ref: "#/components/schemas/InnerShadowEffect"
         - $ref: "#/components/schemas/BlurEffect"
+        - $ref: "#/components/schemas/TextureEffect"
+        - $ref: "#/components/schemas/NoiseEffect"
       discriminator:
         propertyName: type
         mapping:
@@ -4607,6 +4907,8 @@ components:
           INNER_SHADOW: "#/components/schemas/InnerShadowEffect"
           LAYER_BLUR: "#/components/schemas/BlurEffect"
           BACKGROUND_BLUR: "#/components/schemas/BlurEffect"
+          TEXTURE: "#/components/schemas/TextureEffect"
+          NOISE: "#/components/schemas/NoiseEffect"
     Style:
       type: object
       description: A set of properties that can be applied to nodes and published.
@@ -4760,9 +5062,8 @@ components:
           description: The ID of the node that the hyperlink points to, if `type` is `NODE`.
       required:
         - type
-    TypeStyle:
+    BaseTypeStyle:
       type: object
-      description: Metadata for character formatting.
       properties:
         fontFamily:
           type: string
@@ -4775,18 +5076,6 @@ components:
         fontStyle:
           type: string
           description: Describes visual weight or emphasis, such as Bold or Italic.
-        paragraphSpacing:
-          type: number
-          description: Space between paragraphs in px, 0 if not present.
-          default: 0
-        paragraphIndent:
-          type: number
-          description: Paragraph indentation in px, 0 if not present.
-          default: 0
-        listSpacing:
-          type: number
-          description: Space between list items in px, 0 if not present.
-          default: 0
         italic:
           type: boolean
           description: Whether or not text is italicized.
@@ -4806,40 +5095,6 @@ components:
             - TITLE
             - SMALL_CAPS
             - SMALL_CAPS_FORCED
-        textDecoration:
-          type: string
-          description: Text decoration applied to the node, default is none.
-          enum:
-            - NONE
-            - STRIKETHROUGH
-            - UNDERLINE
-          default: NONE
-        textAutoResize:
-          type: string
-          description: Dimensions along which text will auto resize, default is that the
-            text does not auto-resize. TRUNCATE means that the text will be
-            shortened and trailing text will be replaced with "…" if the text
-            contents is larger than the bounds. `TRUNCATE` as a return value is
-            deprecated and will be removed in a future version. Read from
-            `textTruncation` instead.
-          enum:
-            - NONE
-            - WIDTH_AND_HEIGHT
-            - HEIGHT
-            - TRUNCATE
-          default: NONE
-        textTruncation:
-          type: string
-          description: Whether this text node will truncate with an ellipsis when the text
-            contents is larger than the text node.
-          enum:
-            - DISABLED
-            - ENDING
-          default: DISABLED
-        maxLines:
-          type: number
-          description: 'When `textTruncation: "ENDING"` is set, `maxLines` determines how
-            many lines a text node can grow to before it truncates.'
         textAlignHorizontal:
           type: string
           description: Horizontal text alignment as string enum.
@@ -4874,52 +5129,6 @@ components:
             if it is disabled. Note that some flags aren't reflected here. For
             example, SMCP (small caps) is still represented by the `textCase`
             field.
-        lineHeightPx:
-          type: number
-          description: Line height in px.
-        lineHeightPercent:
-          type: number
-          default: 100
-          description: Line height as a percentage of normal line height. This is
-            deprecated; in a future version of the API only lineHeightPx and
-            lineHeightPercentFontSize will be returned.
-        lineHeightPercentFontSize:
-          type: number
-          description: Line height as a percentage of the font size. Only returned when
-            `lineHeightPercent` (deprecated) is not 100.
-        lineHeightUnit:
-          type: string
-          description: The unit of the line height value specified by the user.
-          enum:
-            - PIXELS
-            - FONT_SIZE_%
-            - INTRINSIC_%
-        boundVariables:
-          type: object
-          description: The variables bound to a particular field on this style
-          properties:
-            fontFamily:
-              $ref: "#/components/schemas/VariableAlias"
-            fontSize:
-              $ref: "#/components/schemas/VariableAlias"
-            fontStyle:
-              $ref: "#/components/schemas/VariableAlias"
-            fontWeight:
-              $ref: "#/components/schemas/VariableAlias"
-            letterSpacing:
-              $ref: "#/components/schemas/VariableAlias"
-            lineHeight:
-              $ref: "#/components/schemas/VariableAlias"
-            paragraphSpacing:
-              $ref: "#/components/schemas/VariableAlias"
-            paragraphIndent:
-              $ref: "#/components/schemas/VariableAlias"
-        isOverrideOverTextStyle:
-          type: boolean
-          description: " Whether or not this style has overrides over a text style. The
-            possible fields to override are semanticWeight, semanticItalic,
-            hyperlink, and textDecoration. If this is true, then those fields
-            are overrides if present."
         semanticWeight:
           type: string
           description: Indicates how the font weight was overridden when there is a text
@@ -4934,6 +5143,130 @@ components:
           enum:
             - ITALIC
             - NORMAL
+    TypeStyle:
+      allOf:
+        - type: object
+          description: Metadata for character formatting.
+          properties:
+            paragraphSpacing:
+              type: number
+              description: Space between paragraphs in px, 0 if not present.
+              default: 0
+            paragraphIndent:
+              type: number
+              description: Paragraph indentation in px, 0 if not present.
+              default: 0
+            listSpacing:
+              type: number
+              description: Space between list items in px, 0 if not present.
+              default: 0
+            textDecoration:
+              type: string
+              description: Text decoration applied to the node, default is none.
+              enum:
+                - NONE
+                - STRIKETHROUGH
+                - UNDERLINE
+              default: NONE
+            textAutoResize:
+              type: string
+              description: Dimensions along which text will auto resize, default is that the
+                text does not auto-resize. TRUNCATE means that the text will be
+                shortened and trailing text will be replaced with "…" if the
+                text contents is larger than the bounds. `TRUNCATE` as a return
+                value is deprecated and will be removed in a future version.
+                Read from `textTruncation` instead.
+              enum:
+                - NONE
+                - WIDTH_AND_HEIGHT
+                - HEIGHT
+                - TRUNCATE
+              default: NONE
+            textTruncation:
+              type: string
+              description: Whether this text node will truncate with an ellipsis when the text
+                contents is larger than the text node.
+              enum:
+                - DISABLED
+                - ENDING
+              default: DISABLED
+            maxLines:
+              type: number
+              description: 'When `textTruncation: "ENDING"` is set, `maxLines` determines how
+                many lines a text node can grow to before it truncates.'
+            lineHeightPx:
+              type: number
+              description: Line height in px.
+            lineHeightPercent:
+              type: number
+              default: 100
+              description: Line height as a percentage of normal line height. This is
+                deprecated; in a future version of the API only lineHeightPx and
+                lineHeightPercentFontSize will be returned.
+            lineHeightPercentFontSize:
+              type: number
+              description: Line height as a percentage of the font size. Only returned when
+                `lineHeightPercent` (deprecated) is not 100.
+            lineHeightUnit:
+              type: string
+              description: The unit of the line height value specified by the user.
+              enum:
+                - PIXELS
+                - FONT_SIZE_%
+                - INTRINSIC_%
+            isOverrideOverTextStyle:
+              type: boolean
+              description: Whether or not this style has overrides over a text style. The
+                possible fields to override are semanticWeight, semanticItalic,
+                hyperlink, and textDecoration. If this is true, then those
+                fields are overrides if present.
+            boundVariables:
+              type: object
+              description: The variables bound to a particular field on this style
+              properties:
+                fontFamily:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontSize:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontStyle:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontWeight:
+                  $ref: "#/components/schemas/VariableAlias"
+                letterSpacing:
+                  $ref: "#/components/schemas/VariableAlias"
+                lineHeight:
+                  $ref: "#/components/schemas/VariableAlias"
+                paragraphSpacing:
+                  $ref: "#/components/schemas/VariableAlias"
+                paragraphIndent:
+                  $ref: "#/components/schemas/VariableAlias"
+        - $ref: "#/components/schemas/BaseTypeStyle"
+    TextPathTypeStyle:
+      allOf:
+        - type: object
+          description: Metadata for character formatting for styles used in text paths.
+          properties:
+            isOverrideOverTextStyle:
+              type: boolean
+              description: Whether or not this style has overrides over a text style. The
+                possible fields to override are semanticWeight, semanticItalic,
+                and hyperlink. If this is true, then those fields are overrides
+                if present.
+            boundVariables:
+              type: object
+              description: The variables bound to a particular field on this style
+              properties:
+                fontFamily:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontSize:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontStyle:
+                  $ref: "#/components/schemas/VariableAlias"
+                fontWeight:
+                  $ref: "#/components/schemas/VariableAlias"
+                letterSpacing:
+                  $ref: "#/components/schemas/VariableAlias"
+        - $ref: "#/components/schemas/BaseTypeStyle"
     ComponentPropertyType:
       type: string
       description: Component property type.
@@ -8191,6 +8524,69 @@ components:
               - error
               - status
               - meta
+    GetFileMetaResponse:
+      description: Response from the GET /v1/files/{file_key}/meta endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the file.
+              folder_name:
+                type: string
+                description: The name of the project containing the file.
+              last_touched_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the file content was last modified.
+              creator:
+                description: The user who created the file.
+                $ref: "#/components/schemas/User"
+              last_touched_by:
+                description: The user who last modified the file contents.
+                $ref: "#/components/schemas/User"
+              thumbnail_url:
+                type: string
+                description: A URL to a thumbnail image of the file.
+              editorType:
+                type: string
+                enum:
+                  - figma
+                  - figjam
+                  - slides
+                description: The type of editor associated with this file.
+              role:
+                type: string
+                enum:
+                  - owner
+                  - editor
+                  - viewer
+                description: The role of the user making the API request in relation to the
+                  file.
+              link_access:
+                type: string
+                enum:
+                  - view
+                  - edit
+                  - org_view
+                  - org_edit
+                  - inherit
+                description: Access policy for users who have the link to the file.
+              url:
+                type: string
+                description: The URL of the file.
+              version:
+                type: string
+                description: The version number of the file. This number is incremented when a
+                  file is modified and can be used to check if the file has
+                  changed between requests.
+            required:
+              - name
+              - last_touched_at
+              - creator
+              - editorType
     GetTeamProjectsResponse:
       description: Response from the GET /v1/teams/{team_id}/projects endpoint.
       content:
