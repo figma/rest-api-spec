@@ -3438,9 +3438,27 @@ export type WebhookV2 = {
   event_type: WebhookV2Event
 
   /**
-   * The team id you are subscribed to for updates
+   * The team id you are subscribed to for updates. This is deprecated, use context and context_id
+   * instead
+   *
+   * @deprecated
    */
   team_id: string
+
+  /**
+   * The type of context this webhook is attached to. The value will be "PROJECT", "TEAM", or "FILE"
+   */
+  context: string
+
+  /**
+   * The ID of the context this webhook is attached to
+   */
+  context_id: string
+
+  /**
+   * The plan API ID of the team or organization where this webhook was created
+   */
+  plan_api_id: string
 
   /**
    * The current status of the webhook
@@ -3453,7 +3471,8 @@ export type WebhookV2 = {
   client_id: string | null
 
   /**
-   * The passcode that will be passed back to the webhook endpoint
+   * The passcode that will be passed back to the webhook endpoint. For security, when using the GET
+   * endpoints, the value is an empty string
    */
   passcode: string
 
@@ -3479,6 +3498,7 @@ export type WebhookV2Event =
   | 'FILE_DELETE'
   | 'LIBRARY_PUBLISH'
   | 'FILE_COMMENT'
+  | 'DEV_MODE_STATUS_UPDATE'
 
 /**
  * An enum representing the possible statuses you can set a webhook to:
@@ -3763,6 +3783,40 @@ export type WebhookFileCommentPayload = WebhookBasePayload & {
 
   /**
    * The user that made the comment and triggered this event
+   */
+  triggered_by: User
+}
+
+export type WebhookDevModeStatusUpdatePayload = WebhookBasePayload & {
+  event_type: 'DEV_MODE_STATUS_UPDATE'
+
+  /**
+   * The key of the file that was updated
+   */
+  file_key: string
+
+  /**
+   * The name of the file that was updated
+   */
+  file_name: string
+
+  /**
+   * The id of the node where the Dev Mode status changed. For example, "43:2"
+   */
+  node_id: string
+
+  /**
+   * An array of related links that have been applied to the layer in the file
+   */
+  related_links: DevResource[]
+
+  /**
+   * The Dev Mode status. Either "NONE", "READY_FOR_DEV", or "COMPLETED"
+   */
+  status: string
+
+  /**
+   * The user that made the status change and triggered the event
    */
   triggered_by: User
 }
@@ -5740,6 +5794,18 @@ export type PostWebhookResponse = WebhookV2
 export type GetWebhookResponse = WebhookV2
 
 /**
+ * Response from the GET /v2/webhooks endpoint.
+ */
+export type GetWebhooksResponse = {
+  /**
+   * An array of webhooks.
+   */
+  webhooks: WebhookV2[]
+
+  pagination?: ResponsePagination
+}
+
+/**
  * Response from the PUT /v2/webhooks/{webhook_id} endpoint.
  */
 export type PutWebhookResponse = WebhookV2
@@ -6746,15 +6812,54 @@ export type GetStylePathParams = {
 }
 
 /**
+ * Query parameters for GET /v2/webhooks
+ */
+export type GetWebhooksQueryParams = {
+  /**
+   * Context to create the resource on. Should be "team", "project", or "file".
+   */
+  context?: string
+  /**
+   * The id of the context that you want to get attached webhooks for. If you're using context_id, you
+   * cannot use plan_api_id.
+   */
+  context_id?: string
+  /**
+   * The id of your plan. Use this to get all webhooks for all contexts you have access to. If you're
+   * using plan_api_id, you cannot use context or context_id. When you use plan_api_id, the response
+   * is paginated.
+   */
+  plan_api_id?: string
+  /**
+   * If you're using plan_api_id, this is the cursor to use for pagination. If you're using context or
+   * context_id, this parameter is ignored. Provide the next_page or prev_page value from the previous
+   * response to get the next or previous page of results.
+   */
+  cursor?: string
+}
+
+/**
  * Request body parameters for POST /v2/webhooks
  */
 export type PostWebhookRequestBody = {
   event_type: WebhookV2Event
 
   /**
-   * Team id to receive updates about
+   * Team id to receive updates about. This is deprecated, use 'context' and 'context_id' instead.
+   *
+   * @deprecated
    */
-  team_id: string
+  team_id?: string
+
+  /**
+   * Context to create the webhook for. Must be "team", "project", or "file".
+   */
+  context: string
+
+  /**
+   * The id of the context you want to receive updates about.
+   */
+  context_id: string
 
   /**
    * The HTTP endpoint that will receive a POST request when the event triggers. Max length 2048

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.30.0
+  version: 0.31.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -1220,6 +1220,58 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
   /v2/webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhooks by context or plan
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - webhooks:read
+      description: Returns a list of webhooks corresponding to the context or plan
+        provided, if they exist. For plan, the webhooks for all contexts that
+        you have access to will be returned, and theresponse is paginated
+      operationId: getWebhooks
+      parameters:
+        - name: context
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Context to create the resource on. Should be "team", "project", or
+            "file".
+        - name: context_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The id of the context that you want to get attached webhooks for.
+            If you're using context_id, you cannot use plan_api_id.
+        - name: plan_api_id
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The id of your plan. Use this to get all webhooks for all contexts
+            you have access to. If you're using plan_api_id, you cannot use
+            context or context_id. When you use plan_api_id, the response is
+            paginated.
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+          description: If you're using plan_api_id, this is the cursor to use for
+            pagination. If you're using context or context_id, this parameter is
+            ignored. Provide the next_page or prev_page value from the previous
+            response to get the next or previous page of results.
+      responses:
+        "200":
+          $ref: "#/components/responses/GetWebhooksResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
     post:
       tags:
         - Webhooks
@@ -1246,7 +1298,16 @@ paths:
                   $ref: "#/components/schemas/WebhookV2Event"
                 team_id:
                   type: string
-                  description: Team id to receive updates about
+                  description: Team id to receive updates about. This is deprecated, use 'context'
+                    and 'context_id' instead.
+                  deprecated: true
+                context:
+                  type: string
+                  description: Context to create the webhook for. Must be "team", "project", or
+                    "file".
+                context_id:
+                  type: string
+                  description: The id of the context you want to receive updates about.
                 endpoint:
                   type: string
                   description: The HTTP endpoint that will receive a POST request when the event
@@ -1264,9 +1325,10 @@ paths:
                     characters.
               required:
                 - event_type
-                - team_id
                 - endpoint
                 - passcode
+                - context
+                - context_id
       callbacks:
         ping:
           "{$request.body#/endpoint}":
@@ -1444,6 +1506,34 @@ paths:
                     the Figma API will treat this as an error. Figma retries
                     failed requests 3 times with an exponential backoff
                     strategy.
+        devModeStatusUpdate:
+          "{$request.body#/endpoint}":
+            post:
+              summary: Dev mode status update event
+              description: Triggers whenever the Dev Mode status for a layer in a file
+                changes.
+              security:
+                - PersonalAccessToken: []
+                - OAuth2:
+                    - webhooks:write
+              requestBody:
+                description: This is useful for task management integrations. For example, you
+                  could use this webhook to update a task in Jira or Asana when
+                  the Dev Mode status of a layer changes.
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/WebhookDevModeStatusUpdatePayload"
+              responses:
+                "200":
+                  description: Your server implementation should return this HTTP status code if
+                    the data was received successfully
+                "400":
+                  description: If your server returns a non-200 status code, or takes too long,
+                    the Figma API will treat this as an error. Figma retries
+                    failed requests 3 times with an exponential backoff
+                    strategy.
       responses:
         "200":
           $ref: "#/components/responses/PostWebhookResponse"
@@ -1581,7 +1671,8 @@ paths:
     get:
       tags:
         - Webhooks
-      summary: Get team webhooks
+      summary: "[Deprecated] Get team webhooks"
+      deprecated: true
       security:
         - PersonalAccessToken: []
         - OAuth2:
@@ -6562,7 +6653,20 @@ components:
           description: The event this webhook triggers on
         team_id:
           type: string
-          description: The team id you are subscribed to for updates
+          description: The team id you are subscribed to for updates. This is deprecated,
+            use context and context_id instead
+          deprecated: true
+        context:
+          type: string
+          description: The type of context this webhook is attached to. The value will be
+            "PROJECT", "TEAM", or "FILE"
+        context_id:
+          type: string
+          description: The ID of the context this webhook is attached to
+        plan_api_id:
+          type: string
+          description: The plan API ID of the team or organization where this webhook was
+            created
         status:
           $ref: "#/components/schemas/WebhookV2Status"
           description: The current status of the webhook
@@ -6574,7 +6678,8 @@ components:
             webhook, if any
         passcode:
           type: string
-          description: The passcode that will be passed back to the webhook endpoint
+          description: The passcode that will be passed back to the webhook endpoint. For
+            security, when using the GET endpoints, the value is an empty string
         endpoint:
           type: string
           description: The endpoint that will be hit when the webhook is triggered
@@ -6589,6 +6694,9 @@ components:
         - id
         - event_type
         - team_id
+        - context
+        - context_id
+        - plan_api_id
         - status
         - client_id
         - passcode
@@ -6604,6 +6712,7 @@ components:
         - FILE_DELETE
         - LIBRARY_PUBLISH
         - FILE_COMMENT
+        - DEV_MODE_STATUS_UPDATE
     WebhookV2Status:
       type: string
       description: |-
@@ -6931,6 +7040,45 @@ components:
             - created_at
             - file_key
             - file_name
+            - triggered_by
+    WebhookDevModeStatusUpdatePayload:
+      allOf:
+        - $ref: "#/components/schemas/WebhookBasePayload"
+        - type: object
+          properties:
+            event_type:
+              type: string
+              enum:
+                - DEV_MODE_STATUS_UPDATE
+            file_key:
+              type: string
+              description: The key of the file that was updated
+            file_name:
+              type: string
+              description: The name of the file that was updated
+            node_id:
+              type: string
+              description: The id of the node where the Dev Mode status changed. For example,
+                "43:2"
+            related_links:
+              type: array
+              items:
+                $ref: "#/components/schemas/DevResource"
+              description: An array of related links that have been applied to the layer in
+                the file
+            status:
+              type: string
+              description: The Dev Mode status. Either "NONE", "READY_FOR_DEV", or "COMPLETED"
+            triggered_by:
+              $ref: "#/components/schemas/User"
+              description: The user that made the status change and triggered the event
+          required:
+            - event_type
+            - file_key
+            - file_name
+            - node_id
+            - related_links
+            - status
             - triggered_by
     ActivityLogUserEntity:
       type: object
@@ -9041,6 +9189,22 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/WebhookV2"
+    GetWebhooksResponse:
+      description: Response from the GET /v2/webhooks endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              webhooks:
+                type: array
+                description: An array of webhooks.
+                items:
+                  $ref: "#/components/schemas/WebhookV2"
+              pagination:
+                $ref: "#/components/schemas/ResponsePagination"
+            required:
+              - webhooks
     PutWebhookResponse:
       description: Response from the PUT /v2/webhooks/{webhook_id} endpoint.
       content:
