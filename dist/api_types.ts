@@ -6673,7 +6673,7 @@ export type GetTeamComponentsPathParams = {
  */
 export type GetTeamComponentsQueryParams = {
   /**
-   * Number of items to return in a paged list of results. Defaults to 30.
+   * Number of items to return in a paged list of results. Defaults to 30. Maximum of 1000.
    */
   page_size?: number
   /**

@@ -889,7 +889,8 @@ paths:
             type: string
         - name: page_size
           in: query
-          description: Number of items to return in a paged list of results. Defaults to 30.
+          description: Number of items to return in a paged list of results. Defaults to
+            30. Maximum of 1000.
           schema:
             type: number
             default: 30
