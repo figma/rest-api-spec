@@ -2456,7 +2456,7 @@ export type ConnectorEndpoint =
 /**
  * Connector line type.
  */
-export type ConnectorLineType = 'STRAIGHT' | 'ELBOWED'
+export type ConnectorLineType = 'STRAIGHT' | 'ELBOWED' | 'CURVED'
 
 export type ConnectorTextBackground = CornerTrait & MinimalFillsTrait
 
@@ -6673,7 +6673,7 @@ export type GetTeamComponentsPathParams = {
  */
 export type GetTeamComponentsQueryParams = {
   /**
-   * Number of items to return in a paged list of results. Defaults to 30.
+   * Number of items to return in a paged list of results. Defaults to 30. Maximum of 1000.
    */
   page_size?: number
   /**
