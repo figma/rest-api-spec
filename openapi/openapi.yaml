@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.32.0
+  version: 0.33.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -2928,6 +2928,80 @@ components:
             - FIXED
             - HUG
             - FILL
+        gridRowCount:
+          type: number
+          description: 'The number of rows in the grid layout. This property is only
+            applicable for auto-layout frames with `layoutMode: "GRID"`.'
+        gridColumnCount:
+          type: number
+          description: 'The number of columns in the grid layout. This property is only
+            applicable for auto-layout frames with `layoutMode: "GRID"`.'
+        gridRowGap:
+          type: number
+          description: 'The distance between rows in the grid layout. This property is
+            only applicable for auto-layout frames with `layoutMode: "GRID"`.'
+          default: 0
+        gridColumnGap:
+          type: number
+          description: 'The distance between columns in the grid layout. This property is
+            only applicable for auto-layout frames with `layoutMode: "GRID"`.'
+          default: 0
+        gridColumnsSizing:
+          type: string
+          description: 'The string for the CSS grid-template-columns property. This
+            property is only applicable for auto-layout frames with `layoutMode:
+            "GRID"`.'
+        gridRowsSizing:
+          type: string
+          description: 'The string for the CSS grid-template-rows property. This property
+            is only applicable for auto-layout frames with `layoutMode:
+            "GRID"`.'
+        gridChildHorizontalAlign:
+          type: string
+          description: "Determines how a GRID frame's child should be aligned in the
+            horizontal direction within its grid area. This property is only
+            applicable for direct children of frames with `layoutMode:
+            \"GRID\"`."
+          enum:
+            - AUTO
+            - MIN
+            - CENTER
+            - MAX
+        gridChildVerticalAlign:
+          type: string
+          description: "Determines how a GRID frame's child should be aligned in the
+            vertical direction within its grid area. This property is only
+            applicable for direct children of frames with `layoutMode:
+            \"GRID\"`."
+          enum:
+            - AUTO
+            - MIN
+            - CENTER
+            - MAX
+        gridRowSpan:
+          type: number
+          description: "The number of rows that a GRID frame's child should span. This
+            property is only applicable for direct children of frames with
+            `layoutMode: \"GRID\"`."
+          default: 1
+        gridColumnSpan:
+          type: number
+          description: "The number of columns that a GRID frame's child should span. This
+            property is only applicable for direct children of frames with
+            `layoutMode: \"GRID\"`."
+          default: 1
+        gridRowAnchorIndex:
+          type: number
+          description: "The index of the row that a GRID frame's child should be anchored
+            to. This property is only applicable for direct children of frames
+            with `layoutMode: \"GRID\"`."
+          default: 0
+        gridColumnAnchorIndex:
+          type: number
+          description: "The index of the column that a GRID frame's child should be
+            anchored to. This property is only applicable for direct children of
+            frames with `layoutMode: \"GRID\"`."
+          default: 0
       required:
         - absoluteBoundingBox
         - absoluteRenderBounds
@@ -2972,6 +3046,7 @@ components:
             - NONE
             - HORIZONTAL
             - VERTICAL
+            - GRID
           default: NONE
         primaryAxisSizingMode:
           type: string
@@ -4895,6 +4970,9 @@ components:
             check the type before reading other properties.
           enum:
             - TEXTURE
+        visible:
+          type: boolean
+          description: Whether the texture effect is visible.
         noiseSize:
           type: number
           description: The size of the texture effect
@@ -4906,6 +4984,7 @@ components:
           description: Whether the texture is clipped to the shape
       required:
         - type
+        - visible
         - noiseSize
         - radius
         - clipToShape
@@ -4966,6 +5045,12 @@ components:
             check the type before reading other properties.
           enum:
             - NOISE
+        color:
+          $ref: "#/components/schemas/RGBA"
+          description: The color of the noise effect
+        visible:
+          type: boolean
+          description: Whether the noise effect is visible.
         blendMode:
           $ref: "#/components/schemas/BlendMode"
           description: Blend mode of the noise effect
@@ -4977,6 +5062,8 @@ components:
           description: The density of the noise effect
       required:
         - type
+        - color
+        - visible
         - noiseSize
         - density
         - blendMode
@@ -8706,6 +8793,9 @@ components:
                   - figma
                   - figjam
                   - slides
+                  - buzz
+                  - sites
+                  - make
                 description: The type of editor associated with this file.
               role:
                 type: string
