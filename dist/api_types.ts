@@ -5692,7 +5692,7 @@ export type DeleteCommentReactionResponse = {
   /**
    * For successful requests, this value is always `false`.
    */
-  error: false
+  error?: false
 }
 
 /**
