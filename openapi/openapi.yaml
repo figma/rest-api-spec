@@ -1231,7 +1231,7 @@ paths:
             - webhooks:read
       description: Returns a list of webhooks corresponding to the context or plan
         provided, if they exist. For plan, the webhooks for all contexts that
-        you have access to will be returned, and theresponse is paginated
+        you have access to will be returned, and the response is paginated
       operationId: getWebhooks
       parameters:
         - name: context
@@ -3185,7 +3185,7 @@ components:
                   - $ref: "#/components/schemas/PaintOverride"
                   - type: "null"
               description: Map from ID to PaintOverride for looking up fill overrides. To see
-                which regions are overriden, you must use the `geometry=paths`
+                which regions are overridden, you must use the `geometry=paths`
                 option. Each path returned may have an `overrideID` which maps
                 to this table.
             fillGeometry:
