@@ -2813,19 +2813,17 @@ components:
       type: object
       properties:
         absoluteBoundingBox:
+          $ref: "#/components/schemas/Rectangle"
+          nullable: true
           description: Bounding box of the node in absolute space coordinates.
-          oneOf:
-            - $ref: "#/components/schemas/Rectangle"
-            - type: "null"
         absoluteRenderBounds:
+          $ref: "#/components/schemas/Rectangle"
+          nullable: true
           description: The actual bounds of a node accounting for drop shadows, thick
             strokes, and anything else that may fall outside the node's regular
             bounding box defined in `x`, `y`, `width`, and `height`. The `x` and
             `y` inside this property represent the absolute position of the node
             on the page. This value will be `null` if the node is invisible.
-          oneOf:
-            - $ref: "#/components/schemas/Rectangle"
-            - type: "null"
         preserveRatio:
           type: boolean
           description: Keep height and width constrained to same ratio.
@@ -3181,9 +3179,8 @@ components:
             fillOverrideTable:
               type: object
               additionalProperties:
-                oneOf:
-                  - $ref: "#/components/schemas/PaintOverride"
-                  - type: "null"
+                $ref: "#/components/schemas/PaintOverride"
+                nullable: true
               description: Map from ID to PaintOverride for looking up fill overrides. To see
                 which regions are overriden, you must use the `geometry=paths`
                 option. Each path returned may have an `overrideID` which maps
@@ -3633,9 +3630,8 @@ components:
               $ref: "#/components/schemas/RGBA"
               description: Background color of the canvas.
             prototypeStartNodeID:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
               description: Node ID that corresponds to the start frame for prototypes. This is
                 deprecated with the introduction of multiple flows. Please use
                 the `flowStartingPoints` field.
@@ -5248,9 +5244,8 @@ components:
           type: string
           description: Font family of text (standard name).
         fontPostScriptName:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: PostScript font name.
         fontStyle:
           type: string
@@ -5701,9 +5696,8 @@ components:
         more actions.
       properties:
         trigger:
-          oneOf:
-            - $ref: "#/components/schemas/Trigger"
-            - type: "null"
+          $ref: "#/components/schemas/Trigger"
+          nullable: true
           description: The user event that initiates the interaction.
         actions:
           type: array
@@ -5862,9 +5856,8 @@ components:
               enum:
                 - UPDATE_MEDIA_RUNTIME
             destinationId:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
             mediaAction:
               type: string
               enum:
@@ -5894,9 +5887,8 @@ components:
               enum:
                 - UPDATE_MEDIA_RUNTIME
             destinationId:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
             mediaAction:
               type: string
               enum:
@@ -5906,6 +5898,7 @@ components:
               type: number
           required:
             - type
+            - destinationId
             - mediaAction
             - amountToSkip
         - type: object
@@ -5924,9 +5917,8 @@ components:
               enum:
                 - UPDATE_MEDIA_RUNTIME
             destinationId:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
             mediaAction:
               type: string
               enum:
@@ -5935,6 +5927,7 @@ components:
               type: number
           required:
             - type
+            - destinationId
             - mediaAction
             - newTimestamp
     NodeAction:
@@ -5946,15 +5939,13 @@ components:
           enum:
             - NODE
         destinationId:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
         navigation:
           $ref: "#/components/schemas/Navigation"
         transition:
-          oneOf:
-            - $ref: "#/components/schemas/Transition"
-            - type: "null"
+          $ref: "#/components/schemas/Transition"
+          nullable: true
         preserveScrollPosition:
           type: boolean
           description: Whether the scroll offsets of any scrollable elements in the
@@ -6117,9 +6108,8 @@ components:
           enum:
             - SET_VARIABLE
         variableId:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
         variableValue:
           $ref: "#/components/schemas/VariableData"
       required:
@@ -6134,17 +6124,15 @@ components:
           enum:
             - SET_VARIABLE_MODE
         variableCollectionId:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
         variableModeId:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
       required:
         - type
-        - variableId
-        - variableMode
+        - variableCollectionId
+        - variableModeId
     ConditionalAction:
       type: object
       description: Checks if a condition is met before performing certain actions by
@@ -6417,18 +6405,16 @@ components:
           format: date-time
           description: The UTC ISO 8601 time at which the comment was left
         resolved_at:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           format: date-time
           description: If set, the UTC ISO 8601 time the comment was resolved
         message:
           type: string
           description: The content of the comment
         order_id:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: Only set for top level comments. The number displayed with the
             comment in the UI
         reactions:
@@ -6442,6 +6428,7 @@ components:
         - file_key
         - user
         - created_at
+        - resolved_at
         - message
         - reactions
         - order_id
@@ -6509,31 +6496,31 @@ components:
         containingStateGroup:
           deprecated: true
           description: Deprecated - Use containingComponentSet instead.
-          oneOf:
-            - type: object
-              properties:
-                nodeId:
-                  type: string
-                  description: The ID of the state group node.
-                name:
-                  type: string
-                  description: The name of the state group node.
-            - type: "null"
+          type: object
+          properties:
+            nodeId:
+              type: string
+              description: The ID of the state group node.
+            name:
+              type: string
+              description: The name of the state group node.
+          nullable: true
         containingComponentSet:
           description: The component set node that contains the frame node.
-          oneOf:
-            - type: object
-              properties:
-                nodeId:
-                  type: string
-                  description: The ID of the component set node.
-                name:
-                  type: string
-                  description: The name of the component set node.
-            - type: "null"
+          type: object
+          properties:
+            nodeId:
+              type: string
+              description: The ID of the component set node.
+            name:
+              type: string
+              description: The name of the component set node.
+          nullable: true
       required:
         - pageId
         - pageName
+        - containingStateGroup
+        - containingComponentSet
     PublishedComponent:
       type: object
       description: An arrangement of published UI elements that can be instantiated
@@ -6709,14 +6696,12 @@ components:
           format: date-time
           description: The UTC ISO 8601 time at which the version was created
         label:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The label given to the version in the editor
         description:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The description of the version as entered in the editor
         user:
           $ref: "#/components/schemas/User"
@@ -6760,9 +6745,8 @@ components:
           $ref: "#/components/schemas/WebhookV2Status"
           description: The current status of the webhook
         client_id:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: The client ID of the OAuth application that registered this
             webhook, if any
         passcode:
@@ -6773,9 +6757,8 @@ components:
           type: string
           description: The endpoint that will be hit when the webhook is triggered
         description:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: Optional user-provided description or name for the webhook. This is
             provided to help make maintaining a number of webhooks more
             convenient. Max length 140 characters.
@@ -6824,9 +6807,8 @@ components:
         response_info:
           $ref: "#/components/schemas/WebhookV2ResponseInfo"
         error_msg:
-          type:
-            - string
-            - "null"
+          type: string
+          nullable: true
           description: Error message for this request. NULL if no error occurred
       required:
         - webhook_id
@@ -6856,9 +6838,7 @@ components:
         - payload
         - sent_at
     WebhookV2ResponseInfo:
-      type:
-        - object
-        - "null"
+      type: object
       description: Information regarding the reply sent back from a webhook endpoint
       properties:
         status:
@@ -7402,9 +7382,8 @@ components:
           type: number
           description: The timestamp of the event in seconds since the Unix epoch.
         actor:
-          type:
-            - object
-            - "null"
+          type: object
+          nullable: true
           description: The user who performed the action.
           properties:
             type:
@@ -7433,9 +7412,8 @@ components:
               type: string
               description: The type of the action.
             details:
-              type:
-                - object
-                - "null"
+              type: object
+              nullable: true
               description: Metadata of the action. Each action type supports its own metadata
                 attributes.
               additionalProperties: true
@@ -7472,9 +7450,8 @@ components:
           description: Contextual information about the event.
           properties:
             client_name:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
               description: The third-party application that triggered the event, if
                 applicable.
             ip_address:
@@ -7488,9 +7465,8 @@ components:
               type: string
               description: The id of the organization where the event took place.
             team_id:
-              type:
-                - string
-                - "null"
+              type: string
+              nullable: true
               description: The id of the team where the event took place -- if this took place
                 in a specific team.
           required:
@@ -8720,9 +8696,8 @@ components:
                 type: object
                 description: A map from node IDs to URLs of the rendered images.
                 additionalProperties:
-                  type:
-                    - string
-                    - "null"
+                  type: string
+                  nullable: true
                   description: A URL to the requested image.
                   format: uri
             required:
@@ -9531,19 +9506,19 @@ components:
                   type: object
                   properties:
                     file_key:
-                      type:
-                        - string
-                        - "null"
+                      type: string
+                      nullable: true
                       description: The file key.
                     node_id:
-                      type:
-                        - string
-                        - "null"
+                      type: string
+                      nullable: true
                       description: The node id.
                     error:
                       type: string
                       description: The error message.
                   required:
+                    - file_key
+                    - node_id
                     - error
             required:
               - links_created
