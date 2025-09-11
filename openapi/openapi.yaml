@@ -7705,13 +7705,7 @@ components:
           type: string
           description: The id of the variable collection that contains this variable.
         resolvedType:
-          type: string
-          description: The resolved type of the variable.
-          enum:
-            - BOOLEAN
-            - FLOAT
-            - STRING
-            - COLOR
+          $ref: "#/components/schemas/VariableResolvedDataType"
         valuesByMode:
           type: object
           description: The values for each mode of this variable.
@@ -8003,13 +7997,7 @@ components:
           description: The variable collection that will contain the variable. You can use
             the temporary id of a variable collection.
         resolvedType:
-          type: string
-          description: The resolved type of the variable.
-          enum:
-            - BOOLEAN
-            - FLOAT
-            - STRING
-            - COLOR
+          $ref: "#/components/schemas/VariableResolvedDataType"
         description:
           type: string
           description: The description of this variable.
