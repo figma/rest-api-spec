@@ -6487,6 +6487,15 @@ components:
         - id
         - handle
         - img_url
+    LinkAccess:
+      type: string
+      enum:
+        - view
+        - edit
+        - org_view
+        - org_edit
+        - inherit
+      description: Access policy for users who have the link to the resource.
     FrameInfo:
       type: object
       description: Data on the frame a component resides in.
@@ -7214,14 +7223,8 @@ components:
             - figma
             - figjam
         link_access:
-          type: string
+          $ref: "#/components/schemas/LinkAccess"
           description: Access policy for users who have the link to the file.
-          enum:
-            - view
-            - edit
-            - org_view
-            - org_edit
-            - inherit
         proto_link_access:
           type: string
           description: Access policy for users who have the link to the file's prototype.
@@ -8806,13 +8809,7 @@ components:
                 description: The role of the user making the API request in relation to the
                   file.
               link_access:
-                type: string
-                enum:
-                  - view
-                  - edit
-                  - org_view
-                  - org_edit
-                  - inherit
+                $ref: "#/components/schemas/LinkAccess"
                 description: Access policy for users who have the link to the file.
               url:
                 type: string
