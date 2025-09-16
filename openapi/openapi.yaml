@@ -6897,6 +6897,25 @@ components:
         mention:
           type: string
           description: User id that is set if a fragment refers to a user mention
+    WebhookPayload:
+      oneOf:
+        - $ref: "#/components/schemas/WebhookPingPayload"
+        - $ref: "#/components/schemas/WebhookFileUpdatePayload"
+        - $ref: "#/components/schemas/WebhookFileDeletePayload"
+        - $ref: "#/components/schemas/WebhookFileVersionUpdatePayload"
+        - $ref: "#/components/schemas/WebhookLibraryPublishPayload"
+        - $ref: "#/components/schemas/WebhookFileCommentPayload"
+        - $ref: "#/components/schemas/WebhookDevModeStatusUpdatePayload"
+      discriminator:
+        propertyName: event_type
+        mapping:
+          PING: "#/components/schemas/WebhookPingPayload"
+          FILE_UPDATE: "#/components/schemas/WebhookFileUpdatePayload"
+          FILE_DELETE: "#/components/schemas/WebhookFileDeletePayload"
+          FILE_VERSION_UPDATE: "#/components/schemas/WebhookFileVersionUpdatePayload"
+          LIBRARY_PUBLISH: "#/components/schemas/WebhookLibraryPublishPayload"
+          FILE_COMMENT: "#/components/schemas/WebhookFileCommentPayload"
+          DEV_MODE_STATUS_UPDATE: "#/components/schemas/WebhookDevModeStatusUpdatePayload"
     WebhookBasePayload:
       type: object
       properties:
