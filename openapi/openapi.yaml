@@ -6487,6 +6487,13 @@ components:
         - id
         - handle
         - img_url
+    Role:
+      type: string
+      enum:
+        - owner
+        - editor
+        - viewer
+      description: The role of the user making the API request in relation to the resource.
     FrameInfo:
       type: object
       description: Data on the frame a component resides in.
@@ -8541,11 +8548,7 @@ components:
                 type: string
                 description: The name of the file as it appears in the editor.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               lastModified:
@@ -8640,11 +8643,7 @@ components:
                 type: string
                 description: The name of the file as it appears in the editor.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               lastModified:
@@ -8798,11 +8797,7 @@ components:
                   - make
                 description: The type of editor associated with this file.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               link_access:
