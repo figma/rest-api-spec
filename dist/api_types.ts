@@ -504,7 +504,7 @@ export type HasExportSettingsTrait = {
 export type HasGeometryTrait = MinimalFillsTrait &
   MinimalStrokesTrait & {
     /**
-     * Map from ID to PaintOverride for looking up fill overrides. To see which regions are overriden,
+     * Map from ID to PaintOverride for looking up fill overrides. To see which regions are overridden,
      * you must use the `geometry=paths` option. Each path returned may have an `overrideID` which maps
      * to this table.
      */
@@ -2232,7 +2232,7 @@ export type BaseTypeStyle = {
   /**
    * Text casing applied to the node, default is the original casing.
    */
-  textCase?: 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
+  textCase?: 'ORIGINAL' | 'UPPER' | 'LOWER' | 'TITLE' | 'SMALL_CAPS' | 'SMALL_CAPS_FORCED'
 
   /**
    * Horizontal text alignment as string enum.
@@ -3960,7 +3960,7 @@ export type ActivityLogFileEntity = {
   /**
    * Access policy for users who have the link to the file.
    */
-  link_access: 'view' | 'edit' | 'org_view' | 'org_edit' | 'inherit'
+  link_access: LinkAccess
 
   /**
    * Access policy for users who have the link to the file's prototype.
@@ -4418,7 +4418,7 @@ export type LocalVariable = {
   /**
    * The resolved type of the variable.
    */
-  resolvedType: 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR'
+  resolvedType: VariableResolvedDataType
 
   /**
    * The values for each mode of this variable.
@@ -4531,7 +4531,7 @@ export type PublishedVariable = {
   /**
    * The resolved type of the variable.
    */
-  resolvedDataType: 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR'
+  resolvedDataType: VariableResolvedDataType
 
   /**
    * The UTC ISO 8601 time at which the variable was last updated.
@@ -4711,7 +4711,7 @@ export type VariableCreate = {
   /**
    * The resolved type of the variable.
    */
-  resolvedType: 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR'
+  resolvedType: VariableResolvedDataType
 
   /**
    * The description of this variable.
@@ -5306,6 +5306,16 @@ export type ErrorResponsePayloadWithErrorBoolean = {
 }
 
 /**
+ * Access policy for users who have the link to the resource.
+ */
+export type LinkAccess = 'view' | 'edit' | 'org_view' | 'org_edit' | 'inherit'
+
+/**
+ * The role of the user making the API request in relation to the resource.
+ */
+export type Role = 'owner' | 'editor' | 'viewer'
+
+/**
  * Response from the GET /v1/files/{file_key} endpoint.
  */
 export type GetFileResponse = {
@@ -5317,7 +5327,7 @@ export type GetFileResponse = {
   /**
    * The role of the user making the API request in relation to the file.
    */
-  role: 'owner' | 'editor' | 'viewer'
+  role: Role
 
   /**
    * The UTC ISO 8601 time at which the file was last modified.
@@ -5410,7 +5420,7 @@ export type GetFileNodesResponse = {
   /**
    * The role of the user making the API request in relation to the file.
    */
-  role: 'owner' | 'editor' | 'viewer'
+  role: Role
 
   /**
    * The UTC ISO 8601 time at which the file was last modified.
@@ -5542,12 +5552,12 @@ export type GetFileMetaResponse = {
   /**
    * The role of the user making the API request in relation to the file.
    */
-  role?: 'owner' | 'editor' | 'viewer'
+  role?: Role
 
   /**
    * Access policy for users who have the link to the file.
    */
-  link_access?: 'view' | 'edit' | 'org_view' | 'org_edit' | 'inherit'
+  link_access?: LinkAccess
 
   /**
    * The URL of the file.
