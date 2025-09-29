@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.33.0
+  version: 0.34.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -3185,7 +3185,7 @@ components:
                   - $ref: "#/components/schemas/PaintOverride"
                   - type: "null"
               description: Map from ID to PaintOverride for looking up fill overrides. To see
-                which regions are overriden, you must use the `geometry=paths`
+                which regions are overridden, you must use the `geometry=paths`
                 option. Each path returned may have an `overrideID` which maps
                 to this table.
             fillGeometry:
@@ -5269,6 +5269,7 @@ components:
           type: string
           description: Text casing applied to the node, default is the original casing.
           enum:
+            - ORIGINAL
             - UPPER
             - LOWER
             - TITLE
@@ -7214,14 +7215,8 @@ components:
             - figma
             - figjam
         link_access:
-          type: string
+          $ref: "#/components/schemas/LinkAccess"
           description: Access policy for users who have the link to the file.
-          enum:
-            - view
-            - edit
-            - org_view
-            - org_edit
-            - inherit
         proto_link_access:
           type: string
           description: Access policy for users who have the link to the file's prototype.
@@ -7705,13 +7700,8 @@ components:
           type: string
           description: The id of the variable collection that contains this variable.
         resolvedType:
-          type: string
+          $ref: "#/components/schemas/VariableResolvedDataType"
           description: The resolved type of the variable.
-          enum:
-            - BOOLEAN
-            - FLOAT
-            - STRING
-            - COLOR
         valuesByMode:
           type: object
           description: The values for each mode of this variable.
@@ -7816,13 +7806,8 @@ components:
           type: string
           description: The id of the variable collection that contains this variable.
         resolvedDataType:
-          type: string
+          $ref: "#/components/schemas/VariableResolvedDataType"
           description: The resolved type of the variable.
-          enum:
-            - BOOLEAN
-            - FLOAT
-            - STRING
-            - COLOR
         updatedAt:
           type: string
           format: date-time
@@ -8003,13 +7988,8 @@ components:
           description: The variable collection that will contain the variable. You can use
             the temporary id of a variable collection.
         resolvedType:
-          type: string
+          $ref: "#/components/schemas/VariableResolvedDataType"
           description: The resolved type of the variable.
-          enum:
-            - BOOLEAN
-            - FLOAT
-            - STRING
-            - COLOR
         description:
           type: string
           description: The description of this variable.
@@ -8529,6 +8509,22 @@ components:
         - error
         - status
         - message
+    LinkAccess:
+      type: string
+      description: Access policy for users who have the link to the resource.
+      enum:
+        - view
+        - edit
+        - org_view
+        - org_edit
+        - inherit
+    Role:
+      type: string
+      description: The role of the user making the API request in relation to the resource.
+      enum:
+        - owner
+        - editor
+        - viewer
   responses:
     GetFileResponse:
       description: Response from the GET /v1/files/{file_key} endpoint.
@@ -8541,11 +8537,7 @@ components:
                 type: string
                 description: The name of the file as it appears in the editor.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               lastModified:
@@ -8640,11 +8632,7 @@ components:
                 type: string
                 description: The name of the file as it appears in the editor.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               lastModified:
@@ -8798,21 +8786,11 @@ components:
                   - make
                 description: The type of editor associated with this file.
               role:
-                type: string
-                enum:
-                  - owner
-                  - editor
-                  - viewer
+                $ref: "#/components/schemas/Role"
                 description: The role of the user making the API request in relation to the
                   file.
               link_access:
-                type: string
-                enum:
-                  - view
-                  - edit
-                  - org_view
-                  - org_edit
-                  - inherit
+                $ref: "#/components/schemas/LinkAccess"
                 description: Access policy for users who have the link to the file.
               url:
                 type: string
