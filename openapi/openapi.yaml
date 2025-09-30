@@ -1231,7 +1231,7 @@ paths:
             - webhooks:read
       description: Returns a list of webhooks corresponding to the context or plan
         provided, if they exist. For plan, the webhooks for all contexts that
-        you have access to will be returned, and theresponse is paginated
+        you have access to will be returned, and the response is paginated
       operationId: getWebhooks
       parameters:
         - name: context
