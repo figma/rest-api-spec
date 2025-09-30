@@ -4894,6 +4894,11 @@ components:
       oneOf:
         - $ref: "#/components/schemas/NormalBlurEffect"
         - $ref: "#/components/schemas/ProgressiveBlurEffect"
+      discriminator:
+        propertyName: blurType
+        mapping:
+          NORMAL: "#/components/schemas/NormalBlurEffect"
+          PROGRESSIVE: "#/components/schemas/ProgressiveBlurEffect"
     BaseBlurEffect:
       type: object
       description: Base properties shared by all blur effects
