@@ -6750,6 +6750,10 @@ components:
           type: string
           description: The type of context this webhook is attached to. The value will be
             "PROJECT", "TEAM", or "FILE"
+          enum:
+            - PROJECT
+            - TEAM
+            - FILE
         context_id:
           type: string
           description: The ID of the context this webhook is attached to
