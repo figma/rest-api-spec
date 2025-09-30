@@ -5072,6 +5072,12 @@ components:
         - $ref: "#/components/schemas/MonotoneNoiseEffect"
         - $ref: "#/components/schemas/MultitoneNoiseEffect"
         - $ref: "#/components/schemas/DuotoneNoiseEffect"
+      discriminator:
+        propertyName: noiseType
+        mapping:
+          MONOTONE: "#/components/schemas/MonotoneNoiseEffect"
+          MULTITONE: "#/components/schemas/MultitoneNoiseEffect"
+          DUOTONE: "#/components/schemas/DuotoneNoiseEffect"
     Effect:
       oneOf:
         - $ref: "#/components/schemas/DropShadowEffect"
