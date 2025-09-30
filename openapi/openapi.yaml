@@ -6009,6 +6009,17 @@ components:
       oneOf:
         - $ref: "#/components/schemas/SimpleTransition"
         - $ref: "#/components/schemas/DirectionalTransition"
+      discriminator:
+        propertyName: type
+        mapping:
+          DISSOLVE: "#/components/schemas/SimpleTransition"
+          SMART_ANIMATE: "#/components/schemas/SimpleTransition"
+          SCROLL_ANIMATE: "#/components/schemas/SimpleTransition"
+          MOVE_IN: "#/components/schemas/DirectionalTransition"
+          MOVE_OUT: "#/components/schemas/DirectionalTransition"
+          PUSH: "#/components/schemas/DirectionalTransition"
+          SLIDE_IN: "#/components/schemas/DirectionalTransition"
+          SLIDE_OUT: "#/components/schemas/DirectionalTransition"
     SimpleTransition:
       type: object
       description: Describes an animation used when navigating in a prototype.
