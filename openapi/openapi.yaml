@@ -4399,6 +4399,12 @@ components:
         - SATURATION
         - COLOR
         - LUMINOSITY
+    PatternAlignment:
+      type: string
+      enum:
+        - START
+        - CENTER
+        - END
     Vector:
       type: object
       description: A 2d vector.
@@ -4653,19 +4659,11 @@ components:
               $ref: "#/components/schemas/Vector"
               description: The spacing for the pattern
             horizontalAlignment:
-              type: string
+              $ref: "#/components/schemas/PatternAlignment"
               description: The horizontal alignment for the pattern
-              enum:
-                - START
-                - CENTER
-                - END
             verticalAlignment:
-              type: string
+              $ref: "#/components/schemas/PatternAlignment"
               description: The vertical alignment for the pattern
-              enum:
-                - START
-                - CENTER
-                - END
           required:
             - type
             - sourceNodeId
