@@ -3490,11 +3490,7 @@ components:
             status applied to it.
           properties:
             type:
-              type: string
-              enum:
-                - NONE
-                - READY_FOR_DEV
-                - COMPLETED
+              $ref: "#/components/schemas/DevModeStatus"
             description:
               type: string
               description: An optional field where the designer can add more information about
@@ -4201,6 +4197,12 @@ components:
         - $ref: "#/components/schemas/IsLayerTrait"
         - $ref: "#/components/schemas/HasExportSettingsTrait"
         - $ref: "#/components/schemas/HasChildrenTrait"
+    DevModeStatus:
+      type: string
+      enum:
+        - NONE
+        - READY_FOR_DEV
+        - COMPLETED
     RGB:
       type: object
       description: An RGB color
@@ -7157,7 +7159,7 @@ components:
               description: An array of related links that have been applied to the layer in
                 the file
             status:
-              type: string
+              $ref: "#/components/schemas/DevModeStatus"
               description: The Dev Mode status. Either "NONE", "READY_FOR_DEV", or "COMPLETED"
             triggered_by:
               $ref: "#/components/schemas/User"
