@@ -6260,6 +6260,11 @@ components:
           oneOf:
             - $ref: "#/components/schemas/MeasurementOffsetInner"
             - $ref: "#/components/schemas/MeasurementOffsetOuter"
+          discriminator:
+            propertyName: type
+            mapping:
+              INNER: "#/components/schemas/MeasurementOffsetInner"
+              OUTER: "#/components/schemas/MeasurementOffsetOuter"
         freeText:
           type: string
           description: When manually overridden, the displayed value of the measurement
