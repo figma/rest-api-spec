@@ -5812,24 +5812,36 @@ components:
         - type
         - mediaHitTime
     Action:
-      type: object
       description: An action that is performed when a trigger is activated.
       oneOf:
-        - type: object
-          properties:
-            type:
-              type: string
-              enum:
-                - BACK
-                - CLOSE
-          required:
-            - type
+        - $ref: "#/components/schemas/ReturnAction"
         - $ref: "#/components/schemas/OpenURLAction"
         - $ref: "#/components/schemas/UpdateMediaRuntimeAction"
         - $ref: "#/components/schemas/SetVariableAction"
         - $ref: "#/components/schemas/SetVariableModeAction"
         - $ref: "#/components/schemas/ConditionalAction"
         - $ref: "#/components/schemas/NodeAction"
+      discriminator:
+        propertyName: type
+        mapping:
+          BACK: "#/components/schemas/ReturnAction"
+          CLOSE: "#/components/schemas/ReturnAction"
+          URL: "#/components/schemas/OpenURLAction"
+          UPDATE_MEDIA_RUNTIME: "#/components/schemas/UpdateMediaRuntimeAction"
+          SET_VARIABLE: "#/components/schemas/SetVariableAction"
+          SET_VARIABLE_MODE: "#/components/schemas/SetVariableModeAction"
+          CONDITIONAL: "#/components/schemas/ConditionalAction"
+          NODE: "#/components/schemas/NodeAction"
+    ReturnAction:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - BACK
+            - CLOSE
+      required:
+        - type
     OpenURLAction:
       type: object
       description: An action that opens a URL.
