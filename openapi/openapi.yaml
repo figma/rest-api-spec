@@ -652,12 +652,8 @@ paths:
                     comment. You cannot reply to other replies (a comment that
                     has a parent_id).
                 client_meta:
+                  $ref: "#/components/schemas/ClientMeta"
                   description: The position where to place the comment.
-                  oneOf:
-                    - $ref: "#/components/schemas/Vector"
-                    - $ref: "#/components/schemas/FrameOffset"
-                    - $ref: "#/components/schemas/Region"
-                    - $ref: "#/components/schemas/FrameOffsetRegion"
               required:
                 - message
       responses:
@@ -6394,16 +6390,8 @@ components:
           type: string
           description: Unique identifier for comment.
         client_meta:
-          description: Positioning information of the comment. Includes information on the
-            location of the comment pin, which is either the absolute
-            coordinates on the canvas or a relative offset within a frame. If
-            the comment is a region, it will also contain the region height,
-            width, and position of the anchor in regards to the region.
-          oneOf:
-            - $ref: "#/components/schemas/Vector"
-            - $ref: "#/components/schemas/FrameOffset"
-            - $ref: "#/components/schemas/Region"
-            - $ref: "#/components/schemas/FrameOffsetRegion"
+          $ref: "#/components/schemas/ClientMeta"
+          description: The position of the comment.
         file_key:
           type: string
           description: The file in which the comment lives
@@ -6446,6 +6434,17 @@ components:
         - message
         - reactions
         - order_id
+    ClientMeta:
+      description: Positioning information of a comment. Includes information on the
+        location of the comment pin, which is either the absolute
+        coordinates on the canvas or a relative offset within a frame. If
+        the comment is a region, it will also contain the region height,
+        width, and position of the anchor in regards to the region.
+      oneOf:
+        - $ref: "#/components/schemas/Vector"
+        - $ref: "#/components/schemas/FrameOffset"
+        - $ref: "#/components/schemas/Region"
+        - $ref: "#/components/schemas/FrameOffsetRegion"
     Reaction:
       type: object
       description: A reaction left by a user.
