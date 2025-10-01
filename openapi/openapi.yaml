@@ -8580,7 +8580,7 @@ components:
                   $ref: "#/components/schemas/Style"
                 description: A mapping from style IDs to style metadata.
               linkAccess:
-                type: string
+                $ref: "#/components/schemas/LinkAccess"
                 description: The share permission level of the file link.
               mainFileKey:
                 type: string
