@@ -605,6 +605,10 @@ export type IndividualStrokesTrait = {
   individualStrokeWeights?: StrokeWeights
 }
 
+export type VariableWidthStrokesTrait = object
+
+export type ComplexStrokesTrait = object
+
 export type CornerTrait = {
   /**
    * Radius of each corner if a single radius is set for all corners
@@ -795,6 +799,8 @@ export type DevStatusTrait = {
 
 export type AnnotationsTrait = object
 
+export type TransformModifiersTrait = object
+
 export type FrameTraits = IsLayerTrait &
   HasBlendModeAndOpacityTrait &
   HasChildrenTrait &
@@ -807,6 +813,8 @@ export type FrameTraits = IsLayerTrait &
   HasMaskTrait &
   TransitionSourceTrait &
   IndividualStrokesTrait &
+  VariableWidthStrokesTrait &
+  ComplexStrokesTrait &
   DevStatusTrait &
   AnnotationsTrait
 
@@ -817,7 +825,9 @@ export type DefaultShapeTraits = IsLayerTrait &
   HasExportSettingsTrait &
   HasEffectsTrait &
   HasMaskTrait &
-  TransitionSourceTrait
+  TransitionSourceTrait &
+  VariableWidthStrokesTrait &
+  ComplexStrokesTrait
 
 export type CornerRadiusShapeTraits = DefaultShapeTraits & CornerTrait
 
@@ -1087,7 +1097,8 @@ export type TransformGroupNode = {
    * The type of this node, represented by the string literal "TRANSFORM_GROUP"
    */
   type: 'TRANSFORM_GROUP'
-} & FrameTraits
+} & FrameTraits &
+  TransformModifiersTrait
 
 export type SliceNode = {
   /**
@@ -4361,6 +4372,12 @@ export type LocalVariableCollection = {
     modeId: string
 
     /**
+     * The unique identifier of this mode's parent mode from the parent variable collection. This will
+     * be `undefined` if this mode does not inherit from a parent mode.
+     */
+    parentModeId?: string
+
+    /**
      * The name of this mode.
      */
     name: string
@@ -4375,6 +4392,23 @@ export type LocalVariableCollection = {
    * Whether this variable collection is remote.
    */
   remote: boolean
+
+  /**
+   * Whether this variable collection is an extension of another variable collection.
+   */
+  isExtension?: boolean
+
+  /**
+   * The id of the parent variable collection that this variable collection is an extension of. If
+   * this variable collection is not an extension, this value will be `undefined`.
+   */
+  parentVariableCollectionId?: string
+
+  /**
+   * The overrides for the variables in this variable collection as a map of variable ids to a map of
+   * mode ids to variable values.
+   */
+  variableOverrides?: { [key: string]: { [key: string]: VariableValue } }
 
   /**
    * Whether this variable collection is hidden when publishing the current file as a library.
@@ -4568,6 +4602,17 @@ export type VariableCollectionCreate = {
    * Whether this variable collection is hidden when publishing the current file as a library.
    */
   hiddenFromPublishing?: boolean
+
+  /**
+   * The id of the parent variable collection that this variable collection is extending from.
+   */
+  parentVariableCollectionId?: string
+
+  /**
+   * Maps inherited modes from the parent variable collection to the initial mode ids on the extended
+   * variable collection.
+   */
+  initialModeIdToParentModeIdMapping?: { [key: string]: string }
 }
 
 /**
@@ -4636,7 +4681,7 @@ export type VariableModeCreate = {
 
   /**
    * The variable collection that will contain the mode. You can use the temporary id of a variable
-   * collection.
+   * collection. New modes cannot be created on extended collections.
    */
   variableCollectionId: string
 }
@@ -4661,7 +4706,7 @@ export type VariableModeUpdate = {
   name?: string
 
   /**
-   * The variable collection that contains the mode.
+   * The variable collection that contains the mode. Modes cannot be updated on extended collections.
    */
   variableCollectionId: string
 }
@@ -4676,7 +4721,8 @@ export type VariableModeDelete = {
   action: 'DELETE'
 
   /**
-   * The id of the variable mode to delete.
+   * The id of the variable mode to delete. Modes cannot be deleted on extended collections unless its
+   * parent mode has been deleted.
    */
   id: string
 }
@@ -4806,9 +4852,10 @@ export type VariableModeValue = {
 
 /**
  * The value for the variable. The value must match the variable's type. If setting to a variable
- * alias, the alias must resolve to this type.
+ * alias, the alias must resolve to this type. If overriding a value, the value type must match the
+ * variable's type. If removing an overridden value, the value must be `null`.
  */
-export type VariableValue = boolean | number | string | RGB | RGBA | VariableAlias
+export type VariableValue = boolean | number | string | RGB | RGBA | VariableAlias | null
 
 /**
  * A dev resource in a file

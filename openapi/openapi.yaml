@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.34.0
+  version: 0.35.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -3290,6 +3290,12 @@ components:
           $ref: "#/components/schemas/StrokeWeights"
           description: An object including the top, bottom, left, and right stroke
             weights. Only returned if individual stroke weights are used.
+    VariableWidthStrokesTrait:
+      type: object
+      properties: {}
+    ComplexStrokesTrait:
+      type: object
+      properties: {}
     CornerTrait:
       type: object
       properties:
@@ -3453,6 +3459,7 @@ components:
         - style
         - characterStyleOverrides
         - styleOverrideTable
+        - textPathStartData
     HasTextSublayerTrait:
       type: object
       properties:
@@ -3504,6 +3511,9 @@ components:
     AnnotationsTrait:
       type: object
       properties: {}
+    TransformModifiersTrait:
+      type: object
+      properties: {}
     FrameTraits:
       allOf:
         - $ref: "#/components/schemas/IsLayerTrait"
@@ -3518,6 +3528,8 @@ components:
         - $ref: "#/components/schemas/HasMaskTrait"
         - $ref: "#/components/schemas/TransitionSourceTrait"
         - $ref: "#/components/schemas/IndividualStrokesTrait"
+        - $ref: "#/components/schemas/VariableWidthStrokesTrait"
+        - $ref: "#/components/schemas/ComplexStrokesTrait"
         - $ref: "#/components/schemas/DevStatusTrait"
         - $ref: "#/components/schemas/AnnotationsTrait"
     DefaultShapeTraits:
@@ -3530,6 +3542,8 @@ components:
         - $ref: "#/components/schemas/HasEffectsTrait"
         - $ref: "#/components/schemas/HasMaskTrait"
         - $ref: "#/components/schemas/TransitionSourceTrait"
+        - $ref: "#/components/schemas/VariableWidthStrokesTrait"
+        - $ref: "#/components/schemas/ComplexStrokesTrait"
     CornerRadiusShapeTraits:
       allOf:
         - $ref: "#/components/schemas/DefaultShapeTraits"
@@ -3985,6 +3999,7 @@ components:
           required:
             - type
         - $ref: "#/components/schemas/FrameTraits"
+        - $ref: "#/components/schemas/TransformModifiersTrait"
     SliceNode:
       allOf:
         - type: object
@@ -7646,6 +7661,11 @@ components:
               modeId:
                 type: string
                 description: The unique identifier of this mode.
+              parentModeId:
+                type: string
+                description: The unique identifier of this mode's parent mode from the parent
+                  variable collection. This will be `undefined` if this mode
+                  does not inherit from a parent mode.
               name:
                 type: string
                 description: The name of this mode.
@@ -7658,6 +7678,23 @@ components:
         remote:
           type: boolean
           description: Whether this variable collection is remote.
+        isExtension:
+          type: boolean
+          description: Whether this variable collection is an extension of another
+            variable collection.
+        parentVariableCollectionId:
+          type: string
+          description: The id of the parent variable collection that this variable
+            collection is an extension of. If this variable collection is not an
+            extension, this value will be `undefined`.
+        variableOverrides:
+          type: object
+          description: The overrides for the variables in this variable collection as a
+            map of variable ids to a map of mode ids to variable values.
+          additionalProperties:
+            type: object
+            additionalProperties:
+              $ref: "#/components/schemas/VariableValue"
         hiddenFromPublishing:
           type: boolean
           description: Whether this variable collection is hidden when publishing the
@@ -7845,6 +7882,16 @@ components:
           description: Whether this variable collection is hidden when publishing the
             current file as a library.
           default: false
+        parentVariableCollectionId:
+          type: string
+          description: The id of the parent variable collection that this variable
+            collection is extending from.
+        initialModeIdToParentModeIdMapping:
+          type: object
+          description: Maps inherited modes from the parent variable collection to the
+            initial mode ids on the extended variable collection.
+          additionalProperties:
+            type: string
       required:
         - action
         - name
@@ -7915,7 +7962,8 @@ components:
         variableCollectionId:
           type: string
           description: The variable collection that will contain the mode. You can use the
-            temporary id of a variable collection.
+            temporary id of a variable collection. New modes cannot be created
+            on extended collections.
       required:
         - action
         - name
@@ -7937,7 +7985,8 @@ components:
           description: The name of this variable mode.
         variableCollectionId:
           type: string
-          description: The variable collection that contains the mode.
+          description: The variable collection that contains the mode. Modes cannot be
+            updated on extended collections.
       required:
         - action
         - id
@@ -7953,7 +8002,8 @@ components:
             - DELETE
         id:
           type: string
-          description: The id of the variable mode to delete.
+          description: The id of the variable mode to delete. Modes cannot be deleted on
+            extended collections unless its parent mode has been deleted.
       required:
         - action
         - id
@@ -8094,7 +8144,8 @@ components:
     VariableValue:
       description: The value for the variable. The value must match the variable's
         type. If setting to a variable alias, the alias must resolve to this
-        type.
+        type. If overriding a value, the value type must match the variable's
+        type. If removing an overridden value, the value must be `null`.
       oneOf:
         - type: boolean
         - type: number
@@ -8102,6 +8153,7 @@ components:
         - $ref: "#/components/schemas/RGB"
         - $ref: "#/components/schemas/RGBA"
         - $ref: "#/components/schemas/VariableAlias"
+        - type: "null"
     DevResource:
       type: object
       description: A dev resource in a file
