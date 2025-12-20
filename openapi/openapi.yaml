@@ -5591,31 +5591,28 @@ components:
         - SPEECH_BUBBLE
         - INTERNAL_STORAGE
     ConnectorEndpoint:
+      type: object
       description: Stores canvas location for a connector start/end point.
-      oneOf:
-        - type: object
-          properties:
-            endpointNodeId:
-              type: string
-              description: Node ID that this endpoint attaches to.
-            position:
-              $ref: "#/components/schemas/Vector"
-              description: The position of the endpoint relative to the node.
-        - type: object
-          properties:
-            endpointNodeId:
-              type: string
-              description: Node ID that this endpoint attaches to.
-            magnet:
-              type: string
-              description: The magnet type is a string enum.
-              enum:
-                - AUTO
-                - TOP
-                - BOTTOM
-                - LEFT
-                - RIGHT
-                - CENTER
+      properties:
+        endpointNodeId:
+          type: string
+          description: Node ID that this endpoint attaches to.
+        position:
+          $ref: "#/components/schemas/Vector"
+          description: The position of the endpoint relative to the node. Not present if
+            magnet is present
+        magnet:
+          type: string
+          description: The magnet type is a string enum. Not present if position is present.
+          enum:
+            - AUTO
+            - TOP
+            - BOTTOM
+            - LEFT
+            - RIGHT
+            - CENTER
+      required:
+        - endpointNodeId
     ConnectorLineType:
       type: string
       description: Connector line type.
