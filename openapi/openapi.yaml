@@ -4148,26 +4148,12 @@ components:
               $ref: "#/components/schemas/ConnectorEndpoint"
               description: The ending point of the connector.
             connectorStartStrokeCap:
-              type: string
+              $ref: "#/components/schemas/ConnectorStrokeCap"
               description: A string enum describing the end cap of the start of the connector.
-              enum:
-                - NONE
-                - LINE_ARROW
-                - TRIANGLE_ARROW
-                - DIAMOND_FILLED
-                - CIRCLE_FILLED
-                - TRIANGLE_FILLED
               default: NONE
             connectorEndStrokeCap:
-              type: string
+              $ref: "#/components/schemas/ConnectorStrokeCap"
               description: A string enum describing the end cap of the end of the connector.
-              enum:
-                - NONE
-                - LINE_ARROW
-                - TRIANGLE_ARROW
-                - DIAMOND_FILLED
-                - CIRCLE_FILLED
-                - TRIANGLE_FILLED
               default: NONE
             connectorLineType:
               $ref: "#/components/schemas/ConnectorLineType"
@@ -5616,6 +5602,16 @@ components:
                 - LEFT
                 - RIGHT
                 - CENTER
+    ConnectorStrokeCap:
+      type: string
+      description: Connector stroke cap.
+      enum:
+        - NONE
+        - LINE_ARROW
+        - TRIANGLE_ARROW
+        - DIAMOND_FILLED
+        - CIRCLE_FILLED
+        - TRIANGLE_FILLED
     ConnectorLineType:
       type: string
       description: Connector line type.
