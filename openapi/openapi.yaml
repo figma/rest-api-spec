@@ -4696,6 +4696,16 @@ components:
         - $ref: "#/components/schemas/GradientPaint"
         - $ref: "#/components/schemas/ImagePaint"
         - $ref: "#/components/schemas/PatternPaint"
+      discriminator:
+        propertyName: type
+        mapping:
+          SOLID: "#/components/schemas/SolidPaint"
+          GRADIENT_LINEAR: "#/components/schemas/GradientPaint"
+          GRADIENT_RADIAL: "#/components/schemas/GradientPaint"
+          GRADIENT_ANGULAR: "#/components/schemas/GradientPaint"
+          GRADIENT_DIAMOND: "#/components/schemas/GradientPaint"
+          IMAGE: "#/components/schemas/ImagePaint"
+          PATTERN: "#/components/schemas/PatternPaint"
     LayoutConstraint:
       type: object
       description: Layout constraint relative to containing Frame
