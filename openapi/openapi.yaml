@@ -3309,6 +3309,7 @@ components:
             from 0 to 1. 0 is the default and means that the corner is perfectly
             circular. A value of 0.6 means the corner matches the iOS 7
             "squircle" icon shape. Other values produce various other curves.
+          default: 0
         rectangleCornerRadii:
           type: array
           items:
