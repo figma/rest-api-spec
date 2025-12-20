@@ -7224,11 +7224,8 @@ components:
           type: string
           description: Name of the file.
         editor_type:
-          type: string
+          $ref: "#/components/schemas/EditorType"
           description: Indicates if the object is a file on Figma Design or FigJam.
-          enum:
-            - figma
-            - figjam
         link_access:
           $ref: "#/components/schemas/LinkAccess"
           description: Access policy for users who have the link to the file.
@@ -7363,12 +7360,9 @@ components:
           type: string
           description: Name of the plugin.
         editor_type:
-          type: string
+          $ref: "#/components/schemas/EditorType"
           description: Indicates if the object is a plugin is available on Figma Design or
             FigJam.
-          enum:
-            - figma
-            - figjam
       required:
         - type
         - id
@@ -7390,12 +7384,9 @@ components:
           type: string
           description: Name of the widget.
         editor_type:
-          type: string
+          $ref: "#/components/schemas/EditorType"
           description: Indicates if the object is a widget available on Figma Design or
             FigJam.
-          enum:
-            - figma
-            - figjam
       required:
         - type
         - id
@@ -8561,6 +8552,16 @@ components:
         - error
         - status
         - message
+    EditorType:
+      type: string
+      description: The type of editor.
+      enum:
+        - figma
+        - figjam
+        - slides
+        - buzz
+        - sites
+        - make
     LinkAccess:
       type: string
       description: Access policy for users who have the link to the resource.
@@ -8597,10 +8598,7 @@ components:
                 format: date-time
                 description: The UTC ISO 8601 time at which the file was last modified.
               editorType:
-                type: string
-                enum:
-                  - figma
-                  - figjam
+                $ref: "#/components/schemas/EditorType"
                 description: The type of editor associated with this file.
               thumbnailUrl:
                 type: string
@@ -8692,10 +8690,7 @@ components:
                 format: date-time
                 description: The UTC ISO 8601 time at which the file was last modified.
               editorType:
-                type: string
-                enum:
-                  - figma
-                  - figjam
+                $ref: "#/components/schemas/EditorType"
                 description: The type of editor associated with this file.
               thumbnailUrl:
                 type: string
@@ -8828,14 +8823,7 @@ components:
                 type: string
                 description: A URL to a thumbnail image of the file.
               editorType:
-                type: string
-                enum:
-                  - figma
-                  - figjam
-                  - slides
-                  - buzz
-                  - sites
-                  - make
+                $ref: "#/components/schemas/EditorType"
                 description: The type of editor associated with this file.
               role:
                 $ref: "#/components/schemas/Role"
