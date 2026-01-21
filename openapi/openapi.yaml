@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.35.0
+  version: 0.36.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -7687,6 +7687,14 @@ components:
           description: The id of the parent variable collection that this variable
             collection is an extension of. If this variable collection is not an
             extension, this value will be `undefined`.
+        rootVariableCollectionId:
+          type: string
+          description: The id of the root variable collection in the extension chain. This
+            is the ID of the original (non-extended) collection at the top of
+            the parent chain. For example, if Collection C extends B which
+            extends A (root), then `rootVariableCollectionId` is A's ID. If this
+            variable collection is not an extension, this value will be
+            `undefined`.
         variableOverrides:
           type: object
           description: The overrides for the variables in this variable collection as a

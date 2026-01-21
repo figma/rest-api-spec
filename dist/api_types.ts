@@ -4405,6 +4405,14 @@ export type LocalVariableCollection = {
   parentVariableCollectionId?: string
 
   /**
+   * The id of the root variable collection in the extension chain. This is the ID of the original
+   * (non-extended) collection at the top of the parent chain. For example, if Collection C extends B
+   * which extends A (root), then `rootVariableCollectionId` is A's ID. If this variable collection is
+   * not an extension, this value will be `undefined`.
+   */
+  rootVariableCollectionId?: string
+
+  /**
    * The overrides for the variables in this variable collection as a map of variable ids to a map of
    * mode ids to variable values.
    */
