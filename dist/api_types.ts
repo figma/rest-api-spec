@@ -6303,6 +6303,91 @@ export type GetLibraryAnalyticsVariableUsagesResponse = {
 }
 
 /**
+ * Response from the GET /v1/oembed endpoint.
+ */
+export type GetOEmbedResponse = {
+  /**
+   * The oEmbed specification version. Always "1.0".
+   */
+  version: string
+
+  /**
+   * The oEmbed response type. Always "rich".
+   */
+  type: string
+
+  /**
+   * The title of the Figma file or published Make site.
+   */
+  title: string
+
+  /**
+   * The key of the Figma file. Not present for published Makes
+   */
+  key?: string
+
+  /**
+   * The canonical URL of the resource.
+   */
+  url: string
+
+  /**
+   * The name of the content provider. Always "Figma" or "Make".
+   */
+  provider_name: string
+
+  /**
+   * The URL of the content provider's website. Always "https://www.figma.com".
+   */
+  provider_url: string
+
+  /**
+   * Suggested cache lifetime for this response in seconds. Always 3600.
+   */
+  cache_age: number
+
+  /**
+   * Width of the embed in pixels.
+   */
+  width: number
+
+  /**
+   * Height of the embed in pixels.
+   */
+  height: number
+
+  /**
+   * The HTML for embedding the file. Contains an iframe pointing to the Figma embed URL.
+   */
+  html: string
+
+  /**
+   * Only present and "true" when the resource is a published Make.
+   */
+  is_published_site?: boolean
+
+  /**
+   * The name of the folder containing the file, if the file resides in a folder.
+   */
+  folder_name?: string
+
+  /**
+   * URL of a thumbnail image for the file.
+   */
+  thumbnail_url?: string
+
+  /**
+   * Width of the thumbnail image in pixels.
+   */
+  thumbnail_width?: number
+
+  /**
+   * Height of the thumbnail image in pixels.
+   */
+  thumbnail_height?: number
+}
+
+/**
  * Bad request. Parameters are invalid or malformed. Please check the input formats. This error can
  * also happen if the requested resources are too large to complete the request, which results in a
  * timeout. Please reduce the number and size of objects requested.
@@ -6398,6 +6483,16 @@ export type TooManyRequestsErrorResponseWithErrorBoolean = ErrorResponsePayloadW
    * Status code
    */
   status: 429
+}
+
+/**
+ * The server does not support the functionality required to fulfill the request.
+ */
+export type NotImplementedErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 501
 }
 
 /**
@@ -7500,4 +7595,24 @@ export type GetLibraryAnalyticsVariableUsagesQueryParams = {
    * A dimension to group returned analytics data by.
    */
   group_by: 'variable' | 'file'
+}
+
+/**
+ * Query parameters for GET /v1/oembed
+ */
+export type GetOEmbedQueryParams = {
+  /**
+   * The URL of the Figma file or published Make site to retrieve oEmbed data for.
+   */
+  url: string
+  /**
+   * Maximum width of the embed in pixels. Defaults to 800. The response width will be adjusted to
+   * maintain a 16:9 aspect ratio with maxheight.
+   */
+  maxwidth?: number
+  /**
+   * Maximum height of the embed in pixels. Defaults to 450. The response height will be adjusted to
+   * maintain a 16:9 aspect ratio with maxwidth.
+   */
+  maxheight?: number
 }
