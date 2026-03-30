@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.36.0
+  version: 0.37.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
 
@@ -85,6 +85,11 @@ tags:
     externalDocs:
       description: Library analytics endpoints documentation
       url: https://www.figma.com/developers/api#library-analytics
+  - name: oEmbed
+    description: Get oEmbed data for Figma files and published Makes.
+    externalDocs:
+      description: oEmbed endpoint documentation
+      url: https://www.figma.com/developers/api#oembed
 paths:
   /v1/files/{file_key}:
     get:
@@ -2565,6 +2570,53 @@ paths:
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
         "500":
           $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/oembed:
+    get:
+      tags:
+        - oEmbed
+      summary: Get oEmbed data
+      description: Returns oEmbed data for a Figma file or published Make site URL,
+        following the [oEmbed specification](https://oembed.com/).
+      security:
+        - PersonalAccessToken: []
+        - OAuth2:
+            - file_metadata:read
+      operationId: getOEmbed
+      parameters:
+        - name: url
+          in: query
+          description: The URL of the Figma file or published Make site to retrieve oEmbed
+            data for.
+          required: true
+          schema:
+            type: string
+        - name: maxwidth
+          in: query
+          description: Maximum width of the embed in pixels. Defaults to 800. The response
+            width will be adjusted to maintain a 16:9 aspect ratio with
+            maxheight.
+          schema:
+            type: integer
+            default: 800
+        - name: maxheight
+          in: query
+          description: Maximum height of the embed in pixels. Defaults to 450. The
+            response height will be adjusted to maintain a 16:9 aspect ratio
+            with maxwidth.
+          schema:
+            type: integer
+            default: 450
+      responses:
+        "200":
+          $ref: "#/components/responses/GetOEmbedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "501":
+          $ref: "#/components/responses/NotImplementedErrorResponseWithErrMessage"
 components:
   securitySchemes:
     PersonalAccessToken:
@@ -9775,6 +9827,75 @@ components:
             required:
               - rows
               - next_page
+    GetOEmbedResponse:
+      description: Response from the GET /v1/oembed endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
+                description: The oEmbed specification version. Always "1.0".
+              type:
+                type: string
+                description: The oEmbed response type. Always "rich".
+              title:
+                type: string
+                description: The title of the Figma file or published Make site.
+              key:
+                type: string
+                description: The key of the Figma file. Not present for published Makes
+              url:
+                type: string
+                description: The canonical URL of the resource.
+              provider_name:
+                type: string
+                description: The name of the content provider. Always "Figma" or "Make".
+              provider_url:
+                type: string
+                description: The URL of the content provider's website. Always
+                  "https://www.figma.com".
+              cache_age:
+                type: integer
+                description: Suggested cache lifetime for this response in seconds. Always 3600.
+              width:
+                type: integer
+                description: Width of the embed in pixels.
+              height:
+                type: integer
+                description: Height of the embed in pixels.
+              html:
+                type: string
+                description: The HTML for embedding the file. Contains an iframe pointing to the
+                  Figma embed URL.
+              is_published_site:
+                type: boolean
+                description: Only present and "true" when the resource is a published Make.
+              folder_name:
+                type: string
+                description: The name of the folder containing the file, if the file resides in
+                  a folder.
+              thumbnail_url:
+                type: string
+                description: URL of a thumbnail image for the file.
+              thumbnail_width:
+                type: integer
+                description: Width of the thumbnail image in pixels.
+              thumbnail_height:
+                type: integer
+                description: Height of the thumbnail image in pixels.
+            required:
+              - version
+              - type
+              - title
+              - url
+              - provider_name
+              - provider_url
+              - cache_age
+              - width
+              - height
+              - html
     BadRequestErrorResponseWithErrMessage:
       description: Bad request. Parameters are invalid or malformed. Please check the
         input formats. This error can also happen if the requested resources are
@@ -9929,6 +10050,23 @@ components:
                     description: Status code
                     enum:
                       - 429
+                required:
+                  - status
+    NotImplementedErrorResponseWithErrMessage:
+      description: The server does not support the functionality required to fulfill
+        the request.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrMessage"
+              - type: object
+                properties:
+                  status:
+                    type: number
+                    description: Status code
+                    enum:
+                      - 501
                 required:
                   - status
     InternalServerErrorResponseWithErrMessage:
