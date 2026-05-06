@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.37.0
+  version: 0.38.0
   description: |-
-    This is the OpenAPI specification for the [Figma REST API](https://www.figma.com/developers/api).
+    This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
     Note: we are releasing the OpenAPI specification as a beta given the large surface area and complexity of the REST API. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues).
   termsOfService: https://www.figma.com/developer-terms/
@@ -13,83 +13,88 @@ servers:
   - url: https://api.figma.com
 externalDocs:
   description: Figma REST API Documentation
-  url: https://www.figma.com/developers/api
+  url: https://developers.figma.com/docs/rest-api/
 tags:
   - name: Files
     description: Get file JSON, images, and other file-related content.
     externalDocs:
       description: File endpoints documentation
-      url: https://www.figma.com/developers/api#files
+      url: https://developers.figma.com/docs/rest-api/file-endpoints/
   - name: Comments
     description: Interact with file comments.
     externalDocs:
       description: Comment endpoints documentation
-      url: https://www.figma.com/developers/api#comments
+      url: https://developers.figma.com/docs/rest-api/comments-endpoints/
   - name: Comment Reactions
     description: Interact with reactions to file comments.
     externalDocs:
       description: Comment endpoints documentation
-      url: https://www.figma.com/developers/api#comments
+      url: https://developers.figma.com/docs/rest-api/comments-endpoints/
   - name: Projects
     description: Get information about projects and files in teams.
     externalDocs:
       description: Project endpoints documentation
-      url: https://www.figma.com/developers/api#projects
+      url: https://developers.figma.com/docs/rest-api/projects-endpoints/
   - name: Users
     description: Get information about the currently authenticated user.
     externalDocs:
       description: User endpoints documentation
-      url: https://www.figma.com/developers/api#users
+      url: https://developers.figma.com/docs/rest-api/users-endpoints/
   - name: Components
     description: Get information about published components.
     externalDocs:
-      description: Component and style endpoints documentation
-      url: https://www.figma.com/developers/api#library-items
+      description: Component endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/component-endpoints/
   - name: Component Sets
     description: Get information about published component sets.
     externalDocs:
-      description: Component and style endpoints documentation
-      url: https://www.figma.com/developers/api#library-items
+      description: Component endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/component-endpoints/
   - name: Styles
     description: Get information about published styles.
     externalDocs:
-      description: Component and style endpoints documentation
-      url: https://www.figma.com/developers/api#library-items
+      description: Component endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/component-endpoints/
   - name: Webhooks
     description: Interact with team webhooks as a team admin.
     externalDocs:
       description: Webhook endpoints documentation
-      url: https://www.figma.com/developers/api#webhooks_v2
+      url: https://developers.figma.com/docs/rest-api/webhooks-endpoints/
   - name: Activity Logs
     description: Get activity logs as an organization admin.
     externalDocs:
       description: Activity log endpoints documentation
-      url: https://www.figma.com/developers/api#activity_logs
+      url: https://developers.figma.com/docs/rest-api/activity-logs-endpoints/
+  - name: Developer Logs
+    description: Get developer logs for REST API and MCP server requests in an organization.
+    externalDocs:
+      description: Developer log endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/developer-logs-endpoints/
   - name: Payments
     description: Get purchase information for your Community resources.
     externalDocs:
       description: Payment endpoints documentation
-      url: https://www.figma.com/developers/api#payments
+      url: https://developers.figma.com/docs/rest-api/payments-endpoints/
   - name: Variables
     description: Interact with variables in an Enterprise organization.
     externalDocs:
       description: Variables endpoints documentation
-      url: https://www.figma.com/developers/api#variables
+      url: https://developers.figma.com/docs/rest-api/variables-endpoints/
   - name: Dev Resources
     description: Interact with dev resources in Figma Dev Mode.
     externalDocs:
       description: Dev resource endpoints documentation
-      url: https://www.figma.com/developers/api#dev-resources
+      url: https://developers.figma.com/docs/rest-api/dev-resources-endpoints/
   - name: Library Analytics
     description: Get analytics data for your published libraries.
     externalDocs:
       description: Library analytics endpoints documentation
-      url: https://www.figma.com/developers/api#library-analytics
+      url: https://developers.figma.com/docs/rest-api/library-analytics-endpoints/
   - name: oEmbed
     description: Get oEmbed data for Figma files and published Makes.
     externalDocs:
       description: oEmbed endpoint documentation
-      url: https://www.figma.com/developers/api#oembed
+      url: https://developers.figma.com/docs/rest-api/oembed-endpoints/
 paths:
   /v1/files/{file_key}:
     get:
@@ -98,6 +103,7 @@ paths:
       summary: Get file JSON
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_content:read
             - files:read
@@ -183,6 +189,7 @@ paths:
       summary: Get file JSON for specific nodes
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_content:read
             - files:read
@@ -266,6 +273,7 @@ paths:
       summary: Render images of file nodes
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_content:read
             - files:read
@@ -390,6 +398,7 @@ paths:
       summary: Get image fills
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_content:read
             - files:read
@@ -427,6 +436,7 @@ paths:
       summary: Get file metadata
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_metadata:read
             - files:read
@@ -461,6 +471,7 @@ paths:
       summary: Get projects in a team
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - projects:read
             - files:read
@@ -497,6 +508,7 @@ paths:
       summary: Get files in a project
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - projects:read
             - files:read
@@ -534,6 +546,7 @@ paths:
       summary: Get versions of a file
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_versions:read
             - files:read
@@ -590,6 +603,7 @@ paths:
       summary: Get comments in a file
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_comments:read
             - files:read
@@ -723,6 +737,7 @@ paths:
       summary: Get reactions for a comment
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_comments:read
             - files:read
@@ -880,6 +895,7 @@ paths:
       summary: Get team components
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - team_library_content:read
             - files:read
@@ -933,6 +949,7 @@ paths:
       summary: Get file components
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_content:read
             - files:read
@@ -966,6 +983,7 @@ paths:
       summary: Get component
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_assets:read
             - files:read
@@ -998,6 +1016,7 @@ paths:
       summary: Get team component sets
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - team_library_content:read
             - files:read
@@ -1050,6 +1069,7 @@ paths:
       summary: Get file component sets
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_content:read
             - files:read
@@ -1083,6 +1103,7 @@ paths:
       summary: Get component set
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_assets:read
             - files:read
@@ -1115,6 +1136,7 @@ paths:
       summary: Get team styles
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - team_library_content:read
             - files:read
@@ -1167,6 +1189,7 @@ paths:
       summary: Get file styles
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_content:read
             - files:read
@@ -1200,6 +1223,7 @@ paths:
       summary: Get style
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_assets:read
             - files:read
@@ -1232,6 +1256,7 @@ paths:
       summary: Get webhooks by context or plan
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:read
       description: Returns a list of webhooks corresponding to the context or plan
@@ -1284,6 +1309,7 @@ paths:
       summary: Create a webhook
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:write
       description: Create a new webhook which will call the specified endpoint when
@@ -1558,6 +1584,7 @@ paths:
       summary: Get a webhook
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:read
             - files:read
@@ -1589,6 +1616,7 @@ paths:
       summary: Update a webhook
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:write
       description: Update a webhook by ID.
@@ -1649,6 +1677,7 @@ paths:
       summary: Delete a webhook
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:write
       description: Deletes the specified webhook. This operation cannot be reversed.
@@ -1681,6 +1710,7 @@ paths:
       deprecated: true
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:read
             - files:read
@@ -1711,6 +1741,7 @@ paths:
       summary: Get webhook requests
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - webhooks:read
             - files:read
@@ -1743,6 +1774,7 @@ paths:
         - Activity Logs
       summary: Get activity logs
       security:
+        - PlanAccessToken: []
         - OrgOAuth2:
             - org:activity_log_read
       description: Returns a list of activity log events
@@ -1785,6 +1817,82 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetActivityLogsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/developer_logs:
+    post:
+      tags:
+        - Developer Logs
+      summary: Get developer logs
+      security:
+        - PlanAccessToken: []
+      description: Returns a list of developer log entries for REST API and MCP server
+        requests made within the organization. This endpoint requires a plan
+        access token with the `org:developer_log_read` scope.
+      operationId: getDeveloperLogs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token_type:
+                  type: string
+                  description: Filter by the type of token used for authentication.
+                  enum:
+                    - plan_access_token
+                    - developer_token
+                    - oauth_token
+                token:
+                  type: string
+                  description: Filter by token value(s). Multiple values can be separated by
+                    commas.
+                token_name:
+                  type: string
+                  description: Filter by token name prefix(es). Multiple values can be separated
+                    by commas.
+                user_email:
+                  type: string
+                  description: Filter by user email prefix(es). Multiple values can be separated
+                    by commas.
+                ip_address:
+                  type: string
+                  description: Filter by IP address prefix(es). Multiple values can be separated
+                    by commas.
+                event_source:
+                  type: string
+                  description: Filter by event source.
+                  enum:
+                    - rest_api
+                    - mcp_server
+                date_range:
+                  type: string
+                  description: Filter by date range.
+                  enum:
+                    - last_24h
+                    - last_7d
+                    - last_30d
+                  default: last_30d
+                limit:
+                  type: integer
+                  description: Maximum number of entries to return.
+                  minimum: 1
+                  maximum: 100
+                  default: 25
+                cursor:
+                  type: string
+                  description: A cursor returned from a previous request, used for pagination.
+      responses:
+        "200":
+          $ref: "#/components/responses/PostDeveloperLogsResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "401":
@@ -2053,6 +2161,7 @@ paths:
       summary: Get dev resources
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_dev_resources:read
       description: Get dev resources in a file
@@ -2095,6 +2204,7 @@ paths:
       summary: Create dev resources
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_dev_resources:write
       description: |-
@@ -2159,6 +2269,7 @@ paths:
       summary: Update dev resources
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_dev_resources:write
       description: |-
@@ -2215,6 +2326,7 @@ paths:
       summary: Delete dev resource
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - file_dev_resources:write
       description: Delete a dev resource from a file
@@ -2253,6 +2365,7 @@ paths:
       summary: Get library analytics component action data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics component actions data broken
@@ -2314,6 +2427,7 @@ paths:
       summary: Get library analytics component usage data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics component usage data broken
@@ -2361,6 +2475,7 @@ paths:
       summary: Get library analytics style action data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics style actions data broken down
@@ -2422,6 +2537,7 @@ paths:
       summary: Get library analytics style usage data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics style usage data broken down by
@@ -2469,6 +2585,7 @@ paths:
       summary: Get library analytics variable action data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics variable actions data broken
@@ -2530,6 +2647,7 @@ paths:
       summary: Get library analytics variable usage data.
       security:
         - PersonalAccessToken: []
+        - PlanAccessToken: []
         - OAuth2:
             - library_analytics:read
       description: Returns a list of library analytics variable usage data broken down
@@ -2620,6 +2738,10 @@ paths:
 components:
   securitySchemes:
     PersonalAccessToken:
+      type: apiKey
+      name: X-Figma-Token
+      in: header
+    PlanAccessToken:
       type: apiKey
       name: X-Figma-Token
       in: header
@@ -7568,6 +7690,142 @@ components:
         - action
         - entity
         - context
+    DeveloperLogAction:
+      type: object
+      description: The API endpoint or tool that was called.
+      properties:
+        event_name:
+          type: string
+          description: The route path (for REST API requests) or tool name (for MCP server
+            calls).
+        event_source:
+          type: string
+          description: The source of the event.
+          enum:
+            - rest_api
+            - mcp_server
+      required:
+        - event_name
+        - event_source
+    DeveloperLogActor:
+      type: object
+      description: The token used and associated user for the request.
+      properties:
+        user_id:
+          type:
+            - string
+            - "null"
+          description: The ID of the user who made the request; null for requests made
+            with plan access tokens, as there is no associated user.
+        user_name:
+          type:
+            - string
+            - "null"
+          description: The name of the user who made the request; null for requests made
+            with plan access tokens, as there is no associated user.
+        user_email:
+          type:
+            - string
+            - "null"
+          description: The email of the user who made the request; null for requests made
+            with plan access tokens, as there is no associated user.
+        token_name:
+          type: string
+          description: The name of the token, or the OAuth app name for OAuth tokens.
+        token_type:
+          type: string
+          description: The type of token used for authentication.
+          enum:
+            - developer_token
+            - plan_access_token
+            - oauth_token
+      required:
+        - token_name
+        - token_type
+    DeveloperLogResource:
+      type: object
+      description: The resource accessed by the request.
+      properties:
+        id_or_key:
+          type:
+            - string
+            - "null"
+          description: The ID or key of the resource. For files this is the file key; for
+            teams and projects this is the numeric ID. Null for requests without
+            an associated resources (e.g. activity logs).
+        name:
+          type:
+            - string
+            - "null"
+          description: The name of the resource; null for requests without an associated
+            resource (e.g. activity logs).
+        type:
+          type:
+            - string
+            - "null"
+          description: The type of resource; null for requests without an associated
+            resource (e.g. activity logs).
+          enum:
+            - file
+            - team
+            - project
+            - null
+        org_id:
+          type: string
+          description: The ID of the organization associated with the request (e.g. that
+            owns the resource).
+      required:
+        - org_id
+    DeveloperLogContext:
+      type: object
+      description: Context about the request.
+      properties:
+        ip_address:
+          type: string
+          description: The IP address of the client that made the request.
+        city:
+          type:
+            - string
+            - "null"
+          description: The city of the client, if available.
+        country_region:
+          type:
+            - string
+            - "null"
+          description: The region of the client, if available.
+        country:
+          type:
+            - string
+            - "null"
+          description: The country of the client, if available.
+      required:
+        - ip_address
+    DeveloperLog:
+      type: object
+      description: A log entry from the Developer Log, representing a REST API or MCP
+        server request.
+      properties:
+        uuid:
+          type: string
+          description: The unique identifier of the log entry.
+        timestamp:
+          type: string
+          description: The ISO 8601 timestamp of when the request was made.
+        action:
+          $ref: "#/components/schemas/DeveloperLogAction"
+        actor:
+          $ref: "#/components/schemas/DeveloperLogActor"
+        resource:
+          $ref: "#/components/schemas/DeveloperLogResource"
+        context:
+          $ref: "#/components/schemas/DeveloperLogContext"
+      required:
+        - uuid
+        - timestamp
+        - action
+        - actor
+        - resource
+        - context
     PaymentStatus:
       type: object
       description: An object describing the user's payment status.
@@ -9459,6 +9717,49 @@ components:
                   next_page:
                     type: boolean
                     description: Whether there is a next page of events
+    PostDeveloperLogsResponse:
+      description: Response from the POST /v1/developer_logs endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: number
+                enum:
+                  - 200
+                description: The response status code.
+              error:
+                type: boolean
+                enum:
+                  - false
+                description: For successful requests, this value is always `false`.
+              meta:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: An array of developer log entries sorted by timestamp in descending
+                      order.
+                    items:
+                      $ref: "#/components/schemas/DeveloperLog"
+                  cursor:
+                    type:
+                      - string
+                      - "null"
+                    description: A cursor for pagination. Pass this value as the `cursor` parameter
+                      in the next request to retrieve the next page of results.
+                      `null` when there are no more results.
+                  has_more:
+                    type: boolean
+                    description: Whether there are more results available after this page.
+                required:
+                  - items
+                  - has_more
+            required:
+              - status
+              - error
+              - meta
     GetPaymentsResponse:
       description: Response from the GET /v1/payments endpoint.
       content:

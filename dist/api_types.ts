@@ -4216,6 +4216,128 @@ export type ActivityLog = {
 }
 
 /**
+ * The API endpoint or tool that was called.
+ */
+export type DeveloperLogAction = {
+  /**
+   * The route path (for REST API requests) or tool name (for MCP server calls).
+   */
+  event_name: string
+
+  /**
+   * The source of the event.
+   */
+  event_source: 'rest_api' | 'mcp_server'
+}
+
+/**
+ * The token used and associated user for the request.
+ */
+export type DeveloperLogActor = {
+  /**
+   * The ID of the user who made the request; null for requests made with plan access tokens, as there
+   * is no associated user.
+   */
+  user_id?: string | null
+
+  /**
+   * The name of the user who made the request; null for requests made with plan access tokens, as
+   * there is no associated user.
+   */
+  user_name?: string | null
+
+  /**
+   * The email of the user who made the request; null for requests made with plan access tokens, as
+   * there is no associated user.
+   */
+  user_email?: string | null
+
+  /**
+   * The name of the token, or the OAuth app name for OAuth tokens.
+   */
+  token_name: string
+
+  /**
+   * The type of token used for authentication.
+   */
+  token_type: 'developer_token' | 'plan_access_token' | 'oauth_token'
+}
+
+/**
+ * The resource accessed by the request.
+ */
+export type DeveloperLogResource = {
+  /**
+   * The ID or key of the resource. For files this is the file key; for teams and projects this is the
+   * numeric ID. Null for requests without an associated resources (e.g. activity logs).
+   */
+  id_or_key?: string | null
+
+  /**
+   * The name of the resource; null for requests without an associated resource (e.g. activity logs).
+   */
+  name?: string | null
+
+  /**
+   * The type of resource; null for requests without an associated resource (e.g. activity logs).
+   */
+  type?: string | null
+
+  /**
+   * The ID of the organization associated with the request (e.g. that owns the resource).
+   */
+  org_id: string
+}
+
+/**
+ * Context about the request.
+ */
+export type DeveloperLogContext = {
+  /**
+   * The IP address of the client that made the request.
+   */
+  ip_address: string
+
+  /**
+   * The city of the client, if available.
+   */
+  city?: string | null
+
+  /**
+   * The region of the client, if available.
+   */
+  country_region?: string | null
+
+  /**
+   * The country of the client, if available.
+   */
+  country?: string | null
+}
+
+/**
+ * A log entry from the Developer Log, representing a REST API or MCP server request.
+ */
+export type DeveloperLog = {
+  /**
+   * The unique identifier of the log entry.
+   */
+  uuid: string
+
+  /**
+   * The ISO 8601 timestamp of when the request was made.
+   */
+  timestamp: string
+
+  action: DeveloperLogAction
+
+  actor: DeveloperLogActor
+
+  resource: DeveloperLogResource
+
+  context: DeveloperLogContext
+}
+
+/**
  * An object describing the user's payment status.
  */
 export type PaymentStatus = {
@@ -6020,6 +6142,39 @@ export type GetActivityLogsResponse = {
 }
 
 /**
+ * Response from the POST /v1/developer_logs endpoint.
+ */
+export type PostDeveloperLogsResponse = {
+  /**
+   * The response status code.
+   */
+  status: 200
+
+  /**
+   * For successful requests, this value is always `false`.
+   */
+  error: false
+
+  meta: {
+    /**
+     * An array of developer log entries sorted by timestamp in descending order.
+     */
+    items: DeveloperLog[]
+
+    /**
+     * A cursor for pagination. Pass this value as the `cursor` parameter in the next request to
+     * retrieve the next page of results. `null` when there are no more results.
+     */
+    cursor?: string | null
+
+    /**
+     * Whether there are more results available after this page.
+     */
+    has_more: boolean
+  }
+}
+
+/**
  * Response from the GET /v1/payments endpoint.
  */
 export type GetPaymentsResponse = {
@@ -7237,6 +7392,56 @@ export type GetActivityLogsQueryParams = {
    * Event order by timestamp. This param can be either "asc" (default) or "desc".
    */
   order?: 'asc' | 'desc'
+}
+
+/**
+ * Request body parameters for POST /v1/developer_logs
+ */
+export type GetDeveloperLogsRequestBody = {
+  /**
+   * Filter by the type of token used for authentication.
+   */
+  token_type?: 'plan_access_token' | 'developer_token' | 'oauth_token'
+
+  /**
+   * Filter by token value(s). Multiple values can be separated by commas.
+   */
+  token?: string
+
+  /**
+   * Filter by token name prefix(es). Multiple values can be separated by commas.
+   */
+  token_name?: string
+
+  /**
+   * Filter by user email prefix(es). Multiple values can be separated by commas.
+   */
+  user_email?: string
+
+  /**
+   * Filter by IP address prefix(es). Multiple values can be separated by commas.
+   */
+  ip_address?: string
+
+  /**
+   * Filter by event source.
+   */
+  event_source?: 'rest_api' | 'mcp_server'
+
+  /**
+   * Filter by date range.
+   */
+  date_range?: 'last_24h' | 'last_7d' | 'last_30d'
+
+  /**
+   * Maximum number of entries to return.
+   */
+  limit?: number
+
+  /**
+   * A cursor returned from a previous request, used for pagination.
+   */
+  cursor?: string
 }
 
 /**
