@@ -5764,6 +5764,41 @@ export type GetTeamProjectsResponse = {
 }
 
 /**
+ * Response from the GET /v1/projects/{project_id}/meta endpoint.
+ */
+export type GetProjectMetaResponse = {
+  /**
+   * The unique identifier of the project.
+   */
+  id: string
+
+  /**
+   * The name of the project.
+   */
+  name: string
+
+  /**
+   * A URL to a thumbnail image of the project. May be null if the project has no files.
+   */
+  thumbnail_url: string | null
+
+  /**
+   * The number of files in the project.
+   */
+  file_count: number
+
+  /**
+   * The UTC ISO 8601 time at which the project was last updated.
+   */
+  updated_at: string
+
+  /**
+   * The UTC ISO 8601 time at which the project was created.
+   */
+  created_at: string
+}
+
+/**
  * Response from the GET /v1/projects/{project_id}/files endpoint.
  */
 export type GetProjectFilesResponse = {
@@ -6873,6 +6908,16 @@ export type GetTeamProjectsPathParams = {
    * ID of the team to list projects from
    */
   team_id: string
+}
+
+/**
+ * Path parameters for GET /v1/projects/{project_id}/meta
+ */
+export type GetProjectMetaPathParams = {
+  /**
+   * ID of the project to get metadata for.
+   */
+  project_id: string
 }
 
 /**

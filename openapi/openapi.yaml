@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.38.0
+  version: 0.39.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -497,6 +497,36 @@ paths:
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "403":
           $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v1/projects/{project_id}/meta:
+    get:
+      tags:
+        - Projects
+      summary: Get project metadata
+      security:
+        - PersonalAccessToken: []
+        - PlanAccessToken: []
+        - OAuth2:
+            - project_metadata:read
+      description: Get project metadata
+      operationId: getProjectMeta
+      parameters:
+        - name: project_id
+          in: path
+          description: ID of the project to get metadata for.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetProjectMetaResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
         "429":
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
         "500":
@@ -2770,6 +2800,7 @@ components:
             library_analytics:read: Read library analytics data.
             library_assets:read: Read data of individual published components and styles.
             library_content:read: Read published components and styles of files.
+            project_metadata:read: Read metadata of projects.
             projects:read: List projects and files in projects.
             team_library_content:read: Read published components and styles of teams.
             webhooks:read: Read metadata of webhooks.
@@ -9193,6 +9224,43 @@ components:
             required:
               - name
               - projects
+    GetProjectMetaResponse:
+      description: Response from the GET /v1/projects/{project_id}/meta endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: The unique identifier of the project.
+              name:
+                type: string
+                description: The name of the project.
+              thumbnail_url:
+                type:
+                  - string
+                  - "null"
+                description: A URL to a thumbnail image of the project. May be null if the
+                  project has no files.
+              file_count:
+                type: integer
+                description: The number of files in the project.
+              updated_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the project was last updated.
+              created_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the project was created.
+            required:
+              - id
+              - name
+              - thumbnail_url
+              - file_count
+              - updated_at
+              - created_at
     GetProjectFilesResponse:
       description: Response from the GET /v1/projects/{project_id}/files endpoint.
       content:
