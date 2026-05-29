@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.39.0
+  version: 0.40.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -9157,55 +9157,61 @@ components:
           schema:
             type: object
             properties:
-              name:
-                type: string
-                description: The name of the file.
-              folder_name:
-                type: string
-                description: The name of the project containing the file.
-              last_touched_at:
-                type: string
-                format: date-time
-                description: The UTC ISO 8601 time at which the file content was last modified.
-              creator:
-                description: The user who created the file.
-                $ref: "#/components/schemas/User"
-              last_touched_by:
-                description: The user who last modified the file contents.
-                $ref: "#/components/schemas/User"
-              thumbnail_url:
-                type: string
-                description: A URL to a thumbnail image of the file.
-              editorType:
-                type: string
-                enum:
-                  - figma
-                  - figjam
-                  - slides
-                  - buzz
-                  - sites
-                  - make
-                description: The type of editor associated with this file.
-              role:
-                $ref: "#/components/schemas/Role"
-                description: The role of the user making the API request in relation to the
-                  file.
-              link_access:
-                $ref: "#/components/schemas/LinkAccess"
-                description: Access policy for users who have the link to the file.
-              url:
-                type: string
-                description: The URL of the file.
-              version:
-                type: string
-                description: The version number of the file. This number is incremented when a
-                  file is modified and can be used to check if the file has
-                  changed between requests.
+              file:
+                type: object
+                description: The file metadata.
+                properties:
+                  name:
+                    type: string
+                    description: The name of the file.
+                  folder_name:
+                    type: string
+                    description: The name of the project containing the file.
+                  last_touched_at:
+                    type: string
+                    format: date-time
+                    description: The UTC ISO 8601 time at which the file content was last modified.
+                  creator:
+                    description: The user who created the file.
+                    $ref: "#/components/schemas/User"
+                  last_touched_by:
+                    description: The user who last modified the file contents.
+                    $ref: "#/components/schemas/User"
+                  thumbnail_url:
+                    type: string
+                    description: A URL to a thumbnail image of the file.
+                  editorType:
+                    type: string
+                    enum:
+                      - figma
+                      - figjam
+                      - slides
+                      - buzz
+                      - sites
+                      - make
+                    description: The type of editor associated with this file.
+                  role:
+                    $ref: "#/components/schemas/Role"
+                    description: The role of the user making the API request in relation to the
+                      file.
+                  link_access:
+                    $ref: "#/components/schemas/LinkAccess"
+                    description: Access policy for users who have the link to the file.
+                  url:
+                    type: string
+                    description: The URL of the file.
+                  version:
+                    type: string
+                    description: The version number of the file. This number is incremented when a
+                      file is modified and can be used to check if the file has
+                      changed between requests.
+                required:
+                  - name
+                  - last_touched_at
+                  - creator
+                  - editorType
             required:
-              - name
-              - last_touched_at
-              - creator
-              - editorType
+              - file
     GetTeamProjectsResponse:
       description: Response from the GET /v1/teams/{team_id}/projects endpoint.
       content:

@@ -5692,60 +5692,65 @@ export type GetImageFillsResponse = {
  */
 export type GetFileMetaResponse = {
   /**
-   * The name of the file.
+   * The file metadata.
    */
-  name: string
+  file: {
+    /**
+     * The name of the file.
+     */
+    name: string
 
-  /**
-   * The name of the project containing the file.
-   */
-  folder_name?: string
+    /**
+     * The name of the project containing the file.
+     */
+    folder_name?: string
 
-  /**
-   * The UTC ISO 8601 time at which the file content was last modified.
-   */
-  last_touched_at: string
+    /**
+     * The UTC ISO 8601 time at which the file content was last modified.
+     */
+    last_touched_at: string
 
-  /**
-   * The user who created the file.
-   */
-  creator: User
+    /**
+     * The user who created the file.
+     */
+    creator: User
 
-  /**
-   * The user who last modified the file contents.
-   */
-  last_touched_by?: User
+    /**
+     * The user who last modified the file contents.
+     */
+    last_touched_by?: User
 
-  /**
-   * A URL to a thumbnail image of the file.
-   */
-  thumbnail_url?: string
+    /**
+     * A URL to a thumbnail image of the file.
+     */
+    thumbnail_url?: string
 
-  /**
-   * The type of editor associated with this file.
-   */
-  editorType: 'figma' | 'figjam' | 'slides' | 'buzz' | 'sites' | 'make'
+    /**
+     * The type of editor associated with this file.
+     */
+    editorType: 'figma' | 'figjam' | 'slides' | 'buzz' | 'sites' | 'make'
 
-  /**
-   * The role of the user making the API request in relation to the file.
-   */
-  role?: Role
+    /**
+     * The role of the user making the API request in relation to the file.
+     */
+    role?: Role
 
-  /**
-   * Access policy for users who have the link to the file.
-   */
-  link_access?: LinkAccess
+    /**
+     * Access policy for users who have the link to the file.
+     */
+    link_access?: LinkAccess
 
-  /**
-   * The URL of the file.
-   */
-  url?: string
+    /**
+     * The URL of the file.
+     */
+    url?: string
 
-  /**
-   * The version number of the file. This number is incremented when a file is modified and can be
-   * used to check if the file has changed between requests.
-   */
-  version?: string
+    /**
+     * The version number of the file. This number is incremented when a file is modified and can be
+     * used to check if the file has changed between requests.
+     */
+    version?: string
+  }
 }
 
 /**
