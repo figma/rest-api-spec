@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.40.0
+  version: 0.41.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -70,6 +70,11 @@ tags:
     externalDocs:
       description: Developer log endpoints documentation
       url: https://developers.figma.com/docs/rest-api/developer-logs-endpoints/
+  - name: AI Usage
+    description: Get per-user, per-day AI credit usage for a plan.
+    externalDocs:
+      description: AI usage endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/ai-usage-endpoints/
   - name: Payments
     description: Get purchase information for your Community resources.
     externalDocs:
@@ -1923,6 +1928,70 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PostDeveloperLogsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrorBoolean"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrorBoolean"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrorBoolean"
+  /v1/ai_usage/daily:
+    get:
+      tags:
+        - AI Usage
+      summary: Get daily AI credit usage
+      security:
+        - PlanAccessToken: []
+      description: Returns per-user, per-day AI credit usage for the plan associated
+        with the calling token. This endpoint requires a plan access token with
+        the `org:ai_metering_usage_read` scope.
+      operationId: getAiUsageDaily
+      parameters:
+        - name: start_date
+          description: The first day to include, inclusive, as a `YYYY-MM-DD` calendar
+            date (UTC). Required. Must be on or after `2025-12-01` and no more
+            than 366 days before the current UTC day.
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: end_date
+          description: The last day to include, inclusive, as a `YYYY-MM-DD` calendar date
+            (UTC). Required. Must be on or after `start_date` and the current
+            UTC day or earlier.
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: user_email
+          description: Restrict the results to a single Figma user, identified by email.
+            When omitted, rows for every user in the plan with usage in the
+            range are returned. An email that matches no Figma user returns a
+            400.
+          in: query
+          schema:
+            type: string
+        - name: limit
+          description: Maximum number of rows to return. This param defaults to 1000 if
+            unspecified, and may not exceed 1000.
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 1000
+        - name: cursor
+          description: An opaque cursor returned from a previous request, used for
+            pagination.
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetAiUsageDailyResponse"
         "400":
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "401":
@@ -7857,6 +7926,99 @@ components:
         - actor
         - resource
         - context
+    AiUsageDailyRow:
+      type: object
+      description: A single per-user, per-day AI credit usage aggregate for the plan.
+      properties:
+        plan_id:
+          type: string
+          description: The id of the plan the usage belongs to.
+        user_id:
+          type: string
+          description: The id of the Figma user that consumed the credits.
+        user_email:
+          type:
+            - string
+            - "null"
+          description: The email of the Figma user that consumed the credits, or `null`
+            when the user's email could not be resolved (e.g. a deleted user).
+        day:
+          type: string
+          description: The calendar date (UTC) of the aggregated usage, in `YYYY-MM-DD`
+            format.
+        editor_type:
+          type: string
+          description: The editor the AI action was associated with. `not_applicable` when
+            the underlying AI action had no associated file.
+          enum:
+            - design
+            - figjam
+            - slides
+            - sites
+            - buzz
+            - make
+            - not_applicable
+        seat_credits_sum:
+          type: integer
+          description: The sum of seat-level (per-user-allocated) credits consumed for
+            this day, user, and editor type.
+        plan_credits_sum:
+          type: integer
+          description: The sum of plan-level (shared pool) credits consumed for this day,
+            user, and editor type.
+        workspace_id:
+          type:
+            - string
+            - "null"
+          description: The id of the workspace the usage was attributed to, or `null` when
+            the usage had no associated workspace.
+        workspace_name:
+          type:
+            - string
+            - "null"
+          description: The name of the workspace the usage was attributed to, or `null`
+            when the usage had no associated workspace.
+        team_id:
+          type:
+            - string
+            - "null"
+          description: The id of the team the usage was attributed to, or `null` when the
+            usage had no associated team.
+        team_name:
+          type:
+            - string
+            - "null"
+          description: The name of the team the usage was attributed to, or `null` when
+            the usage had no associated team.
+        license_group_id:
+          type:
+            - string
+            - "null"
+          description: The id of the license group the usage was attributed to, or `null`
+            when the usage had no associated license group.
+        license_group_name:
+          type:
+            - string
+            - "null"
+          description: The name of the license group the usage was attributed to, or
+            `null` when the usage had no associated license group.
+        metering_period_start:
+          type: string
+          description: The start of the plan-scoped metering period this usage belongs to,
+            as an RFC 3339 UTC timestamp (e.g. `2026-05-01T00:00:00Z`).
+        metering_period_end:
+          type: string
+          description: The end of the plan-scoped metering period this usage belongs to,
+            as an RFC 3339 UTC timestamp (e.g. `2026-06-01T00:00:00Z`).
+      required:
+        - plan_id
+        - user_id
+        - day
+        - editor_type
+        - seat_credits_sum
+        - plan_credits_sum
+        - metering_period_start
+        - metering_period_end
     PaymentStatus:
       type: object
       description: An object describing the user's payment status.
@@ -9834,6 +9996,30 @@ components:
               - status
               - error
               - meta
+    GetAiUsageDailyResponse:
+      description: Response from the GET /v1/ai_usage/daily endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              rows:
+                type: array
+                description: Per-user, per-day AI credit usage aggregates, ordered by `day`,
+                  then user, then `editor_type`.
+                items:
+                  $ref: "#/components/schemas/AiUsageDailyRow"
+              next_cursor:
+                type: string
+                description: An opaque cursor to pass as the `cursor` query parameter to fetch
+                  the next page. Empty when there are no more pages.
+              has_next_page:
+                type: boolean
+                description: Whether there is a next page of results to fetch.
+            required:
+              - rows
+              - next_cursor
+              - has_next_page
     GetPaymentsResponse:
       description: Response from the GET /v1/payments endpoint.
       content:
