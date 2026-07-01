@@ -4338,6 +4338,95 @@ export type DeveloperLog = {
 }
 
 /**
+ * A single per-user, per-day AI credit usage aggregate for the plan.
+ */
+export type AiUsageDailyRow = {
+  /**
+   * The id of the plan the usage belongs to.
+   */
+  plan_id: string
+
+  /**
+   * The id of the Figma user that consumed the credits.
+   */
+  user_id: string
+
+  /**
+   * The email of the Figma user that consumed the credits, or `null` when the user's email could not
+   * be resolved (e.g. a deleted user).
+   */
+  user_email?: string | null
+
+  /**
+   * The calendar date (UTC) of the aggregated usage, in `YYYY-MM-DD` format.
+   */
+  day: string
+
+  /**
+   * The editor the AI action was associated with. `not_applicable` when the underlying AI action had
+   * no associated file.
+   */
+  editor_type: 'design' | 'figjam' | 'slides' | 'sites' | 'buzz' | 'make' | 'not_applicable'
+
+  /**
+   * The sum of seat-level (per-user-allocated) credits consumed for this day, user, and editor type.
+   */
+  seat_credits_sum: number
+
+  /**
+   * The sum of plan-level (shared pool) credits consumed for this day, user, and editor type.
+   */
+  plan_credits_sum: number
+
+  /**
+   * The id of the workspace the usage was attributed to, or `null` when the usage had no associated
+   * workspace.
+   */
+  workspace_id?: string | null
+
+  /**
+   * The name of the workspace the usage was attributed to, or `null` when the usage had no associated
+   * workspace.
+   */
+  workspace_name?: string | null
+
+  /**
+   * The id of the team the usage was attributed to, or `null` when the usage had no associated team.
+   */
+  team_id?: string | null
+
+  /**
+   * The name of the team the usage was attributed to, or `null` when the usage had no associated
+   * team.
+   */
+  team_name?: string | null
+
+  /**
+   * The id of the license group the usage was attributed to, or `null` when the usage had no
+   * associated license group.
+   */
+  license_group_id?: string | null
+
+  /**
+   * The name of the license group the usage was attributed to, or `null` when the usage had no
+   * associated license group.
+   */
+  license_group_name?: string | null
+
+  /**
+   * The start of the plan-scoped metering period this usage belongs to, as an RFC 3339 UTC timestamp
+   * (e.g. `2026-05-01T00:00:00Z`).
+   */
+  metering_period_start: string
+
+  /**
+   * The end of the plan-scoped metering period this usage belongs to, as an RFC 3339 UTC timestamp
+   * (e.g. `2026-06-01T00:00:00Z`).
+   */
+  metering_period_end: string
+}
+
+/**
  * An object describing the user's payment status.
  */
 export type PaymentStatus = {
@@ -6215,6 +6304,27 @@ export type PostDeveloperLogsResponse = {
 }
 
 /**
+ * Response from the GET /v1/ai_usage/daily endpoint.
+ */
+export type GetAiUsageDailyResponse = {
+  /**
+   * Per-user, per-day AI credit usage aggregates, ordered by `day`, then user, then `editor_type`.
+   */
+  rows: AiUsageDailyRow[]
+
+  /**
+   * An opaque cursor to pass as the `cursor` query parameter to fetch the next page. Empty when there
+   * are no more pages.
+   */
+  next_cursor: string
+
+  /**
+   * Whether there is a next page of results to fetch.
+   */
+  has_next_page: boolean
+}
+
+/**
  * Response from the GET /v1/payments endpoint.
  */
 export type GetPaymentsResponse = {
@@ -7490,6 +7600,37 @@ export type GetDeveloperLogsRequestBody = {
 
   /**
    * A cursor returned from a previous request, used for pagination.
+   */
+  cursor?: string
+}
+
+/**
+ * Query parameters for GET /v1/ai_usage/daily
+ */
+export type GetAiUsageDailyQueryParams = {
+  /**
+   * The first day to include, inclusive, as a `YYYY-MM-DD` calendar date (UTC). Required. Must be on
+   * or after `2025-12-01` and no more than 366 days before the current UTC day.
+   */
+  start_date: string
+  /**
+   * The last day to include, inclusive, as a `YYYY-MM-DD` calendar date (UTC). Required. Must be on
+   * or after `start_date` and the current UTC day or earlier.
+   */
+  end_date: string
+  /**
+   * Restrict the results to a single Figma user, identified by email. When omitted, rows for every
+   * user in the plan with usage in the range are returned. An email that matches no Figma user
+   * returns a 400.
+   */
+  user_email?: string
+  /**
+   * Maximum number of rows to return. This param defaults to 1000 if unspecified, and may not exceed
+   * 1000.
+   */
+  limit?: number
+  /**
+   * An opaque cursor returned from a previous request, used for pagination.
    */
   cursor?: string
 }
