@@ -3522,6 +3522,27 @@ export type Version = {
 }
 
 /**
+ * A Folder (previously called a "Project") is a collection of files and subfolders. Folders can be
+ * nested; a folder's parent is identified by `parent_folder_id`.
+ */
+export type Folder = {
+  /**
+   * The ID of the folder.
+   */
+  id: string
+
+  /**
+   * The name of the folder.
+   */
+  name: string
+
+  /**
+   * The ID of the folder's parent folder, or null if the folder is a top-level folder in the team.
+   */
+  parent_folder_id: string | null
+}
+
+/**
  * A description of an HTTP webhook (from Figma back to your application)
  */
 export type WebhookV2 = {
@@ -5928,6 +5949,133 @@ export type GetProjectFilesResponse = {
 }
 
 /**
+ * Response from the GET /v2/teams/{team_id}/folders endpoint.
+ */
+export type GetTeamFoldersResponse = {
+  /**
+   * The team's name.
+   */
+  name: string
+
+  /**
+   * An array of the team's top-level folders. Each folder's `parent_folder_id` is null.
+   */
+  folders: Folder[]
+}
+
+/**
+ * Response from the GET /v2/folders/{folder_id}/folders endpoint.
+ */
+export type GetFolderFoldersResponse = {
+  /**
+   * The parent folder's name.
+   */
+  name: string
+
+  /**
+   * An array of the folder's direct subfolders. Each subfolder's `parent_folder_id` equals the
+   * requested folder's ID.
+   */
+  folders: Folder[]
+}
+
+/**
+ * Response from the GET /v2/folders/{folder_id}/meta endpoint.
+ */
+export type GetFolderMetaResponse = {
+  /**
+   * The ID of the folder.
+   */
+  id: string
+
+  /**
+   * The name of the folder.
+   */
+  name: string
+
+  /**
+   * A URL to a thumbnail image of the folder. Null if the folder has no files.
+   */
+  thumbnail_url: string | null
+
+  /**
+   * The number of files in the folder.
+   */
+  file_count: number
+
+  /**
+   * The UTC ISO 8601 time at which the folder was last updated.
+   */
+  updated_at: string
+
+  /**
+   * The UTC ISO 8601 time at which the folder was created.
+   */
+  created_at: string
+}
+
+/**
+ * Response from the GET /v2/folders/{folder_id}/files endpoint.
+ */
+export type GetFolderFilesResponse = {
+  /**
+   * The folder's name.
+   */
+  name: string
+
+  /**
+   * An array of the files directly in the folder.
+   */
+  files: {
+    /**
+     * The file's key.
+     */
+    key: string
+
+    /**
+     * The file's name.
+     */
+    name: string
+
+    /**
+     * The file's thumbnail URL.
+     */
+    thumbnail_url?: string
+
+    /**
+     * The UTC ISO 8601 time at which the file was last modified.
+     */
+    last_modified: string
+
+    /**
+     * Present only when `branch_data` is true and the file has branches. An array of the file's
+     * branches.
+     */
+    branches?: {
+      /**
+       * The branch's file key.
+       */
+      key: string
+
+      /**
+       * The branch's name.
+       */
+      name: string
+
+      /**
+       * The branch's thumbnail URL.
+       */
+      thumbnail_url?: string
+
+      /**
+       * The UTC ISO 8601 time at which the branch was last modified.
+       */
+      last_modified: string
+    }[]
+  }[]
+}
+
+/**
  * Response from the GET /v1/files/{file_key}/versions endpoint.
  */
 export type GetFileVersionsResponse = {
@@ -7053,6 +7201,56 @@ export type GetProjectFilesQueryParams = {
    * Returns branch metadata in the response for each main file with a branch inside the project.
    */
   branch_data?: boolean
+}
+
+/**
+ * Path parameters for GET /v2/teams/{team_id}/folders
+ */
+export type GetTeamFoldersPathParams = {
+  /**
+   * ID of the team to list folders from
+   */
+  team_id: string
+}
+
+/**
+ * Path parameters for GET /v2/folders/{folder_id}/folders
+ */
+export type GetFolderFoldersPathParams = {
+  /**
+   * ID of the parent folder to list subfolders from
+   */
+  folder_id: string
+}
+
+/**
+ * Path parameters for GET /v2/folders/{folder_id}/files
+ */
+export type GetFolderFilesPathParams = {
+  /**
+   * ID of the folder to list files from
+   */
+  folder_id: string
+}
+
+/**
+ * Query parameters for GET /v2/folders/{folder_id}/files
+ */
+export type GetFolderFilesQueryParams = {
+  /**
+   * Returns branch metadata in the response for each main file with a branch inside the folder.
+   */
+  branch_data?: boolean
+}
+
+/**
+ * Path parameters for GET /v2/folders/{folder_id}/meta
+ */
+export type GetFolderMetaPathParams = {
+  /**
+   * ID of the folder to get metadata for
+   */
+  folder_id: string
 }
 
 /**

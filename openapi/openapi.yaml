@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.41.0
+  version: 0.42.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -35,6 +35,11 @@ tags:
     externalDocs:
       description: Project endpoints documentation
       url: https://developers.figma.com/docs/rest-api/projects-endpoints/
+  - name: Folders
+    description: Get information about folders, subfolders, and files in teams.
+    externalDocs:
+      description: Folder endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/folders-endpoints/
   - name: Users
     description: Get information about the currently authenticated user.
     externalDocs:
@@ -473,20 +478,23 @@ paths:
     get:
       tags:
         - Projects
-      summary: Get projects in a team
+      summary: "[Deprecated] Get projects in a team"
+      deprecated: true
       security:
         - PersonalAccessToken: []
         - PlanAccessToken: []
         - OAuth2:
             - projects:read
             - files:read
-      description: "You can use this endpoint to get a list of all the Projects within
-        the specified team. This will only return projects visible to the
-        authenticated user or owner of the developer token. Note: it is not
-        currently possible to programmatically obtain the team id of a user just
-        from a token. To obtain a team id, navigate to a team page of a team you
-        are a part of. The team id will be present in the URL after the word
-        team and before your team name."
+      description: 'Deprecated in favor of [Get top-level folders in a
+        team](https://developers.figma.com/docs/rest-api/folders-endpoints/).
+        You can use this endpoint to get a list of the top-level Projects (now
+        called "folders") within the specified team. This will only return
+        projects visible to the authenticated user or owner of the developer
+        token. Note: it is not currently possible to programmatically obtain the
+        team id of a user just from a token. To obtain a team id, navigate to a
+        team page of a team you are a part of. The team id will be present in
+        the URL after the word team and before your team name.'
       operationId: getTeamProjects
       parameters:
         - name: team_id
@@ -510,13 +518,16 @@ paths:
     get:
       tags:
         - Projects
-      summary: Get project metadata
+      summary: "[Deprecated] Get project metadata"
+      deprecated: true
       security:
         - PersonalAccessToken: []
         - PlanAccessToken: []
         - OAuth2:
             - project_metadata:read
-      description: Get project metadata
+      description: Deprecated in favor of [Get folder
+        metadata](https://developers.figma.com/docs/rest-api/folders-endpoints/).
+        Get metadata for a project (now called a "folder").
       operationId: getProjectMeta
       parameters:
         - name: project_id
@@ -540,14 +551,18 @@ paths:
     get:
       tags:
         - Projects
-      summary: Get files in a project
+      summary: "[Deprecated] Get files in a project"
+      deprecated: true
       security:
         - PersonalAccessToken: []
         - PlanAccessToken: []
         - OAuth2:
             - projects:read
             - files:read
-      description: Get a list of all the Files within the specified project.
+      description: Deprecated in favor of [Get files in a
+        folder](https://developers.figma.com/docs/rest-api/folders-endpoints/).
+        Get a list of all the Files within the specified project (now called a
+        "folder").
       operationId: getProjectFiles
       parameters:
         - name: project_id
@@ -570,6 +585,146 @@ paths:
           $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
         "403":
           $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v2/teams/{team_id}/folders:
+    get:
+      tags:
+        - Folders
+      summary: Get top-level folders in a team
+      security:
+        - PersonalAccessToken: []
+        - PlanAccessToken: []
+        - OAuth2:
+            - folders:read
+      description: Get a list of the top-level folders (previously called "projects")
+        within the specified team. Subfolders can be traversed with the GET
+        /v2/folders/{folder_id}/folders endpoint. It is not possible to
+        programmatically obtain team IDs. To obtain a team ID, navigate to the
+        team page in the Figma file browser. The team ID is present in the URL
+        after the word team. For example, in
+        `https://www.figma.com/files/181033233908053158/team/1535685101263221741`,
+        the team ID is `1535685101263221741`.
+      operationId: getTeamFolders
+      parameters:
+        - name: team_id
+          in: path
+          description: ID of the team to list folders from
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetTeamFoldersResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v2/folders/{folder_id}/folders:
+    get:
+      tags:
+        - Folders
+      summary: Get subfolders in a folder
+      security:
+        - PersonalAccessToken: []
+        - PlanAccessToken: []
+        - OAuth2:
+            - folders:read
+      description: Get a list of the direct subfolders within the specified folder.
+      operationId: getFolderFolders
+      parameters:
+        - name: folder_id
+          in: path
+          description: ID of the parent folder to list subfolders from
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetFolderFoldersResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v2/folders/{folder_id}/files:
+    get:
+      tags:
+        - Folders
+      summary: Get files in a folder
+      security:
+        - PersonalAccessToken: []
+        - PlanAccessToken: []
+        - OAuth2:
+            - folders:read
+      description: Get a list of the files directly within the specified folder.
+      operationId: getFolderFiles
+      parameters:
+        - name: folder_id
+          in: path
+          description: ID of the folder to list files from
+          required: true
+          schema:
+            type: string
+        - name: branch_data
+          in: query
+          description: Returns branch metadata in the response for each main file with a
+            branch inside the folder.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          $ref: "#/components/responses/GetFolderFilesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v2/folders/{folder_id}/meta:
+    get:
+      tags:
+        - Folders
+      summary: Get folder metadata
+      security:
+        - PlanAccessToken: []
+        - OAuth2:
+            - folder_metadata:read
+      description: Get metadata for a folder (name, thumbnail, file count, timestamps)
+        without enumerating its files.
+      operationId: getFolderMeta
+      parameters:
+        - name: folder_id
+          in: path
+          description: ID of the folder to get metadata for
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetFolderMetaResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
         "429":
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
         "500":
@@ -2871,6 +3026,8 @@ components:
             library_content:read: Read published components and styles of files.
             project_metadata:read: Read metadata of projects.
             projects:read: List projects and files in projects.
+            folders:read: List folders and files in folders.
+            folder_metadata:read: Read metadata of folders.
             team_library_content:read: Read published components and styles of teams.
             webhooks:read: Read metadata of webhooks.
             webhooks:write: Create and manage webhooks.
@@ -7020,6 +7177,28 @@ components:
         - label
         - description
         - user
+    Folder:
+      type: object
+      description: A Folder (previously called a "Project") is a collection of files
+        and subfolders. Folders can be nested; a folder's parent is identified
+        by `parent_folder_id`.
+      properties:
+        id:
+          type: string
+          description: The ID of the folder.
+        name:
+          type: string
+          description: The name of the folder.
+        parent_folder_id:
+          type:
+            - string
+            - "null"
+          description: The ID of the folder's parent folder, or null if the folder is a
+            top-level folder in the team.
+      required:
+        - id
+        - name
+        - parent_folder_id
     WebhookV2:
       type: object
       description: A description of an HTTP webhook (from Figma back to your application)
@@ -9458,6 +9637,141 @@ components:
                       type: string
                       format: date-time
                       description: The UTC ISO 8601 time at which the file was last modified.
+                  required:
+                    - key
+                    - name
+                    - last_modified
+            required:
+              - name
+              - files
+    GetTeamFoldersResponse:
+      description: Response from the GET /v2/teams/{team_id}/folders endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The team's name.
+              folders:
+                type: array
+                description: An array of the team's top-level folders. Each folder's
+                  `parent_folder_id` is null.
+                items:
+                  $ref: "#/components/schemas/Folder"
+            required:
+              - name
+              - folders
+    GetFolderFoldersResponse:
+      description: Response from the GET /v2/folders/{folder_id}/folders endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The parent folder's name.
+              folders:
+                type: array
+                description: An array of the folder's direct subfolders. Each subfolder's
+                  `parent_folder_id` equals the requested folder's ID.
+                items:
+                  $ref: "#/components/schemas/Folder"
+            required:
+              - name
+              - folders
+    GetFolderMetaResponse:
+      description: Response from the GET /v2/folders/{folder_id}/meta endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: The ID of the folder.
+              name:
+                type: string
+                description: The name of the folder.
+              thumbnail_url:
+                type:
+                  - string
+                  - "null"
+                description: A URL to a thumbnail image of the folder. Null if the folder has no
+                  files.
+              file_count:
+                type: integer
+                description: The number of files in the folder.
+              updated_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the folder was last updated.
+              created_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the folder was created.
+            required:
+              - id
+              - name
+              - thumbnail_url
+              - file_count
+              - updated_at
+              - created_at
+    GetFolderFilesResponse:
+      description: Response from the GET /v2/folders/{folder_id}/files endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The folder's name.
+              files:
+                type: array
+                description: An array of the files directly in the folder.
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                      description: The file's key.
+                    name:
+                      type: string
+                      description: The file's name.
+                    thumbnail_url:
+                      type: string
+                      description: The file's thumbnail URL.
+                    last_modified:
+                      type: string
+                      format: date-time
+                      description: The UTC ISO 8601 time at which the file was last modified.
+                    branches:
+                      type: array
+                      description: Present only when `branch_data` is true and the file has branches.
+                        An array of the file's branches.
+                      items:
+                        type: object
+                        properties:
+                          key:
+                            type: string
+                            description: The branch's file key.
+                          name:
+                            type: string
+                            description: The branch's name.
+                          thumbnail_url:
+                            type: string
+                            description: The branch's thumbnail URL.
+                          last_modified:
+                            type: string
+                            format: date-time
+                            description: The UTC ISO 8601 time at which the branch was last modified.
+                        required:
+                          - key
+                          - name
+                          - last_modified
                   required:
                     - key
                     - name
