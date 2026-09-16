@@ -17,5 +17,16 @@
   "bugs": {
     "url": "https://github.com/figma/rest-api-spec/issues"
   },
-  "homepage": "https://github.com/figma/rest-api-spec"
+  "homepage": "https://github.com/figma/rest-api-spec",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "yaml": "^2.8.1"
+  },
+  "files": [
+    "dist/api_types.ts",
+    "openapi/openapi.yaml"
+  ],
+  "scripts": {
+    "release:check": "node --test scripts/release.test.mjs && node scripts/release.mjs pack && node scripts/test-package.mjs"
+  }
 }
