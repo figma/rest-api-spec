@@ -4514,12 +4514,16 @@ export type PaymentInformation = {
  * - `STROKE_FLOAT`
  * - `EFFECT_FLOAT`
  * - `OPACITY`
+ * - `COLOR_OPACITY`
  * - `FONT_WEIGHT`
  * - `FONT_SIZE`
  * - `LINE_HEIGHT`
  * - `LETTER_SPACING`
  * - `PARAGRAPH_SPACING`
  * - `PARAGRAPH_INDENT`
+ *
+ * `OPACITY` corresponds to layer opacity, while `COLOR_OPACITY` corresponds to the opacity channel
+ * of a color.
  *
  * Valid scopes for `STRING` variables:
  *
@@ -4553,6 +4557,7 @@ export type VariableScope =
   | 'EFFECT_FLOAT'
   | 'EFFECT_COLOR'
   | 'OPACITY'
+  | 'COLOR_OPACITY'
   | 'FONT_FAMILY'
   | 'FONT_STYLE'
   | 'FONT_WEIGHT'
@@ -4697,7 +4702,9 @@ export type LocalVariable = {
   /**
    * The values for each mode of this variable.
    */
-  valuesByMode: { [key: string]: boolean | number | string | RGBA | VariableAlias }
+  valuesByMode: {
+    [key: string]: boolean | number | string | RGBA | VariableAlias | VariableComposedColor
+  }
 
   /**
    * Whether this variable is remote.
@@ -5095,7 +5102,30 @@ export type VariableModeValue = {
  * alias, the alias must resolve to this type. If overriding a value, the value type must match the
  * variable's type. If removing an overridden value, the value must be `null`.
  */
-export type VariableValue = boolean | number | string | RGB | RGBA | VariableAlias | null
+export type VariableValue =
+  | boolean
+  | number
+  | string
+  | RGB
+  | RGBA
+  | VariableAlias
+  | VariableComposedColor
+  | null
+
+/**
+ * A color with an independently authored opacity.
+ */
+export type VariableComposedColor =
+  | {
+      color: RGB | RGBA
+
+      opacity: VariableAlias
+    }
+  | {
+      color: VariableAlias
+
+      opacity: number | VariableAlias
+    }
 
 /**
  * A dev resource in a file
