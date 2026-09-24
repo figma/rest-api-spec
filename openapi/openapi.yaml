@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.42.0
+  version: 0.43.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -2341,6 +2341,7 @@ paths:
           - Variable names must be unique within a collection and cannot contain certain special characters such as `.{}`
         - **variableModeValues**: For setting a variable value under a specific mode.
           - When setting aliases, a variable cannot be aliased to itself or form an alias cycle
+          - Color variables can use a composed color value with `color` and `opacity` fields. At least one field must be a variable alias.
 
         Temporary ids can be used to reference an object later in the same POST request body. They can be used at create time in the `id` property of variable collections, modes, variables, and in the `initialModeId` property of variable collections. They are scoped to a single request body, and must be unique within the body. The mapping of temporary ids to real ids is returned in the response.
 
@@ -8265,6 +8266,7 @@ components:
         - EFFECT_FLOAT
         - EFFECT_COLOR
         - OPACITY
+        - COLOR_OPACITY
         - FONT_FAMILY
         - FONT_STYLE
         - FONT_WEIGHT
@@ -8289,12 +8291,15 @@ components:
         - `STROKE_FLOAT`
         - `EFFECT_FLOAT`
         - `OPACITY`
+        - `COLOR_OPACITY`
         - `FONT_WEIGHT`
         - `FONT_SIZE`
         - `LINE_HEIGHT`
         - `LETTER_SPACING`
         - `PARAGRAPH_SPACING`
         - `PARAGRAPH_INDENT`
+
+        `OPACITY` corresponds to layer opacity, while `COLOR_OPACITY` corresponds to the opacity channel of a color.
 
         Valid scopes for `STRING` variables:
         - `ALL_SCOPES`
@@ -8439,6 +8444,7 @@ components:
               - type: string
               - $ref: "#/components/schemas/RGBA"
               - $ref: "#/components/schemas/VariableAlias"
+              - $ref: "#/components/schemas/VariableComposedColor"
         remote:
           type: boolean
           description: Whether this variable is remote.
@@ -8843,7 +8849,33 @@ components:
         - $ref: "#/components/schemas/RGB"
         - $ref: "#/components/schemas/RGBA"
         - $ref: "#/components/schemas/VariableAlias"
+        - $ref: "#/components/schemas/VariableComposedColor"
         - type: "null"
+    VariableComposedColor:
+      description: A color with an independently authored opacity.
+      oneOf:
+        - type: object
+          properties:
+            color:
+              oneOf:
+                - $ref: "#/components/schemas/RGB"
+                - $ref: "#/components/schemas/RGBA"
+            opacity:
+              $ref: "#/components/schemas/VariableAlias"
+          required:
+            - color
+            - opacity
+        - type: object
+          properties:
+            color:
+              $ref: "#/components/schemas/VariableAlias"
+            opacity:
+              oneOf:
+                - type: number
+                - $ref: "#/components/schemas/VariableAlias"
+          required:
+            - color
+            - opacity
     DevResource:
       type: object
       description: A dev resource in a file
