@@ -3540,6 +3540,21 @@ export type Folder = {
    * The ID of the folder's parent folder, or null if the folder is a top-level folder in the team.
    */
   parent_folder_id: string | null
+
+  /**
+   * The audience that can access the folder.
+   */
+  sharing_audience_control?:
+    | 'plan_view'
+    | 'plan_edit'
+    | 'invite_only'
+    | 'workspace_view'
+    | 'workspace_edit'
+
+  /**
+   * The time at which the folder was created.
+   */
+  created_at?: string
 }
 
 /**

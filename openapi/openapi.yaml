@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.43.0
+  version: 0.44.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -7196,6 +7196,19 @@ components:
             - "null"
           description: The ID of the folder's parent folder, or null if the folder is a
             top-level folder in the team.
+        sharing_audience_control:
+          type: string
+          description: The audience that can access the folder.
+          enum:
+            - plan_view
+            - plan_edit
+            - invite_only
+            - workspace_view
+            - workspace_edit
+        created_at:
+          type: string
+          format: date-time
+          description: The time at which the folder was created.
       required:
         - id
         - name
