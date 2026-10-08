@@ -6638,12 +6638,17 @@ components:
         - EXPRESSION
     VariableResolvedDataType:
       type: string
-      description: Defines the types of data a VariableData object can eventually equal
+      description: |-
+        Defines the types of data a VariableData object can eventually equal
+
+        `TIMING` values are numbers in seconds. `EASING` values are `VariableEasing` objects.
       enum:
         - BOOLEAN
         - FLOAT
         - STRING
         - COLOR
+        - EASING
+        - TIMING
     Expression:
       type: object
       description: Defines the
@@ -8458,6 +8463,7 @@ components:
               - $ref: "#/components/schemas/RGBA"
               - $ref: "#/components/schemas/VariableAlias"
               - $ref: "#/components/schemas/VariableComposedColor"
+              - $ref: "#/components/schemas/VariableEasing"
         remote:
           type: boolean
           description: Whether this variable is remote.
@@ -8889,6 +8895,69 @@ components:
           required:
             - color
             - opacity
+    VariableEasing:
+      description: The value of a variable whose resolved type is `EASING`. The curve is
+        always resolved into `bezierValues` or `springValues`, whatever preset
+        `easingType` refers to.
+      oneOf:
+        - type: object
+          properties:
+            easingType:
+              type: integer
+              description: The easing preset the curve was authored with.
+            bezierValues:
+              $ref: "#/components/schemas/VariableEasingBezierValues"
+          required:
+            - easingType
+            - bezierValues
+        - type: object
+          properties:
+            easingType:
+              type: integer
+              description: The easing preset the curve was authored with.
+            springValues:
+              $ref: "#/components/schemas/VariableEasingSpringValues"
+          required:
+            - easingType
+            - springValues
+    VariableEasingBezierValues:
+      type: object
+      description: The control points of a cubic bezier easing curve.
+      properties:
+        p1x:
+          type: number
+          description: The x coordinate of the first control point.
+        p1y:
+          type: number
+          description: The y coordinate of the first control point.
+        p2x:
+          type: number
+          description: The x coordinate of the second control point.
+        p2y:
+          type: number
+          description: The y coordinate of the second control point.
+      required:
+        - p1x
+        - p1y
+        - p2x
+        - p2y
+    VariableEasingSpringValues:
+      type: object
+      description: The physical properties of a spring easing.
+      properties:
+        mass:
+          type: number
+          description: The mass of the spring.
+        stiffness:
+          type: number
+          description: The stiffness of the spring.
+        damping:
+          type: number
+          description: The damping of the spring.
+      required:
+        - mass
+        - stiffness
+        - damping
     DevResource:
       type: object
       description: A dev resource in a file
