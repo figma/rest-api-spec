@@ -2969,8 +2969,10 @@ export type VariableDataType =
 
 /**
  * Defines the types of data a VariableData object can eventually equal
+ *
+ * `TIMING` values are numbers in seconds. `EASING` values are `VariableEasing` objects.
  */
-export type VariableResolvedDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR'
+export type VariableResolvedDataType = 'BOOLEAN' | 'FLOAT' | 'STRING' | 'COLOR' | 'EASING' | 'TIMING'
 
 /**
  * Defines the [Expression](https://help.figma.com/hc/en-us/articles/15253194385943) object, which
@@ -4718,7 +4720,14 @@ export type LocalVariable = {
    * The values for each mode of this variable.
    */
   valuesByMode: {
-    [key: string]: boolean | number | string | RGBA | VariableAlias | VariableComposedColor
+    [key: string]:
+      | boolean
+      | number
+      | string
+      | RGBA
+      | VariableAlias
+      | VariableComposedColor
+      | VariableEasing
   }
 
   /**
@@ -5141,6 +5150,73 @@ export type VariableComposedColor =
 
       opacity: number | VariableAlias
     }
+
+/**
+ * The value of a variable whose resolved type is `EASING`. The curve is always resolved into
+ * `bezierValues` or `springValues`, whatever preset `easingType` refers to.
+ */
+export type VariableEasing =
+  | {
+      /**
+       * The easing preset the curve was authored with.
+       */
+      easingType: number
+
+      bezierValues: VariableEasingBezierValues
+    }
+  | {
+      /**
+       * The easing preset the curve was authored with.
+       */
+      easingType: number
+
+      springValues: VariableEasingSpringValues
+    }
+
+/**
+ * The control points of a cubic bezier easing curve.
+ */
+export type VariableEasingBezierValues = {
+  /**
+   * The x coordinate of the first control point.
+   */
+  p1x: number
+
+  /**
+   * The y coordinate of the first control point.
+   */
+  p1y: number
+
+  /**
+   * The x coordinate of the second control point.
+   */
+  p2x: number
+
+  /**
+   * The y coordinate of the second control point.
+   */
+  p2y: number
+}
+
+/**
+ * The physical properties of a spring easing.
+ */
+export type VariableEasingSpringValues = {
+  /**
+   * The mass of the spring.
+   */
+  mass: number
+
+  /**
+   * The stiffness of the spring.
+   */
+  stiffness: number
+
+  /**
+   * The damping of the spring.
+   */
+  damping: number
+}
 
 /**
  * A dev resource in a file
