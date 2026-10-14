@@ -2407,7 +2407,7 @@ export type TextPathTypeStyle = {
 /**
  * Component property type.
  */
-export type ComponentPropertyType = 'BOOLEAN' | 'INSTANCE_SWAP' | 'TEXT' | 'VARIANT'
+export type ComponentPropertyType = 'BOOLEAN' | 'INSTANCE_SWAP' | 'TEXT' | 'VARIANT' | 'SLOT'
 
 /**
  * Instance swap preferred value.
@@ -2425,6 +2425,50 @@ export type InstanceSwapPreferredValue = {
 }
 
 /**
+ * Slot-specific configuration for a SLOT component property.
+ */
+export type SlotSettings = {
+  /**
+   * Whether layers inserted into the slot fill its counter axis.
+   */
+  stretchChildOnInsert?: boolean
+
+  /**
+   * Whether an empty slot is shown by default.
+   */
+  displayEmptyByDefault?: boolean
+
+  /**
+   * Minimum number of children allowed in the slot. null means no minimum.
+   */
+  minChildren?: number | null
+
+  /**
+   * Maximum number of children allowed in the slot. null means no maximum.
+   */
+  maxChildren?: number | null
+
+  /**
+   * Whether slot contents are limited to preferred values.
+   */
+  allowPreferredValuesOnly?: boolean
+}
+
+/**
+ * Identifier for the content of a slot component property.
+ */
+export type SlotContentId = {
+  /**
+   * Identifier for the slot content.
+   */
+  guid: {
+    sessionID: number
+
+    localID: number
+  }
+}
+
+/**
  * A property of a component.
  */
 export type ComponentPropertyDefinition = {
@@ -2436,7 +2480,7 @@ export type ComponentPropertyDefinition = {
   /**
    * Initial value of this property for instances.
    */
-  defaultValue: boolean | string
+  defaultValue: boolean | string | SlotContentId
 
   /**
    * All possible values for this property. Only exists on VARIANT properties.
@@ -2444,9 +2488,14 @@ export type ComponentPropertyDefinition = {
   variantOptions?: string[]
 
   /**
-   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP`.
+   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP` or `SLOT`.
    */
   preferredValues?: InstanceSwapPreferredValue[]
+
+  /**
+   * Settings for a SLOT property.
+   */
+  slotSettings?: SlotSettings
 }
 
 /**
@@ -2461,10 +2510,10 @@ export type ComponentProperty = {
   /**
    * Value of the property for this component instance.
    */
-  value: boolean | string
+  value: boolean | string | SlotContentId
 
   /**
-   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP`.
+   * Preferred values for this property. Only applicable if type is `INSTANCE_SWAP` or `SLOT`.
    */
   preferredValues?: InstanceSwapPreferredValue[]
 
