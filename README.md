@@ -2,7 +2,7 @@
 
 This repository contains the OpenAPI specification and Typescript types for the [Figma REST API](https://www.figma.com/developers/api).
 
-[Changelog](https://www.figma.com/developers/api#changelog)
+[Changelog](https://developers.figma.com/docs/rest-api/changelog/)
 
 Note: this specification is currently in beta. If you notice any inaccuracies with the specification, please [file an issue](https://github.com/figma/rest-api-spec/issues) in this repository.
 
