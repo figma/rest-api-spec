@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.45.0
+  version: 0.46.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -35,6 +35,11 @@ tags:
     externalDocs:
       description: Project endpoints documentation
       url: https://developers.figma.com/docs/rest-api/projects-endpoints/
+  - name: Teams
+    description: Create and manage teams.
+    externalDocs:
+      description: Team endpoints documentation
+      url: https://developers.figma.com/docs/rest-api/teams-endpoints/
   - name: Folders
     description: Get information about folders, subfolders, and files in teams.
     externalDocs:
@@ -474,6 +479,201 @@ paths:
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
         "500":
           $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v1/files/{file_key}/duplicate:
+    post:
+      tags:
+        - Files
+      summary: Duplicate a file
+      security:
+        - OAuth2:
+            - file_duplicate:write
+      description: |-
+        Duplicates a main file or branch into the specified folder as a new standalone file. The source file and destination folder must belong to the Enterprise plan associated with the private OAuth app. The authenticated user must be able to export the source file, edit the destination folder, and create files of the source editor type.
+
+        The copy uses the source's latest saved checkpoint and may not include recent unsaved changes. This endpoint is available only to Enterprise plans.
+      operationId: postFileDuplicate
+      parameters:
+        - name: file_key
+          in: path
+          description: The key of the main file or branch to duplicate.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The destination for the duplicated file.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folder_id:
+                  type: string
+                  description: The ID of the folder to create the duplicated file in.
+              required:
+                - folder_id
+      responses:
+        "200":
+          $ref: "#/components/responses/PostFileDuplicateResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrorBoolean"
+          description: The request body is invalid (for example, `folder_id` is missing or
+            isn't a string), or this type of file can't be duplicated.
+        "401":
+          $ref: "#/components/responses/PostFileDuplicateErrorResponse"
+          description: The request is not authenticated.
+        "403":
+          $ref: "#/components/responses/PostFileDuplicateErrorResponse"
+          description: The token, OAuth app, or user does not have permission to duplicate
+            this file into the destination folder.
+        "404":
+          $ref: "#/components/responses/PostFileDuplicateErrorResponse"
+          description: The source file or destination folder was not found, or the
+            endpoint is not enabled.
+        "429":
+          $ref: "#/components/responses/PostFileDuplicateErrorResponse"
+          description: The request was throttled or rate limited. Please wait before
+            attempting the request again.
+        "500":
+          $ref: "#/components/responses/PostFileDuplicateErrorResponse"
+          description: An internal server error occurred.
+  /v1/teams:
+    post:
+      tags:
+        - Teams
+      summary: Create a team
+      security:
+        - OAuth2:
+            - teams:write
+      description: Creates a team in the Enterprise plan associated with a private
+        OAuth app. The app uses the authenticated user's permissions, and that
+        user becomes the team owner. The request is subject to the same
+        team-creation controls and permissions as team creation in Figma.
+      operationId: postTeam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeamRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/TeamResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrMessage"
+          description: The request parameters are invalid.
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrMessage"
+          description: The access token is missing or incorrect.
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+          description: The caller does not have permission to create the team.
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+          description: The request was rate-limited.
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+          description: An internal server error occurred.
+  /v1/teams/{team_id}:
+    get:
+      tags:
+        - Teams
+      summary: Get a team
+      security:
+        - PlanAccessToken: []
+        - OAuth2:
+            - teams:read
+      description: Returns metadata for a team the caller can access. Private OAuth
+        apps can use this endpoint for Professional, Organization, and
+        Enterprise plans. Plan access tokens can use it for Organization and
+        Enterprise plans.
+      operationId: getTeam
+      parameters:
+        - name: team_id
+          in: path
+          description: The ID of the team.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/TeamResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrMessage"
+          description: The access token is missing or incorrect.
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+          description: The caller does not have permission to access the team.
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+          description: The request was rate-limited.
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+          description: An internal server error occurred.
+  /v1/teams/{team_id}/invites:
+    post:
+      tags:
+        - Teams
+      summary: Invite users to a team
+      security:
+        - OAuth2:
+            - team_members:write
+      description: |-
+        Invites users to a team with the requested role. This endpoint is available only to private OAuth apps associated with an Enterprise plan, and the team must belong to that plan. The authenticated user must be allowed to grant the requested role on the team.
+
+        Each email address is processed independently. Per-address failures are returned in `errors` with HTTP 200, even if `invites` is empty. Always check `errors` to determine which addresses could not be invited.
+
+        Existing team members keep their current role when it is higher than the requested role.
+      operationId: postTeamInvites
+      parameters:
+        - name: team_id
+          in: path
+          description: The ID of the team to invite users to.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The users to invite and the team role to grant them.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteTeamMembersRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/InviteTeamMembersResponse"
+        "400":
+          description: Bad request. The response may be JSON or HTML.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ErrorResponsePayloadWithErrorBoolean"
+                  - type: object
+                    properties:
+                      status:
+                        type: number
+                        enum:
+                          - 400
+            text/html:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/PostTeamInvitesErrorResponse"
+        "403":
+          $ref: "#/components/responses/PostTeamInvitesErrorResponse"
+        "404":
+          $ref: "#/components/responses/PostTeamInvitesErrorResponse"
+        "413":
+          description: Request body too large.
+          content:
+            text/html:
+              schema:
+                type: string
+        "429":
+          $ref: "#/components/responses/PostTeamInvitesErrorResponse"
+        "500":
+          $ref: "#/components/responses/PostTeamInvitesErrorResponse"
   /v1/teams/{team_id}/projects:
     get:
       tags:
@@ -589,6 +789,52 @@ paths:
           $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
         "500":
           $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+  /v1/teams/{team_id}/folders:
+    post:
+      tags:
+        - Folders
+      summary: Create a folder
+      security:
+        - OAuth2:
+            - folders:write
+      description: Creates a top-level folder in a team. The team must belong to the
+        Enterprise plan associated with the private OAuth app, and the
+        authenticated user must be allowed to create a folder in the team.
+      operationId: postTeamFolder
+      parameters:
+        - name: team_id
+          in: path
+          description: The ID of the team in which to create the folder.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFolderRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateFolderResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestErrorResponseWithErrMessage"
+          description: The request parameters are invalid.
+        "401":
+          $ref: "#/components/responses/UnauthorizedErrorResponseWithErrMessage"
+          description: The access token is missing or incorrect.
+        "403":
+          $ref: "#/components/responses/ForbiddenErrorResponseWithErrMessage"
+          description: The caller does not have permission to create the folder.
+        "404":
+          $ref: "#/components/responses/NotFoundErrorResponseWithErrMessage"
+          description: The requested resource was not found.
+        "429":
+          $ref: "#/components/responses/TooManyRequestsErrorResponseWithErrMessage"
+          description: The request was rate-limited.
+        "500":
+          $ref: "#/components/responses/InternalServerErrorResponseWithErrMessage"
+          description: An internal server error occurred.
   /v2/teams/{team_id}/folders:
     get:
       tags:
@@ -3012,6 +3258,8 @@ components:
             file_comments:read: Read the comments for files.
             file_comments:write: Post and delete comments and comment reactions in files.
             file_content:read: Read the contents of files, such as nodes and the editor type.
+            file_duplicate:write: Duplicate files into folders. Available only to private
+              OAuth apps in an Enterprise plan.
             file_dev_resources:read: Read dev resources in files.
             file_dev_resources:write: Write to dev resources in files.
             file_metadata:read: Read metadata of files.
@@ -3027,9 +3275,18 @@ components:
             library_content:read: Read published components and styles of files.
             project_metadata:read: Read metadata of projects.
             projects:read: List projects and files in projects.
-            folders:read: List folders and files in folders.
             folder_metadata:read: Read metadata of folders.
+            folders:read: List folders and files in folders.
+            folders:write: Create folders. Available only to private OAuth apps in an
+              Enterprise plan.
             team_library_content:read: Read published components and styles of teams.
+            team_members:write: Invite members to teams. Available only to private OAuth
+              apps in an Enterprise plan.
+            teams:read: Read team metadata. Available to private OAuth apps in Professional,
+              Organization, and Enterprise plans, and to plan access tokens in
+              Organization and Enterprise plans.
+            teams:write: Create teams. Available only to private OAuth apps in an Enterprise
+              plan.
             webhooks:read: Read metadata of webhooks.
             webhooks:write: Create and manage webhooks.
     OrgOAuth2:
@@ -7228,6 +7485,27 @@ components:
         - label
         - description
         - user
+    CreateFolderRequest:
+      type: object
+      description: Properties for the folder to create.
+      properties:
+        name:
+          type: string
+          description: The name of the folder.
+        sharing_audience_control:
+          type: string
+          description: The audience that can access the folder. Workspace audiences
+            require the specified team to belong to a workspace.
+          enum:
+            - plan_view
+            - plan_edit
+            - invite_only
+            - workspace_view
+            - workspace_edit
+      required:
+        - name
+        - sharing_audience_control
+      additionalProperties: false
     Folder:
       type: object
       description: A Folder (previously called a "Project") is a collection of files
@@ -9362,6 +9640,128 @@ components:
         - owner
         - editor
         - viewer
+    CreateTeamRequest:
+      type: object
+      description: Properties for the team to create.
+      properties:
+        name:
+          type: string
+          description: The name of the team.
+        description:
+          type:
+            - string
+            - "null"
+          description: A description of the team.
+        sharing_audience_control:
+          type: string
+          description: The audience that can discover and join the team. Workspace
+            audiences require a workspace_id.
+          enum:
+            - org_view
+            - org_edit
+            - invite_only
+            - workspace_view
+            - workspace_edit
+        org_discoverability:
+          type:
+            - string
+            - "null"
+          description: Whether organization members can discover an invite-only team.
+            Required for invite_only and not accepted for other audiences.
+          enum:
+            - hidden
+            - discoverable
+            - null
+        workspace_id:
+          type:
+            - string
+            - "null"
+          description: The workspace in which to create the team. Required for workspace
+            audiences.
+      required:
+        - name
+        - sharing_audience_control
+      additionalProperties: false
+    InviteTeamMembersRequest:
+      type: object
+      description: Members to invite to a team and the role to assign them.
+      properties:
+        emails:
+          type: array
+          minItems: 1
+          maxItems: 99
+          items:
+            type: string
+            format: email
+          description: The email addresses to invite.
+        role:
+          type: string
+          enum:
+            - viewer
+            - editor
+            - admin
+          description: The role to grant each invited member. Existing roles are never
+            downgraded.
+      required:
+        - emails
+        - role
+      additionalProperties: false
+    Team:
+      type: object
+      description: A Figma team.
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the team.
+        name:
+          type: string
+          description: The name of the team.
+        description:
+          type:
+            - string
+            - "null"
+          description: A description of the team.
+        sharing_audience_control:
+          type: string
+          description: The audience that can discover and join the team.
+          enum:
+            - org_view
+            - org_edit
+            - invite_only
+            - workspace_view
+            - workspace_edit
+        org_discoverability:
+          type:
+            - string
+            - "null"
+          description: Whether organization members can discover an invite-only team.
+          enum:
+            - hidden
+            - discoverable
+            - null
+        workspace_id:
+          type:
+            - string
+            - "null"
+          description: The workspace containing the team.
+        owner_user_id:
+          type:
+            - string
+            - "null"
+          description: The ID of the user who owns the team.
+        created_at:
+          type: string
+          format: date-time
+          description: The time at which the team was created.
+      required:
+        - id
+        - name
+        - description
+        - sharing_audience_control
+        - org_discoverability
+        - workspace_id
+        - owner_user_id
+        - created_at
   responses:
     GetFileResponse:
       description: Response from the GET /v1/files/{file_key} endpoint.
@@ -9648,6 +10048,50 @@ components:
                   - editorType
             required:
               - file
+    PostFileDuplicateResponse:
+      description: Response from the POST /v1/files/{file_key}/duplicate endpoint.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              file_key:
+                type: string
+                description: The key of the newly created standalone file.
+              name:
+                type: string
+                description: The name of the duplicated file.
+              folder_id:
+                type: string
+                description: The ID of the folder containing the duplicated file.
+              editor_type:
+                type: string
+                enum:
+                  - figma
+                  - figjam
+                  - slides
+                  - buzz
+                  - make
+                description: The type of editor associated with the duplicated file.
+              created_at:
+                type: string
+                format: date-time
+                description: The UTC ISO 8601 time at which the duplicated file was created.
+            required:
+              - file_key
+              - name
+              - folder_id
+              - editor_type
+              - created_at
+    PostFileDuplicateErrorResponse:
+      description: The request failed. The error payload depends on where the request
+        failed.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrMessage"
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrorBoolean"
     GetTeamProjectsResponse:
       description: Response from the GET /v1/teams/{team_id}/projects endpoint.
       content:
@@ -9739,6 +10183,31 @@ components:
             required:
               - name
               - files
+    CreateFolderResponse:
+      description: Response containing the created Folder resource.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/Folder"
+              - type: object
+                properties:
+                  sharing_audience_control:
+                    type: string
+                    description: The audience that can access the folder.
+                    enum:
+                      - plan_view
+                      - plan_edit
+                      - invite_only
+                      - workspace_view
+                      - workspace_edit
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: The time at which the folder was created.
+                required:
+                  - sharing_audience_control
+                  - created_at
     GetTeamFoldersResponse:
       description: Response from the GET /v2/teams/{team_id}/folders endpoint.
       content:
@@ -10920,6 +11389,22 @@ components:
                       - 401
                 required:
                   - status
+    UnauthorizedErrorResponseWithErrMessage:
+      description: Token is missing or incorrect.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrMessage"
+              - type: object
+                properties:
+                  status:
+                    type: number
+                    description: Status code
+                    enum:
+                      - 401
+                required:
+                  - status
     ForbiddenErrorResponseWithErrMessage:
       description: The request was valid, but the server is refusing action. The user
         might not have the necessary permissions for a resource, or may need an
@@ -11071,3 +11556,78 @@ components:
                       - 500
                 required:
                   - status
+    TeamResponse:
+      description: Response containing a Team resource.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Team"
+    InviteTeamMembersResponse:
+      description: Response from the POST /v1/teams/{team_id}/invites endpoint.
+        Per-address failures return HTTP 200. Always inspect `errors`; `invites`
+        may be empty.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              invites:
+                type: array
+                description: The email addresses that were invited, including users already on
+                  the team, whose role is kept or raised. An invitation can
+                  still require approval from an organization admin before the
+                  user joins the team.
+                items:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      description: The normalized email address that was invited.
+                    role:
+                      type: string
+                      description: The requested team role. Existing roles are never downgraded, so a
+                        user already on the team can have a higher role.
+                      enum:
+                        - viewer
+                        - editor
+                        - admin
+                  required:
+                    - email
+                    - role
+              errors:
+                type: array
+                description: The email addresses that could not be invited. The other addresses
+                  in the request are still processed.
+                items:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      description: The normalized email address that could not be invited.
+                    error:
+                      type: string
+                      description: A human-readable explanation of the failure.
+                  required:
+                    - email
+                    - error
+            required:
+              - invites
+              - errors
+          example:
+            invites:
+              - email: alex@example.com
+                role: editor
+            errors:
+              - email: sam@example.com
+                error: Unable to invite this email address.
+    PostTeamInvitesErrorResponse:
+      description: Error response from the POST /v1/teams/{team_id}/invites endpoint.
+        The error payload depends on where the request failed.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrMessage"
+              - $ref: "#/components/schemas/ErrorResponsePayloadWithErrorBoolean"

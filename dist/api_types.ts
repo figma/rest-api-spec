@@ -3571,6 +3571,27 @@ export type Version = {
 }
 
 /**
+ * Properties for the folder to create.
+ */
+export type CreateFolderRequest = {
+  /**
+   * The name of the folder.
+   */
+  name: string
+
+  /**
+   * The audience that can access the folder. Workspace audiences require the specified team to belong
+   * to a workspace.
+   */
+  sharing_audience_control:
+    | 'plan_view'
+    | 'plan_edit'
+    | 'invite_only'
+    | 'workspace_view'
+    | 'workspace_edit'
+}
+
+/**
  * A Folder (previously called a "Project") is a collection of files and subfolders. Folders can be
  * nested; a folder's parent is identified by `parent_folder_id`.
  */
@@ -5697,6 +5718,107 @@ export type LinkAccess = 'view' | 'edit' | 'org_view' | 'org_edit' | 'inherit'
 export type Role = 'owner' | 'editor' | 'viewer'
 
 /**
+ * Properties for the team to create.
+ */
+export type CreateTeamRequest = {
+  /**
+   * The name of the team.
+   */
+  name: string
+
+  /**
+   * A description of the team.
+   */
+  description?: string | null
+
+  /**
+   * The audience that can discover and join the team. Workspace audiences require a workspace_id.
+   */
+  sharing_audience_control:
+    | 'org_view'
+    | 'org_edit'
+    | 'invite_only'
+    | 'workspace_view'
+    | 'workspace_edit'
+
+  /**
+   * Whether organization members can discover an invite-only team. Required for invite_only and not
+   * accepted for other audiences.
+   */
+  org_discoverability?: string | null
+
+  /**
+   * The workspace in which to create the team. Required for workspace audiences.
+   */
+  workspace_id?: string | null
+}
+
+/**
+ * Members to invite to a team and the role to assign them.
+ */
+export type InviteTeamMembersRequest = {
+  /**
+   * The email addresses to invite.
+   */
+  emails: string[]
+
+  /**
+   * The role to grant each invited member. Existing roles are never downgraded.
+   */
+  role: 'viewer' | 'editor' | 'admin'
+}
+
+/**
+ * A Figma team.
+ */
+export type Team = {
+  /**
+   * The unique identifier of the team.
+   */
+  id: string
+
+  /**
+   * The name of the team.
+   */
+  name: string
+
+  /**
+   * A description of the team.
+   */
+  description: string | null
+
+  /**
+   * The audience that can discover and join the team.
+   */
+  sharing_audience_control:
+    | 'org_view'
+    | 'org_edit'
+    | 'invite_only'
+    | 'workspace_view'
+    | 'workspace_edit'
+
+  /**
+   * Whether organization members can discover an invite-only team.
+   */
+  org_discoverability: string | null
+
+  /**
+   * The workspace containing the team.
+   */
+  workspace_id: string | null
+
+  /**
+   * The ID of the user who owns the team.
+   */
+  owner_user_id: string | null
+
+  /**
+   * The time at which the team was created.
+   */
+  created_at: string
+}
+
+/**
  * Response from the GET /v1/files/{file_key} endpoint.
  */
 export type GetFileResponse = {
@@ -5958,6 +6080,43 @@ export type GetFileMetaResponse = {
 }
 
 /**
+ * Response from the POST /v1/files/{file_key}/duplicate endpoint.
+ */
+export type PostFileDuplicateResponse = {
+  /**
+   * The key of the newly created standalone file.
+   */
+  file_key: string
+
+  /**
+   * The name of the duplicated file.
+   */
+  name: string
+
+  /**
+   * The ID of the folder containing the duplicated file.
+   */
+  folder_id: string
+
+  /**
+   * The type of editor associated with the duplicated file.
+   */
+  editor_type: 'figma' | 'figjam' | 'slides' | 'buzz' | 'make'
+
+  /**
+   * The UTC ISO 8601 time at which the duplicated file was created.
+   */
+  created_at: string
+}
+
+/**
+ * The request failed. The error payload depends on where the request failed.
+ */
+export type PostFileDuplicateErrorResponse =
+  | ErrorResponsePayloadWithErrMessage
+  | ErrorResponsePayloadWithErrorBoolean
+
+/**
  * Response from the GET /v1/teams/{team_id}/projects endpoint.
  */
 export type GetTeamProjectsResponse = {
@@ -6040,6 +6199,26 @@ export type GetProjectFilesResponse = {
      */
     last_modified: string
   }[]
+}
+
+/**
+ * Response containing the created Folder resource.
+ */
+export type CreateFolderResponse = Folder & {
+  /**
+   * The audience that can access the folder.
+   */
+  sharing_audience_control:
+    | 'plan_view'
+    | 'plan_edit'
+    | 'invite_only'
+    | 'workspace_view'
+    | 'workspace_edit'
+
+  /**
+   * The time at which the folder was created.
+   */
+  created_at: string
 }
 
 /**
@@ -6969,6 +7148,16 @@ export type UnauthorizedErrorResponseWithErrorBoolean = ErrorResponsePayloadWith
 }
 
 /**
+ * Token is missing or incorrect.
+ */
+export type UnauthorizedErrorResponseWithErrMessage = ErrorResponsePayloadWithErrMessage & {
+  /**
+   * Status code
+   */
+  status: 401
+}
+
+/**
  * The request was valid, but the server is refusing action. The user might not have the necessary
  * permissions for a resource, or may need an account of some sort.
  */
@@ -7061,6 +7250,59 @@ export type InternalServerErrorResponseWithErrorBoolean = ErrorResponsePayloadWi
    */
   status: 500
 }
+
+/**
+ * Response containing a Team resource.
+ */
+export type TeamResponse = Team
+
+/**
+ * Response from the POST /v1/teams/{team_id}/invites endpoint. Per-address failures return HTTP
+ * 200. Always inspect `errors`; `invites` may be empty.
+ */
+export type InviteTeamMembersResponse = {
+  /**
+   * The email addresses that were invited, including users already on the team, whose role is kept or
+   * raised. An invitation can still require approval from an organization admin before the user joins
+   * the team.
+   */
+  invites: {
+    /**
+     * The normalized email address that was invited.
+     */
+    email: string
+
+    /**
+     * The requested team role. Existing roles are never downgraded, so a user already on the team can
+     * have a higher role.
+     */
+    role: 'viewer' | 'editor' | 'admin'
+  }[]
+
+  /**
+   * The email addresses that could not be invited. The other addresses in the request are still
+   * processed.
+   */
+  errors: {
+    /**
+     * The normalized email address that could not be invited.
+     */
+    email: string
+
+    /**
+     * A human-readable explanation of the failure.
+     */
+    error: string
+  }[]
+}
+
+/**
+ * Error response from the POST /v1/teams/{team_id}/invites endpoint. The error payload depends on
+ * where the request failed.
+ */
+export type PostTeamInvitesErrorResponse =
+  | ErrorResponsePayloadWithErrMessage
+  | ErrorResponsePayloadWithErrorBoolean
 
 /**
  * Path parameters for GET /v1/files/{file_key}
@@ -7258,6 +7500,56 @@ export type GetFileMetaPathParams = {
 }
 
 /**
+ * Path parameters for POST /v1/files/{file_key}/duplicate
+ */
+export type PostFileDuplicatePathParams = {
+  /**
+   * The key of the main file or branch to duplicate.
+   */
+  file_key: string
+}
+
+/**
+ * Request body parameters for POST /v1/files/{file_key}/duplicate
+ */
+export type PostFileDuplicateRequestBody = {
+  /**
+   * The ID of the folder to create the duplicated file in.
+   */
+  folder_id: string
+}
+
+/**
+ * Request body parameters for POST /v1/teams
+ */
+export type PostTeamRequestBody = CreateTeamRequest
+
+/**
+ * Path parameters for GET /v1/teams/{team_id}
+ */
+export type GetTeamPathParams = {
+  /**
+   * The ID of the team.
+   */
+  team_id: string
+}
+
+/**
+ * Path parameters for POST /v1/teams/{team_id}/invites
+ */
+export type PostTeamInvitesPathParams = {
+  /**
+   * The ID of the team to invite users to.
+   */
+  team_id: string
+}
+
+/**
+ * Request body parameters for POST /v1/teams/{team_id}/invites
+ */
+export type PostTeamInvitesRequestBody = InviteTeamMembersRequest
+
+/**
  * Path parameters for GET /v1/teams/{team_id}/projects
  */
 export type GetTeamProjectsPathParams = {
@@ -7296,6 +7588,21 @@ export type GetProjectFilesQueryParams = {
    */
   branch_data?: boolean
 }
+
+/**
+ * Path parameters for POST /v1/teams/{team_id}/folders
+ */
+export type PostTeamFolderPathParams = {
+  /**
+   * The ID of the team in which to create the folder.
+   */
+  team_id: string
+}
+
+/**
+ * Request body parameters for POST /v1/teams/{team_id}/folders
+ */
+export type PostTeamFolderRequestBody = CreateFolderRequest
 
 /**
  * Path parameters for GET /v2/teams/{team_id}/folders
