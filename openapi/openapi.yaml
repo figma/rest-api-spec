@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Figma API
-  version: 0.46.0
+  version: 0.47.0
   description: |-
     This is the OpenAPI specification for the [Figma REST API](https://developers.figma.com/docs/rest-api/).
 
@@ -6052,6 +6052,14 @@ components:
                 - STRIKETHROUGH
                 - UNDERLINE
               default: NONE
+            fontVariantPosition:
+              type: string
+              description: Whether the text is formatted as superscript or subscript.
+              enum:
+                - NORMAL
+                - SUPER
+                - SUB
+              default: NORMAL
             textAutoResize:
               type: string
               description: Dimensions along which text will auto resize, default is that the
