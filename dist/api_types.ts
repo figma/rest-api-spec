@@ -2310,6 +2310,11 @@ export type TypeStyle = {
   textDecoration?: 'NONE' | 'STRIKETHROUGH' | 'UNDERLINE'
 
   /**
+   * Whether the text is formatted as superscript or subscript.
+   */
+  fontVariantPosition?: 'NORMAL' | 'SUPER' | 'SUB'
+
+  /**
    * Dimensions along which text will auto resize, default is that the text does not auto-resize.
    * TRUNCATE means that the text will be shortened and trailing text will be replaced with "…" if the
    * text contents is larger than the bounds. `TRUNCATE` as a return value is deprecated and will be
